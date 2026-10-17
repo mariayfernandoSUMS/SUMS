@@ -20,8 +20,8 @@
   :root {
     --bg: #f5f4f0; --card: #ffffff; --ink: #15181c; --muted: #8b9098; --line: #eceae4;
     --verde: #2b9a5d; --verde-osc: #0c2a1c; --verde-osc2: #164a30; --verde-suave: #e2f2e8; --verde-pill: #e6f4ea;
-    --ingreso: #2b9a5d; --reemb: #1e8f84; --naranja: 245, 150, 95;
-    --ico-tr: #eceef0; --ico-re: #e0f2ef; --ico-in: #e3f3e8; --linea: #3c9467;
+    --ingreso: #2b9a5d; --reemb: #3b78d8; --naranja: 245, 150, 95;
+    --ico-tr: #eceef0; --ico-re: #e3ecfb; --ico-in: #e3f3e8; --linea: #3c9467;
     --sombra: 0 1px 2px rgba(20, 24, 28, .04), 0 6px 20px rgba(20, 24, 28, .05);
     --r: 22px;
   }
@@ -113,6 +113,25 @@
   .seg { display: flex; background: #e7e5df; border-radius: 14px; padding: 4px; margin-top: 10px; }
   .seg button { flex: 1; padding: 9px; border-radius: 11px; font-weight: 600; color: var(--muted); font-size: 14px; }
   .seg-vista { margin: 0 0 12px; }
+  .filtros { display: flex; gap: 6px; overflow-x: auto; margin: 12px -16px 0; padding: 0 16px 2px; scrollbar-width: none; }
+  .filtros::-webkit-scrollbar { display: none; }
+  .filtros button { flex: none; padding: 7px 13px; border-radius: 99px; font-size: 13px; font-weight: 700; color: var(--muted); background: var(--card); box-shadow: var(--sombra); }
+  .filtros button.on { background: var(--ink); color: var(--bg); }
+  .fbanco { position: relative; flex: none; display: flex; align-items: center; gap: 4px; margin: 0; padding: 7px 11px 7px 13px; border-radius: 99px;
+    font-size: 13px; font-weight: 700; letter-spacing: 0; color: var(--ink); background: var(--card); box-shadow: var(--sombra); }
+  .fbanco.on { background: var(--ink); color: var(--bg); }
+  .fbanco .flecha-sel { width: 12px; height: 12px; transform: rotate(90deg); opacity: .6; }
+  .fbanco select { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; padding: 0; border: 0; font-size: 16px; }
+  .fsep { flex: none; width: 1px; background: var(--line); margin: 4px 2px; }
+  .filtros button.pulsado { transform: scale(.93); }
+  .filtros button.on.f-gasto { background: #fde8e3; color: #ad4535; }
+  .filtros button.on.f-ingreso { background: #e4f4ea; color: #1f7444; }
+  .filtros button.on.f-reembolso { background: #e3ecfb; color: #2d64bd; }
+  .filtros button.on.f-traspaso { background: #eceef0; color: #4d5359; }
+  :root[data-tema="oscuro"] .filtros button.on.f-gasto { background: #3a1f1c; color: #f2a194; }
+  :root[data-tema="oscuro"] .filtros button.on.f-ingreso { background: #173323; color: #7fd9a0; }
+  :root[data-tema="oscuro"] .filtros button.on.f-reembolso { background: #1b2740; color: #9cc0ff; }
+  :root[data-tema="oscuro"] .filtros button.on.f-traspaso { background: #2a2f2c; color: #c3c9c5; }
   .seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
   .tres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .tres div { border-radius: 16px; padding: 10px 12px; min-width: 0; }
@@ -413,8 +432,8 @@
   :root[data-tema="oscuro"] {
     color-scheme: dark;
     --bg: #0e100f; --card: #1a1d1c; --ink: #edf1ee; --muted: #8d9591; --line: #2a2f2c;
-    --verde-suave: #14251b; --verde-pill: #1b3224; --ingreso: #4cc47f; --reemb: #3cc0b0;
-    --ico-tr: #2a2f2c; --ico-re: #16302d; --ico-in: #183222; --linea: #5fd394;
+    --verde-suave: #14251b; --verde-pill: #1b3224; --ingreso: #4cc47f; --reemb: #7aa9f2;
+    --ico-tr: #2a2f2c; --ico-re: #1b2740; --ico-in: #183222; --linea: #5fd394;
     --sombra: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
   }
   :root[data-tema="oscuro"] .balance { background: radial-gradient(120% 140% at 100% 0%, #1f4a35 0%, #13281d 60%); box-shadow: 0 12px 30px rgba(0,0,0,.4);
@@ -562,6 +581,7 @@ let D = { movs: [], cuentas: [], recurrentes: [], config: { categorias: { Gasto:
 let FIJOS = new Set();
 const hoy = new Date(); const HOY = ymd(hoy);
 let mesSel = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+let tipoFiltro = null;
 let tab = 'inicio', vistaMovs = leer('sums_vista') || 'calendario', diaSel = HOY, bancoFiltro = null, busqueda = null;
 let periodo = leer('sums_periodo') || 'Todo', ocultar = leer('sums_ocultar') === '1';
 let form = null;
@@ -910,25 +930,33 @@ function vMovs() {
   }
   h += selectorMes();
   h += `<div class="seg seg-vista"><button data-vista="lista" class="${vistaMovs === 'lista' ? 'on' : ''}">Lista</button><button data-vista="calendario" class="${vistaMovs === 'calendario' ? 'on' : ''}">Calendario</button></div>`;
-  if (bancoFiltro) h += `<button class="chip" data-acc="quitarBanco">${esc(bancoFiltro)} ${SVG.cerrar}</button>`;
   const mes = delMes(filtrados(), mesSel), r = resumen(mes);
   h += `<div class="tres"><div class="ing"><small>Ingreso</small><b class="num">${N(r.ing)}</b></div>
     <div class="gas ir-zona" data-acc="irGastos" role="button"><small>Gasto <i class="ir">${SVG.der}</i></small><b class="num">${N(r.gas)}</b></div><div class="aho ir-zona" data-acc="irEvol" role="button"><small>Ahorro <i class="ir">${SVG.der}</i></small><b class="num">${N(r.ahorro)}</b></div></div>`;
+  // Filtro por tipo de movimiento (afecta a la lista, a los puntos del calendario y a los movimientos del día)
+  // Filtro por banco (el mismo que se activa al tocar un banco en Patrimonio): desplegable con forma de botón
+  const bancosF = D.cuentas.map(c => c.banco).concat(sinBanco().length ? [SIN_BANCO] : []);
+  const selBanco = `<label class="fbanco${bancoFiltro ? ' on' : ''}"><span>${bancoFiltro ? esc(bancoFiltro) : 'Todos los bancos'}</span>${SVG.der.replace('<svg', '<svg class="flecha-sel"')}
+    <select id="filtroBanco" aria-label="Filtrar por banco"><option value="">Todos los bancos</option>${bancosF.map(b => `<option value="${esc(b)}"${b === bancoFiltro ? ' selected' : ''}>${esc(b)}</option>`).join('')}</select></label>`;
+  h += `<div class="filtros">${selBanco}<i class="fsep"></i>${[[null, 'Todos'], ['Gasto', 'Gastos'], ['Ingreso', 'Ingresos'], ['Reembolso', 'Reembolsos'], ['Traspaso', 'Traspasos']]
+    .map(([t, l]) => `<button data-tipof="${t || ''}" class="${tipoFiltro === t ? 'on' : ''} ${t ? 'f-' + t.toLowerCase() : ''}">${l}</button>`).join('')}</div>`;
+  const mesF = tipoFiltro ? mes.filter(m => m.tipo === tipoFiltro) : mes;
+  const nada = tipoFiltro ? `No hay ${{ Gasto: 'gastos', Ingreso: 'ingresos', Reembolso: 'reembolsos', Traspaso: 'traspasos' }[tipoFiltro]} este mes` : 'No hay movimientos este mes';
   if (vistaMovs === 'lista') {
-    h += `<section class="card">${mes.length ? agruparPorDia(ordenar(mes)) : '<div class="vacio">No hay movimientos este mes</div>'}</section>`;
+    h += `<section class="card">${mesF.length ? agruparPorDia(ordenar(mesF)) : `<div class="vacio">${nada}</div>`}</section>`;
     return h;
   }
   // Calendario
   const y = mesSel.getFullYear(), mo = mesSel.getMonth(), dias = new Date(y, mo + 1, 0).getDate();
-  const prev = bancoFiltro ? previstosMes(mesSel).filter(p => p.metodo === bancoFiltro || p.destino === bancoFiltro) : previstosMes(mesSel);
-  const vpd = variablePorDia(mes);
+  const prev = (bancoFiltro ? previstosMes(mesSel).filter(p => p.metodo === bancoFiltro || p.destino === bancoFiltro) : previstosMes(mesSel)).filter(p => !tipoFiltro || p.tipo === tipoFiltro);
+  const vpd = !tipoFiltro || tipoFiltro === 'Gasto' ? variablePorDia(mes) : {};
   const max = Math.max(1, ...Object.values(vpd));
   const offset = (new Date(y, mo, 1).getDay() + 6) % 7;
   let celdas = ['L','M','X','J','V','S','D'].map(d => `<div class="dsem">${d}</div>`).join('');
   for (let i = 0; i < offset; i++) celdas += '<div class="dia fuera"></div>';
   for (let d = 1; d <= dias; d++) {
     const f = ymd(new Date(y, mo, d));
-    const delDia = mes.filter(m => m.fecha === f), prevDia = prev.filter(p => p.fecha === f);
+    const delDia = mesF.filter(m => m.fecha === f), prevDia = prev.filter(p => p.fecha === f);
     const v = Math.max(0, vpd[f] || 0);
     const fondo = v > 0 ? `--tono:rgba(var(--naranja),${(0.12 + 0.6 * v / max).toFixed(2)})` : '';
     const puntos = delDia.length ? '<i></i>' : prevDia.length ? '<i class="prev"></i>' : '';
@@ -937,7 +965,7 @@ function vMovs() {
   }
   h += `<section class="card cal-card"><div class="cal">${celdas}</div>${prev.length ? '<div class="leyenda">○ Previsto</div>' : ''}</section>`;
   if (diaSel.slice(0, 7) === claveMes(mesSel)) {
-    const delDia = ordenar(mes.filter(m => m.fecha === diaSel)), prevDia = prev.filter(p => p.fecha === diaSel);
+    const delDia = ordenar(mesF.filter(m => m.fecha === diaSel)), prevDia = prev.filter(p => p.fecha === diaSel);
     const neto = netoDia(delDia);
     h += `<div class="dia-cab"><h4>${fechaLarga(diaSel)}</h4><span class="num">${delDia.length ? fmt(neto, true) : ''}</span></div>
       <section class="card" style="margin-top:8px">${delDia.length || prevDia.length ? delDia.map(m => filaMov(m)).join('') + prevDia.map(m => filaMov(m)).join('') : '<div class="vacio">Sin movimientos este día</div>'}</section>`;
@@ -1535,7 +1563,7 @@ function reaplicarPulsado(raiz) {
     const el = e.target.closest(SEL); if (!el || el.disabled) return;
     soltar(); actual = el; t0 = performance.now(); el.classList.add('pulsado');
     // Clave para reencontrar el botón si la pantalla se redibuja al pulsarlo
-    const attr = ['data-ana', 'data-anaper', 'data-anameses', 'data-baja', 'data-migas', 'data-acc', 'data-dia', 'data-vista', 'data-periodo', 'data-id', 'data-tema', 'data-f', 'data-t'].find(a => el.hasAttribute(a));
+    const attr = ['data-ana', 'data-anaper', 'data-anameses', 'data-baja', 'data-migas', 'data-acc', 'data-dia', 'data-vista', 'data-tipof', 'data-periodo', 'data-id', 'data-tema', 'data-f', 'data-t'].find(a => el.hasAttribute(a));
     PULSADO = attr ? { sel: `[${attr}="${CSS.escape(el.getAttribute(attr))}"]`, t: t0 } : null;
   }, { passive: true });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => document.addEventListener(ev, soltar, { passive: true }));
@@ -1553,6 +1581,7 @@ $('#barra').addEventListener('click', e => {
 });
 $('#btnMas').addEventListener('click', () => abrirForm(null));
 $('#app').addEventListener('input', e => { if (e.target.id === 'q') { busqueda = e.target.value; pintar(); } });
+$('#app').addEventListener('change', e => { if (e.target.id === 'filtroBanco') { bancoFiltro = e.target.value || null; pintar(); } });
 $('#app').addEventListener('click', e => {
   const acc = e.target.closest('[data-acc]');
   if (acc) {
@@ -1606,6 +1635,8 @@ $('#app').addEventListener('click', e => {
   if (am) { anaMeses = +am.dataset.anameses; anaSelEvol = null; anaSelFijo = null; return pintar(true); }
   const col = e.target.closest('[data-col]');
   if (col) { if (anaVista === 'evol') anaSelEvol = +col.dataset.col; else anaSelFijo = +col.dataset.col; return pintar(); }
+  const tf = e.target.closest('[data-tipof]');
+  if (tf) { tipoFiltro = tf.dataset.tipof || null; return pintar(); }
   const v = e.target.closest('[data-vista]');
   if (v) { vistaMovs = v.dataset.vista; guardar('sums_vista', vistaMovs); return pintar(true); }
   const p = e.target.closest('[data-periodo]');
