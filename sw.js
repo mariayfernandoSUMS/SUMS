@@ -1,7 +1,7 @@
 // SUMS · guarda la app en el móvil para que se abra al instante.
 // Los datos NO se guardan aquí: siempre se piden a la hoja de Google.
 // Al subir una versión nueva a GitHub se descarga sola y se ve la siguiente vez que abras la app.
-const CACHE = 'sums-v1';
+const CACHE = 'sums-v2';
 const ARCHIVOS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

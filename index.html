@@ -282,6 +282,12 @@
   #toast { position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 11px 18px;
     border-radius: 14px; font-weight: 600; font-size: 14px; opacity: 0; transition: opacity .2s; z-index: 60; pointer-events: none; white-space: nowrap; }
   #toast.on { opacity: 1; }
+  .con-aviso #toast { bottom: calc(env(safe-area-inset-bottom) + 112px); }
+  .aviso-red { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(max(2px, env(safe-area-inset-bottom) - 3px) + 72px); z-index: 19;
+    background: var(--card); color: var(--muted); border: 1px solid var(--line); box-shadow: var(--sombra); border-radius: 99px;
+    padding: 6px 12px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .aviso-red b { color: #c4581b; }
+  .mov.pendiente { opacity: .7; }
   .aviso-sb { display: block; width: 100%; text-align: left; font-size: 14px; color: #8a4a12; background: #fff4e8; line-height: 1.45; }
   .aviso-sb b { color: #c4581b; }
 
@@ -497,6 +503,7 @@
 
 <div class="velo oculto" id="velo"><div class="hoja" id="hoja"></div></div>
 <div id="toast"></div>
+<button id="avisoRed" class="aviso-red oculto" type="button"></button>
 
 <script>
 // ── Iconos ───────────────────────────────────────────────
@@ -584,12 +591,27 @@ function pantalla(id) {
 
 async function cargar() {
   if ((!TOKEN || (INSTALADA && !API_URL)) && !DEMO) { prepararLogin(); pantalla('login'); return; }
+  const copia = leerCopia();
+  let mostrada = false;
+  if (copia && USUARIO && copia.D.config.personas.indexOf(USUARIO) > -1) {      // abre al instante con lo último guardado
+    D = conPendientes(JSON.parse(JSON.stringify(copia.D))); FIJOS = new Set(D.config.fijos || []);
+    pantalla('app'); pintar(true); mostrada = true; avisoRed();
+  }
   try {
-    D = await api('api_datos');
+    if (INSTALADA) await enviarPendientes();
+    const nuevo = await api('api_datos');
+    const cambia = !copia || PEND.length || JSON.stringify(nuevo) !== JSON.stringify(copia.D);
+    guardarCopia(nuevo); D = conPendientes(nuevo); OFFLINE = null; avisoRed();
     FIJOS = new Set(D.config.fijos || []); ultimaCarga = Date.now();
     if (!USUARIO || D.config.personas.indexOf(USUARIO) < 0) { pedirUsuario(); return; }
-    pantalla('app'); pintar(true);
+    if (!mostrada) { pantalla('app'); pintar(true); }
+    else if (cambia) { const v = $('#velo'); if (v.classList.contains('oculto') || v.classList.contains('cierra')) pintar(); }
   } catch (e) {
+    if (e.message === SIN_RED && copia) {
+      OFFLINE = copia.t; avisoRed(); ultimaCarga = Date.now();
+      if (!mostrada) { D = conPendientes(JSON.parse(JSON.stringify(copia.D))); FIJOS = new Set(D.config.fijos || []); if (!USUARIO) { pedirUsuario(); return; } pantalla('app'); pintar(true); }
+      return;
+    }
     if (/clave/i.test(e.message)) {
       TOKEN = null; guardar('fin_token', null); prepararLogin(); pantalla('login'); $('#loginError').textContent = 'Clave incorrecta';
     } else if (INSTALADA && !D.movs.length) {
@@ -598,7 +620,67 @@ async function cargar() {
   }
 }
 let ultimaCarga = Date.now();
-async function recargar() { D = await api('api_datos'); FIJOS = new Set(D.config.fijos || []); ultimaCarga = Date.now(); const v = $('#velo'); if (v.classList.contains('oculto') || v.classList.contains('cierra')) pintar(); }
+async function recargar() {
+  try {
+    await enviarPendientes();
+    const n = await api('api_datos'); guardarCopia(n); D = conPendientes(n); OFFLINE = null;
+  } catch (e) {
+    if (e.message !== SIN_RED) throw e;
+    OFFLINE = OFFLINE || (leerCopia() || {}).t || Date.now(); D = conPendientes(D);
+  }
+  FIJOS = new Set(D.config.fijos || []); ultimaCarga = Date.now(); avisoRed();
+  const v = $('#velo'); if (v.classList.contains('oculto') || v.classList.contains('cierra')) pintar();
+}
+
+// ── Sin conexión ─────────────────────────────────────────
+// La app guarda en el móvil una copia de los últimos datos para poder abrirse sin cobertura,
+// y los movimientos añadidos sin conexión quedan pendientes hasta que se puedan enviar a la hoja.
+const SIN_RED = 'Sin conexión';
+let OFFLINE = null, ENVIANDO = false;
+let PEND = (() => { try { return JSON.parse(leer('sums_pendientes')) || []; } catch (e) { return []; } })();
+const guardarPend = () => guardar('sums_pendientes', PEND.length ? JSON.stringify(PEND) : null);
+function guardarCopia(datos) {
+  if (!INSTALADA) return;
+  try { localStorage.setItem('sums_datos', JSON.stringify({ t: Date.now(), D: datos })); }
+  catch (e) { try { localStorage.setItem('sums_datos', JSON.stringify({ t: Date.now(), D: Object.assign({}, datos, { cuentas: datos.cuentas.map(c => Object.assign({}, c, { logo: '' })) }) })); } catch (e2) {} }
+}
+function leerCopia() { if (!INSTALADA) return null; try { const c = JSON.parse(leer('sums_datos')); return c && c.D && c.D.movs ? c : null; } catch (e) { return null; } }
+const numImporte = v => { let t = String(v == null ? '' : v).replace(/[^\d,.\-]/g, ''); if (t.indexOf(',') > -1) t = t.replace(/\./g, '').replace(',', '.'); return Math.abs(parseFloat(t)); };
+function movDePendiente(p) {
+  const d = p.d, h = new Date(p.t), tr = d.tipo === 'Traspaso';
+  return { id: p.id, pendiente: true, fecha: d.fecha || HOY, hora: pad(h.getHours()) + ':' + pad(h.getMinutes()), importe: numImporte(d.importe), tipo: d.tipo,
+    concepto: d.concepto || (tr ? `Traspaso ${d.metodo} → ${d.destino}` : (d.detalle || d.subcategoria || d.categoria || 'Sin concepto')),
+    categoria: tr ? 'Traspaso' : (d.categoria || 'Sin clasificar'), subcategoria: d.subcategoria || '', detalle: d.detalle || '', metodo: d.metodo || '',
+    quien: d.quien || '', notas: d.notas || '', vinculado: d.vinculado || '', destino: d.destino || '', origen: 'App' };
+}
+function conPendientes(datos) { datos.movs = datos.movs.filter(m => !m.pendiente).concat(PEND.map(movDePendiente)); return datos; }
+async function enviarPendientes() {
+  if (!PEND.length || ENVIANDO) return;
+  ENVIANDO = true; let n = 0;
+  try {
+    while (PEND.length) {
+      try { await api('api_agregar', PEND[0].d); }
+      catch (e) {
+        if (e.message === SIN_RED) throw e;
+        toast('No se pudo guardar «' + movDePendiente(PEND[0]).concepto + '»: ' + e.message);   // error de la hoja: se descarta para no bloquear la cola
+      }
+      PEND.shift(); guardarPend(); n++;
+    }
+  } finally {
+    ENVIANDO = false; avisoRed();
+    if (n) toast(n === 1 ? 'Movimiento pendiente enviado' : n + ' movimientos pendientes enviados');
+  }
+}
+function avisoRed() {
+  const el = $('#avisoRed'), n = PEND.length, ver = INSTALADA && (OFFLINE !== null || n > 0);
+  el.classList.toggle('oculto', !ver); document.body.classList.toggle('con-aviso', ver);
+  if (!ver) return;
+  const hora = OFFLINE ? new Date(OFFLINE) : null;
+  const cuando = hora ? (ymd(hora) === HOY ? `de las ${pad(hora.getHours())}:${pad(hora.getMinutes())}` : `del ${hora.getDate()}/${hora.getMonth() + 1}`) : '';
+  el.innerHTML = (OFFLINE !== null ? `Sin conexión · datos ${cuando}` : 'Enviando…') + (n ? ` · <b>${n} pendiente${n === 1 ? '' : 's'}</b>` : '');
+}
+$('#avisoRed').addEventListener('click', () => { toast('Reintentando…'); recargar().then(() => toast(OFFLINE === null ? 'Datos actualizados' : 'Sigue sin conexión')).catch(e => toast(e.message)); });
+window.addEventListener('online', () => { if (INSTALADA && TOKEN) recargar().catch(() => {}); });
 // Vuelve a pedir los datos al volver a la app o al cambiar de pestaña (si han pasado más de 15 s)
 function refrescarSiToca() { if (TOKEN || DEMO) if (Date.now() - ultimaCarga > 15000 && !$('#app').classList.contains('oculto')) recargar().catch(() => {}); }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refrescarSiToca(); });
@@ -692,7 +774,7 @@ function icono(m) {
 }
 function filaMov(m, conFecha) {
   const etiqueta = m.tipo === 'Traspaso' ? `${m.metodo} → ${m.destino}` : (m.detalle || m.subcategoria || m.categoria);
-  const sub = [etiqueta, conFecha ? fechaCorta(m.fecha) : (m.previsto ? 'Previsto' : '')].filter(Boolean).join(' · ');
+  const sub = [m.pendiente ? '⏳ Pendiente' : '', etiqueta, conFecha ? fechaCorta(m.fecha) : (m.previsto ? 'Previsto' : '')].filter(Boolean).join(' · ');
   let imp;
   if (m.tipo === 'Gasto') {
     const dev = m.previsto ? 0 : reembolsosDe(m.id).reduce((a, r) => a + r.importe, 0);
@@ -701,7 +783,7 @@ function filaMov(m, conFecha) {
   } else if (m.tipo === 'Ingreso') imp = `<div class="imp in num">+${fmt(m.importe)}</div>`;
   else if (m.tipo === 'Reembolso') imp = `<div class="imp re num">+${fmt(m.importe)}</div>`;
   else imp = `<div class="imp tr num">${fmt(m.importe)}</div>`;
-  return `<div class="mov${m.previsto ? ' previsto' : ''}" ${m.previsto ? '' : `data-id="${esc(m.id)}"`}>${icono(m)}
+  return `<div class="mov${m.previsto ? ' previsto' : ''}${m.pendiente ? ' pendiente' : ''}" ${m.previsto || m.pendiente ? '' : `data-id="${esc(m.id)}"`}>${icono(m)}
     <div class="txt"><div class="t">${esc(m.concepto)}</div><div class="s">${esc(sub)}</div></div>${imp}</div>`;
 }
 // Movimientos previstos a partir de Recurrentes (solo días futuros)
@@ -1641,7 +1723,7 @@ $('#hoja').addEventListener('click', async e => {
   }
   if (f.dataset.f === 'borrar') {
     if (!confirm('¿Borrar este movimiento?')) return;
-    try { await api('api_borrar', form.id); cerrarHoja(); toast('Borrado'); await recargar(); } catch (err) { toast(err.message); }
+    try { await api('api_borrar', form.id); cerrarHoja(); toast('Borrado'); await recargar(); } catch (err) { toast(err.message === SIN_RED ? 'Sin conexión: para borrar necesitas cobertura' : err.message); }
     return;
   }
   if (f.dataset.f === 'guardar') {
@@ -1657,7 +1739,18 @@ $('#hoja').addEventListener('click', async e => {
     try {
       await (form.id ? api('api_editar', form.id, d) : api('api_agregar', d));
       cerrarHoja(); toast(form.id ? 'Cambios guardados' : 'Movimiento añadido'); await recargar();
-    } catch (err) { toast(err.message); $('#fGuardar').disabled = false; }
+    } catch (err) {
+      if (err.message === SIN_RED && !form.id && INSTALADA) {
+        if (!(numImporte(d.importe) > 0)) { toast('Escribe un importe'); $('#fGuardar').disabled = false; return; }
+        if (!d.fecha) d.fecha = HOY;
+        PEND.push({ id: 'pend-' + Date.now(), t: Date.now(), d }); guardarPend();
+        OFFLINE = OFFLINE || (leerCopia() || {}).t || Date.now();
+        D = conPendientes(D); cerrarHoja(); avisoRed(); pintar();
+        toast('Sin conexión: se enviará cuando vuelva');
+        return;
+      }
+      toast(err.message === SIN_RED ? 'Sin conexión: para editar necesitas cobertura' : err.message); $('#fGuardar').disabled = false;
+    }
   }
 });
 // Abrir y cerrar la hoja con animación (sube al abrir, baja al cerrar)
