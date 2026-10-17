@@ -1895,7 +1895,19 @@ function crearDemo() {
 
 if (DEMO) { USUARIO = USUARIO || 'María'; }
 // App instalada: guarda la app en el móvil para que arranque al momento (los datos siempre se piden a la hoja)
-if (INSTALADA && 'serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+if (INSTALADA && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+    // Busca versión nueva cada vez que vuelves a la app
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+  }).catch(() => {});
+  // Cuando llega una versión nueva, recarga una vez para usarla (sin interrumpir si hay un formulario abierto)
+  let yaRecargada = false; const teniaVersion = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (yaRecargada || !teniaVersion) return;
+    yaRecargada = true;
+    const v = $('#velo'); if (!v || v.classList.contains('oculto')) location.reload();
+  });
+}
 cargar();
 </script>
 </body>
