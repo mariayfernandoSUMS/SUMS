@@ -301,6 +301,15 @@
   #toast { position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 11px 18px;
     border-radius: 14px; font-weight: 600; font-size: 14px; opacity: 0; transition: opacity .2s; z-index: 60; pointer-events: none; white-space: nowrap; }
   #toast.on { opacity: 1; }
+  /* Deslizar hacia abajo para actualizar */
+  html, body { overscroll-behavior-y: contain; }
+  .tirar { position: fixed; left: 50%; top: calc(env(safe-area-inset-top) + 6px); z-index: 30; width: 38px; height: 38px; margin-left: -19px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--card); color: var(--verde); box-shadow: 0 4px 14px rgba(0,0,0,.14);
+    opacity: 0; transform: translateY(-50px); pointer-events: none; }
+  .tirar svg { width: 18px; height: 18px; }
+  .tirar.vuelve { transition: transform .3s cubic-bezier(.2,.9,.25,1), opacity .3s; }
+  .tirar.cargando svg { animation: girar .8s linear infinite; }
+  @keyframes girar { to { transform: rotate(360deg); } }
   .con-aviso #toast { bottom: calc(env(safe-area-inset-bottom) + 112px); }
   .aviso-red { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(max(2px, env(safe-area-inset-bottom) - 3px) + 72px); z-index: 19;
     background: var(--card); color: var(--muted); border: 1px solid var(--line); box-shadow: var(--sombra); border-radius: 99px;
@@ -521,6 +530,7 @@
 </nav>
 
 <div class="velo oculto" id="velo"><div class="hoja" id="hoja"></div></div>
+<div id="tirar" class="tirar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></div>
 <div id="toast"></div>
 <button id="avisoRed" class="aviso-red oculto" type="button"></button>
 
@@ -1895,8 +1905,10 @@ function crearDemo() {
 
 if (DEMO) { USUARIO = USUARIO || 'María'; }
 // App instalada: guarda la app en el móvil para que arranque al momento (los datos siempre se piden a la hoja)
+let REG = null;
 if (INSTALADA && 'serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+    REG = reg;
     // Busca versión nueva cada vez que vuelves a la app
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
   }).catch(() => {});
@@ -1908,6 +1920,33 @@ if (INSTALADA && 'serviceWorker' in navigator) {
     const v = $('#velo'); if (!v || v.classList.contains('oculto')) location.reload();
   });
 }
+// Deslizar hacia abajo (estando arriba del todo) para volver a pedir los datos y buscar versión nueva de la app
+(function () {
+  const ind = $('#tirar'), UMBRAL = 70;
+  let y0 = null, dist = 0, ocupado = false;
+  const poner = (d, giro) => { ind.style.opacity = Math.min(1, d / UMBRAL); ind.style.transform = `translateY(${Math.min(d, UMBRAL + 20) - 50}px) rotate(${giro}deg)`; };
+  const valido = t => !$('#app').classList.contains('oculto') && $('#velo').classList.contains('oculto')
+    && !t.closest('.grafico, .asa, select, input, .filtros, .barra');
+  document.addEventListener('touchstart', e => {
+    if (ocupado || window.scrollY > 0 || e.touches.length !== 1 || !valido(e.target)) { y0 = null; return; }
+    y0 = e.touches[0].clientY; dist = 0; ind.classList.remove('vuelve');
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (y0 === null) return;
+    const d = e.touches[0].clientY - y0;
+    if (d <= 0 || window.scrollY > 0) { dist = 0; poner(0, 0); return; }
+    dist = d * .55; poner(dist, dist * 3);
+  }, { passive: true });
+  document.addEventListener('touchend', async () => {
+    if (y0 === null) return; y0 = null;
+    ind.classList.add('vuelve');
+    if (dist < UMBRAL) { poner(0, 0); return; }
+    ocupado = true; ind.classList.add('cargando'); ind.style.opacity = 1; ind.style.transform = `translateY(${UMBRAL - 40}px)`;
+    try { if (REG) REG.update().catch(() => {}); await recargar(); toast(OFFLINE === null ? 'Actualizado' : 'Sin conexión'); }
+    catch (err) { toast(err.message); }
+    ind.classList.remove('cargando'); poner(0, 0); ocupado = false;
+  });
+})();
 cargar();
 </script>
 </body>
