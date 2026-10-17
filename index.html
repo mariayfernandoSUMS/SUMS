@@ -581,7 +581,7 @@ let D = { movs: [], cuentas: [], recurrentes: [], config: { categorias: { Gasto:
 let FIJOS = new Set();
 const hoy = new Date(); const HOY = ymd(hoy);
 let mesSel = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-let tipoFiltro = null;
+let tipoFiltro = null, catFiltro = null, fvFiltro = null;
 let tab = 'inicio', vistaMovs = leer('sums_vista') || 'calendario', diaSel = HOY, bancoFiltro = null, busqueda = null;
 let periodo = leer('sums_periodo') || 'Todo', ocultar = leer('sums_ocultar') === '1';
 let form = null;
@@ -933,25 +933,36 @@ function vMovs() {
   const mes = delMes(filtrados(), mesSel), r = resumen(mes);
   h += `<div class="tres"><div class="ing"><small>Ingreso</small><b class="num">${N(r.ing)}</b></div>
     <div class="gas ir-zona" data-acc="irGastos" role="button"><small>Gasto <i class="ir">${SVG.der}</i></small><b class="num">${N(r.gas)}</b></div><div class="aho ir-zona" data-acc="irEvol" role="button"><small>Ahorro <i class="ir">${SVG.der}</i></small><b class="num">${N(r.ahorro)}</b></div></div>`;
-  // Filtro por tipo de movimiento (afecta a la lista, a los puntos del calendario y a los movimientos del día)
-  // Filtro por banco (el mismo que se activa al tocar un banco en Patrimonio): desplegable con forma de botón
-  const bancosF = D.cuentas.map(c => c.banco).concat(sinBanco().length ? [SIN_BANCO] : []);
-  const selBanco = `<label class="fbanco${bancoFiltro ? ' on' : ''}"><span>${bancoFiltro ? esc(bancoFiltro) : 'Todos los bancos'}</span>${SVG.der.replace('<svg', '<svg class="flecha-sel"')}
-    <select id="filtroBanco" aria-label="Filtrar por banco"><option value="">Todos los bancos</option>${bancosF.map(b => `<option value="${esc(b)}"${b === bancoFiltro ? ' selected' : ''}>${esc(b)}</option>`).join('')}</select></label>`;
+  // Filtros (desplegables con forma de botón): Tipo, Categoría, Fijo/Variable y Banco.
+  // Afectan a la lista, al calendario y a los movimientos del día; los recuadros de arriba solo cambian con el banco.
+  const flecha = SVG.der.replace('<svg', '<svg class="flecha-sel"');
+  const pill = (id, aria, valor, etiqueta, opciones, extra) => `<label class="fbanco${valor ? ' on' + (extra || '') : ''}"><span>${esc(etiqueta)}</span>${flecha}
+    <select id="${id}" aria-label="${aria}">${opciones.map(([v, l]) => `<option value="${esc(v)}"${v === (valor || '') ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></label>`;
   const TIPOS_F = [['', 'Todos los tipos'], ['Gasto', 'Gastos'], ['Ingreso', 'Ingresos'], ['Reembolso', 'Reembolsos'], ['Traspaso', 'Traspasos']];
-  const selTipo = `<label class="fbanco${tipoFiltro ? ' on f-' + tipoFiltro.toLowerCase() : ''}"><span>${TIPOS_F.find(t => t[0] === (tipoFiltro || ''))[1]}</span>${SVG.der.replace('<svg', '<svg class="flecha-sel"')}
-    <select id="filtroTipo" aria-label="Filtrar por tipo">${TIPOS_F.map(([t, l]) => `<option value="${t}"${t === (tipoFiltro || '') ? ' selected' : ''}>${l}</option>`).join('')}</select></label>`;
-  h += `<div class="filtros">${selBanco}${selTipo}</div>`;
-  const mesF = tipoFiltro ? mes.filter(m => m.tipo === tipoFiltro) : mes;
-  const nada = tipoFiltro ? `No hay ${{ Gasto: 'gastos', Ingreso: 'ingresos', Reembolso: 'reembolsos', Traspaso: 'traspasos' }[tipoFiltro]} este mes` : 'No hay movimientos este mes';
+  const arbolCat = tipoFiltro === 'Ingreso' ? [D.config.categorias.Ingreso] : tipoFiltro === 'Gasto' || tipoFiltro === 'Reembolso' ? [D.config.categorias.Gasto]
+    : tipoFiltro === 'Traspaso' ? [] : [D.config.categorias.Gasto, D.config.categorias.Ingreso];
+  const catsF = [...new Set(arbolCat.flatMap(a => Object.keys(a)))];
+  if (catFiltro && catsF.indexOf(catFiltro) < 0) catFiltro = null;
+  const bancosF = D.cuentas.map(c => c.banco).concat(sinBanco().length ? [SIN_BANCO] : []);
+  h += `<div class="filtros">`
+    + pill('filtroTipo', 'Filtrar por tipo', tipoFiltro, tipoFiltro ? TIPOS_F.find(t => t[0] === tipoFiltro)[1] : 'Tipo', TIPOS_F, tipoFiltro ? ' f-' + tipoFiltro.toLowerCase() : '')
+    + (catsF.length ? pill('filtroCat', 'Filtrar por categoría', catFiltro, catFiltro ? (emojiDe(catFiltro) ? emojiDe(catFiltro) + ' ' : '') + catFiltro : 'Categoría',
+        [['', 'Todas las categorías']].concat(catsF.map(c => [c, (emojiDe(c) ? emojiDe(c) + '  ' : '') + c]))) : '')
+    + pill('filtroFV', 'Filtrar por fijo o variable', fvFiltro, fvFiltro ? fvFiltro + 's' : 'Fijo/Variable', [['', 'Fijos y variables'], ['Fijo', 'Solo fijos'], ['Variable', 'Solo variables']])
+    + pill('filtroBanco', 'Filtrar por banco', bancoFiltro, bancoFiltro || 'Banco', [['', 'Todos los bancos']].concat(bancosF.map(b => [b, b])))
+    + `</div>`;
+  const pasa = m => (!tipoFiltro || m.tipo === tipoFiltro) && (!catFiltro || m.categoria === catFiltro)
+    && (!fvFiltro || ((m.tipo === 'Gasto' || m.tipo === 'Reembolso') && esFijo(m) === (fvFiltro === 'Fijo')));
+  const mesF = mes.filter(pasa);
+  const nada = tipoFiltro || catFiltro || fvFiltro ? 'No hay movimientos con estos filtros este mes' : 'No hay movimientos este mes';
   if (vistaMovs === 'lista') {
     h += `<section class="card">${mesF.length ? agruparPorDia(ordenar(mesF)) : `<div class="vacio">${nada}</div>`}</section>`;
     return h;
   }
   // Calendario
   const y = mesSel.getFullYear(), mo = mesSel.getMonth(), dias = new Date(y, mo + 1, 0).getDate();
-  const prev = (bancoFiltro ? previstosMes(mesSel).filter(p => p.metodo === bancoFiltro || p.destino === bancoFiltro) : previstosMes(mesSel)).filter(p => !tipoFiltro || p.tipo === tipoFiltro);
-  const vpd = !tipoFiltro || tipoFiltro === 'Gasto' ? variablePorDia(mes) : {};
+  const prev = (bancoFiltro ? previstosMes(mesSel).filter(p => p.metodo === bancoFiltro || p.destino === bancoFiltro) : previstosMes(mesSel)).filter(pasa);
+  const vpd = !tipoFiltro || tipoFiltro === 'Gasto' || tipoFiltro === 'Reembolso' ? variablePorDia(mesF) : {};
   const max = Math.max(1, ...Object.values(vpd));
   const offset = (new Date(y, mo, 1).getDay() + 6) % 7;
   let celdas = ['L','M','X','J','V','S','D'].map(d => `<div class="dsem">${d}</div>`).join('');
@@ -1586,6 +1597,8 @@ $('#app').addEventListener('input', e => { if (e.target.id === 'q') { busqueda =
 $('#app').addEventListener('change', e => {
   if (e.target.id === 'filtroBanco') { bancoFiltro = e.target.value || null; pintar(); }
   if (e.target.id === 'filtroTipo') { tipoFiltro = e.target.value || null; pintar(); }
+  if (e.target.id === 'filtroCat') { catFiltro = e.target.value || null; pintar(); }
+  if (e.target.id === 'filtroFV') { fvFiltro = e.target.value || null; pintar(); }
 });
 $('#app').addEventListener('click', e => {
   const acc = e.target.closest('[data-acc]');
