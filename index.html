@@ -20,7 +20,7 @@
   :root {
     --bg: #f5f4f0; --card: #ffffff; --ink: #15181c; --muted: #8b9098; --line: #eceae4;
     --verde: #2b9a5d; --verde-osc: #0c2a1c; --verde-osc2: #164a30; --verde-suave: #e2f2e8; --verde-pill: #e6f4ea;
-    --ingreso: #2b9a5d; --reemb: #3b78d8; --naranja: 245, 150, 95;
+    --ingreso: #2b9a5d; --reemb: #3b78d8; --traspaso: #8a63d2; --naranja: 245, 150, 95;
     --ico-tr: #eceef0; --ico-re: #e3ecfb; --ico-in: #e3f3e8; --linea: #3c9467;
     --sombra: 0 1px 2px rgba(20, 24, 28, .04), 0 6px 20px rgba(20, 24, 28, .05);
     --r: 22px;
@@ -107,7 +107,7 @@
   .mov .tachado { text-decoration: line-through; color: var(--muted); font-weight: 500; }
   .mov.previsto { opacity: .6; }
   .mov.previsto .ico { background: transparent !important; border: 1.5px dashed var(--muted); color: var(--muted) !important; }
-  .imp.in { color: var(--ingreso); } .imp.re { color: var(--reemb); } .imp.tr { color: var(--muted); }
+  .imp.in { color: var(--ingreso); } .imp.re { color: var(--reemb); } .imp.tr { color: var(--traspaso); }
 
   /* Segmentos y recuadros */
   .seg { display: flex; background: #e7e5df; border-radius: 14px; padding: 4px; margin-top: 10px; }
@@ -124,14 +124,14 @@
   .fbanco select { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; padding: 0; border: 0; font-size: 16px; }
   .fsep { flex: none; width: 1px; background: var(--line); margin: 4px 2px; }
   .filtros button.pulsado { transform: scale(.93); }
-  .filtros button.on.f-gasto { background: #fde8e3; color: #ad4535; }
-  .filtros button.on.f-ingreso { background: #e4f4ea; color: #1f7444; }
-  .filtros button.on.f-reembolso { background: #e3ecfb; color: #2d64bd; }
-  .filtros button.on.f-traspaso { background: #eceef0; color: #4d5359; }
-  :root[data-tema="oscuro"] .filtros button.on.f-gasto { background: #3a1f1c; color: #f2a194; }
-  :root[data-tema="oscuro"] .filtros button.on.f-ingreso { background: #173323; color: #7fd9a0; }
-  :root[data-tema="oscuro"] .filtros button.on.f-reembolso { background: #1b2740; color: #9cc0ff; }
-  :root[data-tema="oscuro"] .filtros button.on.f-traspaso { background: #2a2f2c; color: #c3c9c5; }
+  .filtros .on.f-gasto { background: #fde8e3; color: #ad4535; }
+  .filtros .on.f-ingreso { background: #e4f4ea; color: #1f7444; }
+  .filtros .on.f-reembolso { background: #e3ecfb; color: #2d64bd; }
+  .filtros .on.f-traspaso { background: #eee6fb; color: #6b45b8; }
+  :root[data-tema="oscuro"] .filtros .on.f-gasto { background: #3a1f1c; color: #f2a194; }
+  :root[data-tema="oscuro"] .filtros .on.f-ingreso { background: #173323; color: #7fd9a0; }
+  :root[data-tema="oscuro"] .filtros .on.f-reembolso { background: #1b2740; color: #9cc0ff; }
+  :root[data-tema="oscuro"] .filtros .on.f-traspaso { background: #2a2140; color: #c9b4ff; }
   .seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
   .tres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .tres div { border-radius: 16px; padding: 10px 12px; min-width: 0; }
@@ -432,7 +432,7 @@
   :root[data-tema="oscuro"] {
     color-scheme: dark;
     --bg: #0e100f; --card: #1a1d1c; --ink: #edf1ee; --muted: #8d9591; --line: #2a2f2c;
-    --verde-suave: #14251b; --verde-pill: #1b3224; --ingreso: #4cc47f; --reemb: #7aa9f2;
+    --verde-suave: #14251b; --verde-pill: #1b3224; --ingreso: #4cc47f; --reemb: #7aa9f2; --traspaso: #b9a0f0;
     --ico-tr: #2a2f2c; --ico-re: #1b2740; --ico-in: #183222; --linea: #5fd394;
     --sombra: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
   }
@@ -938,8 +938,10 @@ function vMovs() {
   const bancosF = D.cuentas.map(c => c.banco).concat(sinBanco().length ? [SIN_BANCO] : []);
   const selBanco = `<label class="fbanco${bancoFiltro ? ' on' : ''}"><span>${bancoFiltro ? esc(bancoFiltro) : 'Todos los bancos'}</span>${SVG.der.replace('<svg', '<svg class="flecha-sel"')}
     <select id="filtroBanco" aria-label="Filtrar por banco"><option value="">Todos los bancos</option>${bancosF.map(b => `<option value="${esc(b)}"${b === bancoFiltro ? ' selected' : ''}>${esc(b)}</option>`).join('')}</select></label>`;
-  h += `<div class="filtros">${selBanco}<i class="fsep"></i>${[[null, 'Todos'], ['Gasto', 'Gastos'], ['Ingreso', 'Ingresos'], ['Reembolso', 'Reembolsos'], ['Traspaso', 'Traspasos']]
-    .map(([t, l]) => `<button data-tipof="${t || ''}" class="${tipoFiltro === t ? 'on' : ''} ${t ? 'f-' + t.toLowerCase() : ''}">${l}</button>`).join('')}</div>`;
+  const TIPOS_F = [['', 'Todos los tipos'], ['Gasto', 'Gastos'], ['Ingreso', 'Ingresos'], ['Reembolso', 'Reembolsos'], ['Traspaso', 'Traspasos']];
+  const selTipo = `<label class="fbanco${tipoFiltro ? ' on f-' + tipoFiltro.toLowerCase() : ''}"><span>${TIPOS_F.find(t => t[0] === (tipoFiltro || ''))[1]}</span>${SVG.der.replace('<svg', '<svg class="flecha-sel"')}
+    <select id="filtroTipo" aria-label="Filtrar por tipo">${TIPOS_F.map(([t, l]) => `<option value="${t}"${t === (tipoFiltro || '') ? ' selected' : ''}>${l}</option>`).join('')}</select></label>`;
+  h += `<div class="filtros">${selBanco}${selTipo}</div>`;
   const mesF = tipoFiltro ? mes.filter(m => m.tipo === tipoFiltro) : mes;
   const nada = tipoFiltro ? `No hay ${{ Gasto: 'gastos', Ingreso: 'ingresos', Reembolso: 'reembolsos', Traspaso: 'traspasos' }[tipoFiltro]} este mes` : 'No hay movimientos este mes';
   if (vistaMovs === 'lista') {
@@ -1581,7 +1583,10 @@ $('#barra').addEventListener('click', e => {
 });
 $('#btnMas').addEventListener('click', () => abrirForm(null));
 $('#app').addEventListener('input', e => { if (e.target.id === 'q') { busqueda = e.target.value; pintar(); } });
-$('#app').addEventListener('change', e => { if (e.target.id === 'filtroBanco') { bancoFiltro = e.target.value || null; pintar(); } });
+$('#app').addEventListener('change', e => {
+  if (e.target.id === 'filtroBanco') { bancoFiltro = e.target.value || null; pintar(); }
+  if (e.target.id === 'filtroTipo') { tipoFiltro = e.target.value || null; pintar(); }
+});
 $('#app').addEventListener('click', e => {
   const acc = e.target.closest('[data-acc]');
   if (acc) {
