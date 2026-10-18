@@ -61,18 +61,23 @@
   .mes svg { width: 18px; height: 18px; }
 
   /* Bloque balance (oscuro) */
-  .balance { --b-ink: #123524; --b-sub: rgba(18, 53, 36, .6); --b-cristal: rgba(255,255,255,.55); --b-barra: rgba(226, 112, 112, .38); --b-barra-hoy: #d9646a;
+  .balance { --b-ink: var(--ink); --b-sub: var(--muted); --b-cristal: rgba(255,255,255,.65); --b-barra: rgba(226, 112, 112, .35); --b-barra-hoy: #d9646a;
     --b-in: #2a7a4b; --b-ga: #b8434a; --b-aho: #3d48a8; --b-neg: #b8434a;
-    background: linear-gradient(155deg, #d6f0e0 0%, #bfe5cf 100%); color: var(--b-ink);
-    border-radius: 26px; padding: 20px 20px 16px; box-shadow: 0 10px 26px rgba(60, 140, 95, .16); }
+    --c-aho: #e5e8fd; --c-ing: #e2f5e9; --c-gas: #fde6e6;
+    background: var(--card); color: var(--b-ink); border-radius: 26px; padding: 12px 12px 14px; box-shadow: var(--sombra); }
+  .balance .caja-aho { background: var(--c-aho); border-radius: 18px; padding: 12px 14px 14px; }
+  .balance .caja-aho .cab, .balance .caja-aho .cab b { color: #5b64a8; }
+  .balance .duo .caja-ing { background: var(--c-ing); } .balance .duo .caja-ing small { color: #4f8a66; }
+  .balance .duo .caja-gas { background: var(--c-gas); } .balance .duo .caja-gas small { color: #b0656a; }
+  .balance .barras { margin: 0 6px; } .balance .ejes { margin-left: 6px; margin-right: 6px; }
   .balance .cab { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--b-sub); font-weight: 600; }
   .balance .cab b { color: var(--b-ink); opacity: .8; font-weight: 600; }
   .balance .grande { font-size: 40px; font-weight: 800; letter-spacing: -.03em; margin: 2px 0 2px; line-height: 1.1; color: var(--b-aho); }
   .duo .ga { color: var(--b-ga); }
   .pct { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--b-cristal); color: var(--b-aho); }
   .pct.neg { color: var(--b-neg); }
-  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 14px; }
-  .duo div { background: var(--b-cristal); border-radius: 14px; padding: 10px 12px; }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 16px; }
+  .duo div { background: var(--b-cristal); border-radius: 16px; padding: 10px 14px; }
   .duo small { display: block; font-size: 12px; color: var(--b-sub); font-weight: 600; }
   .duo b { font-size: 18px; font-weight: 700; }
   .duo .in { color: var(--b-in); }
@@ -139,6 +144,7 @@
   .tres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .tres div { border-radius: 16px; padding: 10px 12px; min-width: 0; }
   .tres .ing { background: #e2f5e9; color: #2a7a4b; }
+  .tres .tasa-m { display: block; font-style: normal; font-size: 11px; font-weight: 700; opacity: .75; margin-top: 1px; white-space: nowrap; }
   .tres .gas { background: #fde6e6; color: #b8434a; }
   .tres .aho { background: #e5e8fd; color: #3d48a8; }
   .tres small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; opacity: .75; text-transform: uppercase; }
@@ -450,9 +456,11 @@
     --ico-tr: #2a2f2c; --ico-re: #1b2740; --ico-in: #183222; --linea: #5fd394;
     --sombra: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
   }
-  :root[data-tema="oscuro"] .balance { background: #1b2620; box-shadow: 0 8px 24px rgba(0,0,0,.35); border: 1px solid rgba(143, 211, 168, .08);
-    --b-ink: #e3f2e8; --b-sub: rgba(227, 242, 232, .55); --b-cristal: rgba(255,255,255,.05); --b-barra: rgba(244, 163, 163, .32); --b-barra-hoy: #f4a3a3;
-    --b-in: #8fd3a8; --b-ga: #f4a3a3; --b-aho: #aeb7ff; --b-neg: #f4a3a3; }
+  :root[data-tema="oscuro"] .balance { background: var(--card); box-shadow: var(--sombra);
+    --b-barra: rgba(244, 163, 163, .3); --b-barra-hoy: #f4a3a3; --b-cristal: rgba(255,255,255,.07);
+    --b-in: #8fd3a8; --b-ga: #f4a3a3; --b-aho: #aeb7ff; --b-neg: #f4a3a3; --c-aho: #22264a; --c-ing: #173323; --c-gas: #3a2224; }
+  :root[data-tema="oscuro"] .balance .caja-aho .cab, :root[data-tema="oscuro"] .balance .caja-aho .cab b { color: #9aa2e0; }
+  :root[data-tema="oscuro"] .balance .duo .caja-ing small { color: #7cb592; } :root[data-tema="oscuro"] .balance .duo .caja-gas small { color: #d08f92; }
   :root[data-tema="oscuro"] .seg { background: #232725; }
   :root[data-tema="oscuro"] .seg button.on { background: #343936; box-shadow: none; }
   :root[data-tema="oscuro"] .tres .ing { background: #173323; color: #8fd3a8; }
@@ -917,12 +925,12 @@ function vInicio() {
   const ultimos = ordenar(mes).slice(0, 8);
   return cabecera(`${saludo}, ${esc(USUARIO || '')}`, fechaLarga(HOY), '', claveMes(mesSel) !== claveMes(hoy)) + selectorMes() + `
     <section class="balance">
-      <div class="ir-zona" data-acc="irEvol" role="button" aria-label="Ver evolución del ahorro">
+      <div class="ir-zona caja-aho" data-acc="irEvol" role="button" aria-label="Ver evolución del ahorro">
       <div class="cab"><span>Ahorro de ${MESES[mo]} <i class="ir">${SVG.der}</i></span>${quedan !== null ? `<b>Quedan ${quedan} ${quedan === 1 ? 'día' : 'días'}</b>` : ''}</div>
       <div class="grande num">${N(r.ahorro)}</div>
       ${r.pct === null ? `<span class="pct">Sin ingresos este mes</span>` : r.ahorro < 0 ? `<span class="pct neg">Los gastos superan a los ingresos</span>`
         : `<span class="pct">${r.pct.toLocaleString('es-ES', { maximumFractionDigits: 0 })} % de los ingresos</span>`}</div>
-      <div class="duo"><div><small>Ingresos</small><b class="in num">${N(r.ing, '+')}</b></div><div class="ir-zona" data-acc="irGastos" role="button" aria-label="Ver gastos por categoría"><small>Gastos <i class="ir">${SVG.der}</i></small><b class="ga num">${N(r.gas, '−')}</b></div></div>
+      <div class="duo"><div class="caja-ing"><small>Ingresos</small><b class="in num">${N(r.ing, '+')}</b></div><div class="ir-zona caja-gas" data-acc="irGastos" role="button" aria-label="Ver gastos por categoría"><small>Gastos <i class="ir">${SVG.der}</i></small><b class="ga num">${N(r.gas, '−')}</b></div></div>
       <div class="barras">${barras}</div>
       <div class="ejes"><span>1 ${mc}</span>${posHoy !== null && hoy.getDate() > 3 && hoy.getDate() < dias - 3 ? `<span class="h" style="left:${posHoy}%">Hoy · ${hoy.getDate()}</span>` : ''}<span>${dias} ${mc}</span></div>
     </section>
@@ -1068,6 +1076,16 @@ function curvaSuave(p) {
 }
 
 // Repinta Análisis animando solo el donut
+// Cambiar de mes en cualquier pestaña mueve también las demás (Análisis no pasa del mes actual)
+function irAMes(d) {
+  d = new Date(d.getFullYear(), d.getMonth(), 1);
+  const tope = claveMes(d) > claveMes(hoy) ? new Date(hoy.getFullYear(), hoy.getMonth(), 1) : d;
+  mesSel = d;
+  if (claveMes(d) === claveMes(hoy)) diaSel = HOY;
+  else { const fs = delMes(D.movs, d).map(m => m.fecha).sort(); diaSel = fs.length ? fs[fs.length - 1] : ymd(d); }
+  anaMes = new Date(tope); prevRef = new Date(tope); anaSelEvol = null; anaSelFijo = null;
+  if (anaPer === 'Mes') anaRef = new Date(tope);
+}
 function animarGrafica() { const app = $('#app'); app.classList.remove('graf-anim'); void app.offsetWidth; app.classList.add('graf-anim'); clearTimeout(app._ga); app._ga = setTimeout(() => app.classList.remove('graf-anim'), 1400); }
 function pintarAna() { pintar(); const app = $('#app'); void app.offsetWidth; app.classList.add('entra-ana'); contar(app); setTimeout(() => app.classList.remove('entra-ana'), 1500); }
 
@@ -1347,8 +1365,8 @@ function vAnaEvol() {
   const ahorroTot = datos.reduce((a, x) => a + x.ahorro, 0);
   return cabDetalle('Evolución', claveMes(anaMes) !== claveMes(hoy), 'Ingresos, gastos y ahorro') + `
     <div class="seg">${[6, 12].map(n => `<button data-anameses="${n}" class="${n === anaMeses ? 'on' : ''}">Últimos ${n} meses</button>`).join('')}</div>
-    <div class="tres" style="margin-top:12px"><div class="aho"><small>Ahorro total</small><b class="num">${N(ahorroTot)}</b></div>
-      <div class="pasteltasa"><small>Tasa media</small><b class="num">${tasaMedia === null ? '—' : Math.round(tasaMedia) + ' %'}</b></div>
+    <div class="tres" style="margin-top:12px"><div class="ing"><small>Ingreso medio</small><b class="num">${N(datos.reduce((a, x) => a + x.ing, 0) / datos.length)}</b></div>
+      <div class="aho"><small>Ahorro total</small><b class="num">${N(ahorroTot)}</b><em class="tasa-m">Tasa media ${tasaMedia === null ? '—' : Math.round(tasaMedia) + ' %'}</em></div>
       <div class="gas"><small>Gasto medio</small><b class="num">${N(datos.reduce((a, x) => a + x.gas, 0) / datos.length)}</b></div></div>
     <section class="card ana-card">
       <div class="sel-info"><b>${cap(MESES[m.getMonth()])} ${m.getFullYear()}</b>
@@ -1621,12 +1639,7 @@ $('#app').addEventListener('click', e => {
   const acc = e.target.closest('[data-acc]');
   if (acc) {
     const a = acc.dataset.acc;
-    if (a === 'mesAnt' || a === 'mesSig') {
-      mesSel = new Date(mesSel.getFullYear(), mesSel.getMonth() + (a === 'mesAnt' ? -1 : 1), 1);
-      if (claveMes(mesSel) === claveMes(hoy)) diaSel = HOY;
-      else { const fs = delMes(D.movs, mesSel).map(m => m.fecha).sort(); diaSel = fs.length ? fs[fs.length - 1] : ymd(mesSel); }
-      return pintar(false, true);
-    }
+    if (a === 'mesAnt' || a === 'mesSig') { irAMes(new Date(mesSel.getFullYear(), mesSel.getMonth() + (a === 'mesAnt' ? -1 : 1), 1)); return pintar(false, true); }
     if (a === 'irGastos' || a === 'irEvol') {
       tab = 'analisis'; anaMes = new Date(mesSel.getFullYear(), mesSel.getMonth(), 1);
       anaCat = null; anaSub = null; anaSelEvol = null; anaSelFijo = null;
@@ -1654,9 +1667,14 @@ $('#app').addEventListener('click', e => {
       if (anaVista === 'prev') anaMes = new Date(prevRef);
       if (anaVista === 'donut' && anaPer === 'Mes') anaMes = new Date(anaRef);
       anaVista = null; window.scrollTo(0, 0); return pintar(true); }
-    if (a === 'anaAnt' || a === 'anaSig') { const k = { Mes: 1, Trimestre: 3, 'Año': 12 }[anaPer] * (a === 'anaAnt' ? -1 : 1); anaRef = new Date(anaRef.getFullYear(), anaRef.getMonth() + k, 1); return pintarAna(); }
-    if (a === 'anaMesAnt' || a === 'anaMesSig') { anaMes = new Date(anaMes.getFullYear(), anaMes.getMonth() + (a === 'anaMesAnt' ? -1 : 1), 1); return pintarAna(); }
-    if (a === 'prevAnt' || a === 'prevSig') { prevRef = new Date(prevRef.getFullYear(), prevRef.getMonth() + (a === 'prevAnt' ? -1 : 1), 1); pintar(); return animarGrafica(); }
+    if (a === 'anaAnt' || a === 'anaSig') {
+      const k = { Mes: 1, Trimestre: 3, 'Año': 12 }[anaPer] * (a === 'anaAnt' ? -1 : 1);
+      if (anaPer === 'Mes') irAMes(new Date(anaRef.getFullYear(), anaRef.getMonth() + k, 1));
+      else anaRef = new Date(anaRef.getFullYear(), anaRef.getMonth() + k, 1);
+      return pintarAna();
+    }
+    if (a === 'anaMesAnt' || a === 'anaMesSig') { irAMes(new Date(anaMes.getFullYear(), anaMes.getMonth() + (a === 'anaMesAnt' ? -1 : 1), 1)); return pintarAna(); }
+    if (a === 'prevAnt' || a === 'prevSig') { irAMes(new Date(prevRef.getFullYear(), prevRef.getMonth() + (a === 'prevAnt' ? -1 : 1), 1)); pintar(); return animarGrafica(); }
     if (a === 'ajustes') return abrirAjustes();
   }
   const w = e.target.closest('[data-ana]');
