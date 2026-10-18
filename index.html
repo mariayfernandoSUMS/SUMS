@@ -1187,12 +1187,14 @@ function vPatri() {
   if (vent.length > 1) {
     const W = 360, Hh = 130, vs = vent.map(p => p.v), mn = Math.min(...vs), mx = Math.max(...vs), rg = (mx - mn) || 1;
     // Solo para dibujar: se suaviza la forma (los valores que ves al deslizar el dedo son los reales)
-    const sig = Math.max(1, vent.length / 18), suav = vs.map((_, i) => {
+    // El suavizado se va reduciendo al acercarse a los extremos: así la curva llega al valor real de hoy sin hacer un «gancho»
+    const sig0 = Math.max(1, vent.length / 18), n = vs.length, suav = vs.map((_, i) => {
+      const sig = Math.max(.01, Math.min(sig0, (n - 1 - i) / 3));
+      if (sig < .3) return vs[i];
       let a = 0, w = 0;
-      for (let j = Math.max(0, i - Math.ceil(sig * 3)); j <= Math.min(vs.length - 1, i + Math.ceil(sig * 3)); j++) { const k = Math.exp(-((j - i) ** 2) / (2 * sig * sig)); a += vs[j] * k; w += k; }
+      for (let j = Math.max(0, i - Math.ceil(sig * 3)); j <= Math.min(n - 1, i + Math.ceil(sig * 3)); j++) { const k = Math.exp(-((j - i) ** 2) / (2 * sig * sig)); a += vs[j] * k; w += k; }
       return a / w;
     });
-    suav[suav.length - 1] = vs[vs.length - 1];
     const smn = Math.min(...suav), smx = Math.max(...suav), srg = (smx - smn) || 1;
     const pts = suav.map((v, i) => [i / (vent.length - 1) * W, 18 + (1 - (v - smn) / srg) * (Hh - 36)]);
     const d = curvaSuave(pts);
@@ -1283,7 +1285,7 @@ function vAnalisis() {
   const mxW = Math.max(mx, ...ingPrev6.filter(v => v !== null));
   const conIng6 = datos.filter(x => x.ing > 0), tasa6 = conIng6.length ? conIng6.reduce((a, x) => a + x.ahorro, 0) / conIng6.reduce((a, x) => a + x.ing, 0) * 100 : null;
   // Línea de la tasa de ahorro sobre las barras
-  const tasas = datos.map(x => x.ing > 0 ? Math.max(-100, Math.min(100, x.ahorro / x.ing * 100)) : null), tv = tasas.filter(v => v !== null);
+  const tasas = datos.map((x, i) => !delMes(D.movs, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, Math.min(100, x.ahorro / x.ing * 100)) : (x.ahorro < 0 ? -100 : 0)), tv = tasas.filter(v => v !== null);
   const tendencia = tv.length < 2 ? '' : (() => {
     const hi = Math.max(10, ...tv), lo = Math.min(0, ...tv), Y = v => 6 + (1 - (v - lo) / ((hi - lo) || 1)) * 88;
     const enCurso = claveMes(ms[ms.length - 1]) === claveMes(hoy);
@@ -1428,7 +1430,7 @@ function vAnaEvol() {
         ${ingPrevE[anaSelEvol] ? `<div class="kv"><span><em class="caja-disc" style="color:#3fae6c"></em>Ingresos previstos</span><b class="num">${fmt(ingPrevE[anaSelEvol])}</b></div>` : ''}
         <div class="kv"><span><em style="background:${C_GAS}"></em>Gastos</span><b class="num">${fmt(s.gas)}</b></div>
         <div class="kv"><span><em style="background:${C_TASA};border-radius:50%"></em>Ahorro</span><b class="num">${fmt(s.ahorro)} ${s.pct === null || s.pct < -100 ? '' : `<small>(${Math.round(s.pct)} %)</small>`}</b></div></div>
-      ${barrasSVG(ms, [{ vals: datos.map(x => x.ing), color: C_ING, colorPrev: '#3fae6c', prev: ingPrevE }, { vals: datos.map(x => x.gas), color: C_GAS }], { sel: anaSelEvol, linea: datos.map(x => x.pct === null || x.pct < -100 ? null : x.pct), suelto: claveMes(ms[ms.length - 1]) === claveMes(hoy) ? ms.length - 1 : -1 })}
+      ${barrasSVG(ms, [{ vals: datos.map(x => x.ing), color: C_ING, colorPrev: '#3fae6c', prev: ingPrevE }, { vals: datos.map(x => x.gas), color: C_GAS }], { sel: anaSelEvol, linea: datos.map((x, i) => !delMes(D.movs, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, x.ahorro / x.ing * 100) : (x.ahorro < 0 ? -100 : 0)), suelto: claveMes(ms[ms.length - 1]) === claveMes(hoy) ? ms.length - 1 : -1 })}
       <div class="leyenda-mini"><span><em style="background:${C_ING}"></em>Ingresos</span><span><em style="background:${C_GAS}"></em>Gastos</span><span><em class="lin" style="background:${C_TASA}"></em>Tasa de ahorro</span>${ingPrevE.some(v => v) ? '<span><em class="caja-disc" style="color:#3fae6c"></em>Ingresos previstos</span>' : ''}</div>
     </section>`;
 }
