@@ -301,6 +301,20 @@
   .btn.borde { flex-basis: 100%; border: 1.5px solid var(--line); color: var(--reemb); }
   .btn.rojo { flex: none; color: #c4581b; padding: 15px 8px; }
   .aviso { background: #f6f5f1; border-radius: 12px; padding: 9px 12px; font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .imp-lista { margin: 0 -4px; }
+  .imp-f { display: flex; align-items: flex-start; gap: 10px; padding: 10px 4px; border-top: 1px solid var(--line); }
+  .imp-f:first-child { border-top: 0; }
+  .imp-f.off { opacity: .45; }
+  .imp-chk { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--muted); display: grid; place-items: center; font-size: 14px; font-weight: 800; color: #fff; margin-top: 2px; }
+  .imp-f:not(.off) .imp-chk { background: var(--verde); border-color: var(--verde); }
+  .imp-t { flex: 1; min-width: 0; }
+  .imp-t .t { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .imp-t .s { font-size: 12px; color: var(--muted); }
+  .imp-t .s b { color: #c4581b; font-weight: 700; }
+  .imp-cat { position: relative; display: inline-block; max-width: 100%; margin: 4px 0 0; padding: 3px 9px; border-radius: 99px; background: var(--pista); font-size: 12px; font-weight: 700;
+    letter-spacing: 0; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .imp-cat select { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; padding: 0; border: 0; font-size: 16px; }
+  .imp-f > b { white-space: nowrap; font-size: 14px; } .imp-f > b.in { color: var(--ingreso); } .imp-f > b.re { color: var(--reemb); } .imp-f > b.tr { color: var(--traspaso); }
   .opcion { display: block; width: 100%; text-align: left; padding: 16px; border-radius: 16px; background: #f6f5f1; font-weight: 700; margin-top: 8px; }
 
   /* Pantallas de entrada */
@@ -1709,12 +1723,248 @@ function abrirAjustes() {
   $('#hoja').innerHTML = `<div class="tirador"></div><h2>Ajustes</h2>
     <div class="ajuste-lbl">Apariencia</div>
     <div class="temas">${[['claro', 'Claro'], ['oscuro', 'Oscuro'], ['sistema', 'Sistema']].map(([k, t]) => `<button data-tema="${k}" class="${window.TEMA === k ? 'on' : ''}">${t}</button>`).join('')}</div>
+    <div class="ajuste-lbl" style="margin-top:16px">Datos</div>
+    <button class="opcion" data-aj="importar">📥 Importar movimientos del banco <span style="color:var(--muted);font-weight:500">(Excel o CSV)</span></button>
     <div class="ajuste-lbl" style="margin-top:16px">Cuenta</div>
     <button class="opcion" data-aj="usuario">Cambiar de usuario <span style="color:var(--muted);font-weight:500">(ahora: ${esc(USUARIO)})</span></button>
     <button class="opcion" data-aj="salir">Cerrar sesión</button>
     <div class="botones"><button class="btn sec" data-aj="cerrar">Cerrar</button></div>`;
   abrirHoja();
 }
+
+// ── Importar movimientos desde el extracto del banco (Excel o CSV de BBVA, Bankinter…) ──
+let IMP = null;   // { filas: [...] } mientras se revisa la importación
+// Lector propio de .xlsx (un .xlsx es un zip con XML dentro): no depende de ninguna web externa
+async function leerXlsx(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder();
+  let e = u8.length - 22; while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error('El archivo no es un Excel válido');
+  const n = dv.getUint16(e + 10, true); let o = dv.getUint32(e + 16, true);
+  const ent = {};
+  for (let i = 0; i < n; i++) {
+    const met = dv.getUint16(o + 10, true), tam = dv.getUint32(o + 20, true), ln = dv.getUint16(o + 28, true), lx = dv.getUint16(o + 30, true), lc = dv.getUint16(o + 32, true), off = dv.getUint32(o + 42, true);
+    ent[dec.decode(u8.subarray(o + 46, o + 46 + ln))] = { met, tam, off }; o += 46 + ln + lx + lc;
+  }
+  const leer = async nombre => {
+    const x = ent[nombre]; if (!x) return '';
+    const ini = x.off + 30 + dv.getUint16(x.off + 26, true) + dv.getUint16(x.off + 28, true), datos = u8.slice(ini, ini + x.tam);
+    if (x.met === 0) return dec.decode(datos);
+    return new Response(new Blob([datos]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+  };
+  const xml = t => new DOMParser().parseFromString(t, 'application/xml');
+  const porTag = (d, t) => [...d.getElementsByTagName(t)];
+  const ss = porTag(xml(await leer('xl/sharedStrings.xml')), 'si').map(si => porTag(si, 't').map(t => t.textContent).join(''));
+  // Primera hoja según el libro (si no, sheet1)
+  let ruta = 'xl/worksheets/sheet1.xml';
+  try {
+    const wb = xml(await leer('xl/workbook.xml')), rid = porTag(wb, 'sheet')[0].getAttribute('r:id');
+    const rel = porTag(xml(await leer('xl/_rels/workbook.xml.rels')), 'Relationship').find(r => r.getAttribute('Id') === rid);
+    if (rel) { const t = rel.getAttribute('Target').replace(/^\//, ''); ruta = t.startsWith('xl/') ? t : 'xl/' + t; }
+  } catch (err) {}
+  const hoja = xml(await leer(ruta)), filas = [];
+  const colN = ref => { let c = 0; for (const ch of ref.replace(/\d+/g, '')) c = c * 26 + ch.charCodeAt(0) - 64; return c - 1; };
+  porTag(hoja, 'row').forEach(r => {
+    const fila = [];
+    porTag(r, 'c').forEach(c => {
+      const t = c.getAttribute('t'), v = (porTag(c, 'v')[0] || {}).textContent;
+      let val = t === 's' ? ss[+v] : t === 'inlineStr' ? porTag(c, 't').map(x => x.textContent).join('') : t === 'str' || t === 'b' || t === 'd' ? v : v == null ? '' : +v;
+      fila[colN(c.getAttribute('r') || '')] = val == null ? '' : val;
+    });
+    filas[(+r.getAttribute('r') || filas.length + 1) - 1] = Array.from(fila, x => x == null ? '' : x);
+  });
+  return Array.from(filas, x => x || []);
+}
+// CSV con ; , o tabulador
+function leerCsv(texto) {
+  const prim = texto.split(/\r?\n/).slice(0, 20).join('\n'), sep = [';', '\t', ','].sort((a, b) => prim.split(b).length - prim.split(a).length)[0];
+  const filas = []; let fila = [], campo = '', q = false;
+  for (let i = 0; i < texto.length; i++) {
+    const ch = texto[i];
+    if (q) { if (ch === '"') { if (texto[i + 1] === '"') { campo += '"'; i++; } else q = false; } else campo += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === sep) { fila.push(campo); campo = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && texto[i + 1] === '\n') i++; fila.push(campo); filas.push(fila); fila = []; campo = ''; }
+    else campo += ch;
+  }
+  if (campo || fila.length) { fila.push(campo); filas.push(fila); }
+  return filas;
+}
+async function leerArchivoBanco(f) {
+  const nombre = f.name.toLowerCase(), buf = await f.arrayBuffer(), u8 = new Uint8Array(buf);
+  if (u8[0] === 0x50 && u8[1] === 0x4b) return leerXlsx(buf);                    // .xlsx
+  const txt = new TextDecoder('utf-8').decode(u8);
+  if (/^\s*<(html|table|!doctype)/i.test(txt.slice(0, 500))) {                    // algunos bancos dan «.xls» que en realidad es una tabla HTML
+    const d = new DOMParser().parseFromString(txt, 'text/html');
+    return [...d.querySelectorAll('tr')].map(tr => [...tr.children].map(td => td.textContent.trim()));
+  }
+  if (/\.csv$|\.txt$/.test(nombre) || !(u8[0] === 0xd0 && u8[1] === 0xcf)) {
+    const t = txt.indexOf('\ufffd') > -1 ? new TextDecoder('windows-1252').decode(u8) : txt;
+    return leerCsv(t);
+  }
+  await cargarXLSX();                                                               // .xls antiguo: se usa la librería SheetJS
+  const wb = XLSX.read(buf, { type: 'array', cellDates: true });
+  return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: true, defval: '' });
+}
+function cargarXLSX() {
+  if (window.XLSX) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.onload = res; sc.onerror = () => rej(new Error('No se pudo cargar el lector de Excel (¿sin conexión?)'));
+    document.head.appendChild(sc);
+  });
+}
+const nImp = v => typeof v === 'number' ? v : (() => { let t = String(v || '').replace(/[^\d,.\-]/g, ''); const c = t.lastIndexOf(','), p = t.lastIndexOf('.');
+  if (c > -1 && p > -1) t = c > p ? t.replace(/\./g, '').replace(',', '.') : t.replace(/,/g, ''); else if (c > -1) t = t.replace(',', '.'); return parseFloat(t); })();
+function fImp(v) {
+  if (v instanceof Date && !isNaN(v)) return ymd(new Date(v.getTime() + 12 * 36e5));   // +12 h evita el desfase de horario al leer Excel
+  if (typeof v === 'number' && v > 20000 && v < 80000) { const d = new Date(Math.round((v - 25569) * 864e5)); return ymd(new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); }
+  const m = String(v || '').trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/) || null;
+  if (m) { let y = +m[3]; if (y < 100) y += 2000; return ymd(new Date(y, +m[2] - 1, +m[1])); }
+  const m2 = String(v || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m2 ? m2[0] : '';
+}
+// Categoría según las Reglas de la hoja (misma lógica que el atajo)
+function reglaPara(texto) {
+  const t = ' ' + sinAc(texto) + ' ';
+  const rs = (D.config.reglas || []).map(r => [sinAc(r[0]).replace(/^\s+/, ''), r[1], r[2], r[3]]).sort((a, b) => b[0].length - a[0].length);
+  const hit = rs.find(r => { let i = t.indexOf(r[0]); while (i > -1) { if (!/[a-z0-9]/.test(t.charAt(i - 1))) return true; i = t.indexOf(r[0], i + 1); } return false; });
+  return hit ? hit.slice(1) : null;
+}
+// Lee una hoja del banco: busca la fila de cabecera (Fecha… Importe…) y las columnas útiles
+function leerExtracto(filas, nombreArchivo) {
+  const norm = x => sinAc(String(x == null ? '' : x)).trim();
+  const iCab = filas.findIndex(r => r.some(c => /^importe/.test(norm(c))) && r.some(c => /^(fecha|f\.? ?valor)/.test(norm(c))));
+  if (iCab < 0) throw new Error('No encuentro las columnas Fecha e Importe en ' + nombreArchivo);
+  const cab = filas[iCab].map(norm);
+  const col = re => cab.findIndex(c => re.test(c));
+  const cImp = col(/^importe/), cFechas = cab.map((c, i) => /^(fecha|f\.? ?valor)/.test(c) ? i : -1).filter(i => i > -1);
+  const cDesc = cab.map((c, i) => /concepto|descripci|movimiento|observaci|detalle/.test(c) ? i : -1).filter(i => i > -1);
+  const todo = filas.slice(0, iCab + 1).flat().map(norm).join(' ') + ' ' + norm(nombreArchivo);
+  const bancos = D.cuentas.map(c => c.banco).concat(D.config.metodos).filter((b, i, a) => b && a.indexOf(b) === i);
+  let banco = bancos.find(b => todo.indexOf(sinAc(b)) > -1) || '';
+  if (!banco && cab.indexOf('disponible') > -1 && cab.indexOf('f.valor') > -1) banco = bancos.find(b => /bbva/i.test(b)) || '';
+  if (!banco && cab.indexOf('fecha contable') > -1) banco = bancos.find(b => /bankinter/i.test(b)) || '';
+  const out = [];
+  for (let i = iCab + 1; i < filas.length; i++) {
+    const r = filas[i]; const imp = nImp(r[cImp]);
+    const fechas = cFechas.map(c => fImp(r[c])).filter(Boolean).sort();
+    if (!fechas.length || !isFinite(imp) || !imp) continue;
+    const textos = cDesc.map(c => String(r[c] || '').trim()).filter(Boolean);
+    let concepto = textos[0] || 'Sin concepto';
+    if (textos[1] && /bizum|transferencia|traspaso|trans |recibo|devoluci/i.test(concepto) && !/^(otros|pago con tarjeta)$/i.test(textos[1])) concepto += ' · ' + textos[1];
+    out.push({ fecha: fechas[0], importe: imp, concepto: concepto.replace(/\s+/g, ' ').slice(0, 80), texto: textos.join(' '), banco });
+  }
+  return out;
+}
+function prepararImportacion(movs) {
+  const usados = new Set();
+  const ingresoDef = Object.keys(D.config.categorias.Ingreso).find(c => /otros/i.test(c)) || Object.keys(D.config.categorias.Ingreso)[0] || '';
+  const dias = (a, b) => Math.abs((desdeYmd(a) - desdeYmd(b)) / 864e5);
+  const filas = movs.map((m, k) => {
+    const pos = m.importe > 0, abs = Math.abs(m.importe);
+    let tipo = pos ? (/bizum/i.test(m.texto) ? 'Reembolso' : 'Ingreso') : 'Gasto';
+    let cat = '', sub = '', det = '';
+    const r = reglaPara(m.texto);
+    if (tipo === 'Ingreso') { if (/nomina/i.test(sinAc(m.texto)) && D.config.categorias.Ingreso['Nómina']) cat = 'Nómina'; else cat = ingresoDef; }
+    else if (r) [cat, sub, det] = r; else cat = 'Sin clasificar';
+    // ¿Ya está en la hoja? Mismo banco, mismo importe y fecha parecida (±3 días)
+    const lado = x => x.tipo === 'Traspaso' ? x.id + (pos ? '|entra' : '|sale') : x.id;   // un traspaso aparece en los dos bancos
+    const dup = D.movs.find(x => !usados.has(lado(x)) && Math.abs(x.importe - abs) < .005 && dias(x.fecha, m.fecha) <= 3 && (
+      x.tipo === 'Traspaso' ? (pos ? bancoDe(x.destino) === m.banco : bancoDe(x.metodo) === m.banco)
+        : bancoDe(x.metodo) === m.banco && (pos ? x.tipo !== 'Gasto' : x.tipo === 'Gasto')));
+    if (dup) usados.add(lado(dup));
+    return { k, texto: m.texto, fecha: m.fecha, importe: abs, signo: pos ? 1 : -1, concepto: m.concepto, banco: m.banco, tipo, cat, sub, det, destino: '', dup: dup ? dup.concepto : '', on: !dup, pareja: false };
+  });
+  // Traspasos entre tus cuentas: sale de un banco y entra lo mismo en otro en ±3 días
+  filas.filter(f => f.signo < 0 && !f.dup).forEach(sal => {
+    const esTransf = f => !/bizum/i.test(f.texto) && /transf|traspas|trans\b|trans\//i.test(f.texto);
+    const ent = filas.find(f => f.signo > 0 && !f.dup && !f.pareja && f.banco && f.banco !== sal.banco && Math.abs(f.importe - sal.importe) < .005 && dias(f.fecha, sal.fecha) <= 3
+      && !/bizum/i.test(f.texto) && !/bizum/i.test(sal.texto) && (esTransf(f) || esTransf(sal)));
+    if (!ent || !sal.banco) return;
+    sal.tipo = 'Traspaso'; sal.destino = ent.banco; sal.cat = sal.sub = sal.det = ''; sal.concepto = `Traspaso ${sal.banco} → ${ent.banco}`;
+    ent.pareja = true; ent.on = false;
+  });
+  return filas.sort((a, b) => b.fecha.localeCompare(a.fecha));
+}
+const claveImp = f => [f.tipo, f.cat, f.sub, f.det].join('|');
+function textoCat(f) {
+  if (f.tipo === 'Traspaso') return `⇄ ${f.banco} → ${f.destino}`;
+  const e = emojiDe(f.cat, f.sub, f.det);
+  return (f.tipo === 'Reembolso' ? '↩ ' : '') + (e ? e + ' ' : '') + [f.cat, f.sub, f.det].filter(Boolean).join(' › ');
+}
+function opcionesCat() {
+  const rutas = arbol => Object.keys(arbol).flatMap(c => [[c, '', '']].concat(Object.keys(arbol[c]).flatMap(s => [[c, s, '']].concat(arbol[c][s].map(d => [c, s, d])))));
+  const grupo = (tipo, etiqueta, arbol, pre) => `<optgroup label="${etiqueta}">${rutas(arbol).map(([c, s, d]) => `<option value="${esc([tipo, c, s, d].join('|'))}">${pre}${esc([c, s, d].filter(Boolean).join(' › '))}</option>`).join('')}</optgroup>`;
+  return grupo('Gasto', 'Gasto', D.config.categorias.Gasto, '') + grupo('Ingreso', 'Ingreso', D.config.categorias.Ingreso, '') + grupo('Reembolso', 'Reembolso (resta de un gasto)', D.config.categorias.Gasto, '↩ ');
+}
+function abrirImportar() {
+  IMP = null;
+  const bancos = D.cuentas.map(c => c.banco).concat(D.config.metodos).filter((b, i, a) => b && a.indexOf(b) === i);
+  $('#hoja').innerHTML = `<div class="tirador"></div><h2>Importar movimientos</h2>
+    <div class="aviso">Descarga los movimientos desde la web o la app del banco (Excel o CSV) y elígelos aquí. Puedes elegir varios archivos a la vez, por ejemplo uno de BBVA y otro de Bankinter.</div>
+    <label>Banco (si no se reconoce solo)</label><select id="impBanco">${bancos.map(b => `<option>${esc(b)}</option>`).join('')}</select>
+    <label>Archivos</label><input id="impArchivo" type="file" multiple accept=".xlsx,.xls,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv">
+    <div class="error" id="impError"></div>
+    <div class="botones"><button class="btn sec" data-aj="cerrar">Cancelar</button></div>`;
+  abrirHoja();
+  $('#impArchivo').addEventListener('change', async e => {
+    const files = [...e.target.files]; if (!files.length) return;
+    $('#impError').textContent = 'Leyendo…';
+    try {
+      let movs = [];
+      for (const f of files) {
+        const filas = await leerArchivoBanco(f);
+        movs = movs.concat(leerExtracto(filas, f.name).map(m => Object.assign(m, { banco: m.banco || $('#impBanco').value })));
+      }
+      if (!movs.length) throw new Error('No he encontrado movimientos en el archivo');
+      IMP = { filas: prepararImportacion(movs) };
+      pintarImportar();
+    } catch (err) { $('#impError').textContent = err.message; }
+  });
+}
+function pintarImportar() {
+  const fs = IMP.filas, nuevos = fs.filter(f => f.on).length, dups = fs.filter(f => f.dup).length;
+  const fila = f => `<div class="imp-f${f.on ? '' : ' off'}" data-k="${f.k}">
+      <button class="imp-chk" data-impchk="${f.k}" aria-label="Incluir">${f.on ? '✓' : ''}</button>
+      <div class="imp-t"><div class="t">${esc(f.concepto)}</div>
+        <div class="s">${fechaCorta(f.fecha)} · ${esc(f.banco)}${f.dup ? ` · <b>Ya está: ${esc(f.dup)}</b>` : f.pareja ? ' · <b>Parte del traspaso</b>' : ''}</div>
+        ${f.pareja || f.dup ? '' : f.tipo === 'Traspaso' ? `<div class="imp-cat">${esc(textoCat(f))}</div>` : `<label class="imp-cat sel"><span>${esc(textoCat(f))}</span><select data-impcat="${f.k}"><option value="${esc(claveImp(f))}" selected>${esc(textoCat(f))}</option></select></label>`}
+      </div>
+      <b class="num ${f.tipo === 'Gasto' ? '' : f.tipo === 'Traspaso' ? 'tr' : f.tipo === 'Reembolso' ? 're' : 'in'}">${f.signo < 0 ? '−' : '+'}${fmt(f.importe)}</b></div>`;
+  $('#hoja').innerHTML = `<div class="tirador"></div><h2>Revisa la importación</h2>
+    <div class="aviso">${nuevos} nuevos${dups ? ` · ${dups} ya estaban en la hoja (desmarcados)` : ''}. Toca la categoría para cambiarla y la casilla para incluir o quitar un movimiento.</div>
+    <div class="imp-lista">${fs.map(fila).join('')}</div>
+    <div class="botones"><button class="btn sec" data-aj="cerrar">Cancelar</button><button class="btn pri" id="impGuardar" data-impok="1"${nuevos ? '' : ' disabled'}>Importar ${nuevos}</button></div>`;
+}
+$('#hoja').addEventListener('focusin', e => {   // las opciones de categoría se cargan solo al tocar (la lista puede ser larga)
+  const s = e.target.closest('[data-impcat]'); if (!s || s.dataset.lleno) return;
+  const v = s.value; s.innerHTML = opcionesCat(); s.value = v; s.dataset.lleno = '1';
+});
+$('#hoja').addEventListener('touchstart', e => {
+  const s = e.target.closest('[data-impcat]'); if (!s || s.dataset.lleno) return;
+  const v = s.value; s.innerHTML = opcionesCat(); s.value = v; s.dataset.lleno = '1';
+}, { passive: true });
+$('#hoja').addEventListener('change', e => {
+  const s = e.target.closest('[data-impcat]'); if (!s || !IMP) return;
+  const f = IMP.filas.find(x => x.k === +s.dataset.impcat); [f.tipo, f.cat, f.sub, f.det] = s.value.split('|');
+  s.previousElementSibling.textContent = textoCat(f);
+  f.on = true; const r = s.closest('.imp-f'); r.classList.remove('off'); r.querySelector('.imp-chk').textContent = '✓'; contarImp();
+});
+function contarImp() { const n = IMP.filas.filter(f => f.on).length; const b = $('#impGuardar'); b.textContent = 'Importar ' + n; b.disabled = !n; }
+$('#hoja').addEventListener('click', async e => {
+  const c = e.target.closest('[data-impchk]');
+  if (c && IMP) { const f = IMP.filas.find(x => x.k === +c.dataset.impchk); f.on = !f.on; c.textContent = f.on ? '✓' : ''; c.closest('.imp-f').classList.toggle('off', !f.on); return contarImp(); }
+  if (e.target.closest('[data-impok]') && IMP) {
+    const sel = IMP.filas.filter(f => f.on), b = $('#impGuardar'); b.disabled = true;
+    const datos = sel.map(f => ({ fecha: f.fecha, importe: f.importe, tipo: f.tipo, concepto: f.concepto, categoria: f.cat, subcategoria: f.sub, detalle: f.det,
+      metodo: f.banco, destino: f.destino, quien: USUARIO, notas: 'Importado del banco' }));
+    try {
+      for (let i = 0; i < datos.length; i += 150) { b.textContent = `Importando… ${Math.min(i + 150, datos.length)}/${datos.length}`; await api('api_importar', datos.slice(i, i + 150)); }
+      IMP = null; cerrarHoja(); toast(datos.length === 1 ? '1 movimiento importado' : datos.length + ' movimientos importados'); await recargar();
+    } catch (err) { toast(err.message === SIN_RED ? 'Sin conexión: inténtalo con cobertura' : err.message); b.disabled = false; contarImp(); }
+  }
+});
 
 // ── Formulario de movimiento ─────────────────────────────
 const opciones = (lista, valor, vacio, emoji) => {
@@ -1795,6 +2045,7 @@ $('#hoja').addEventListener('click', async e => {
   }
   const aj = e.target.closest('[data-aj]');
   if (aj) {
+    if (aj.dataset.aj === 'importar') { abrirImportar(); return; }
     if (aj.dataset.aj === 'usuario') { cerrarHoja(); pedirUsuario(); }
     else if (aj.dataset.aj === 'salir') { guardar('fin_token', null); guardar('sums_api', null); API_URL = null; guardar('sums_usuario', null); TOKEN = null; USUARIO = null; cerrarHoja(); pantalla('login'); }
     else cerrarHoja();
@@ -1881,6 +2132,7 @@ $('#velo').addEventListener('click', e => { if (e.target.id === 'velo') cerrarHo
 function demoApi(fn, ...a) {
   if (fn === 'api_datos') { if (!window.__demo) window.__demo = crearDemo(); return JSON.parse(JSON.stringify(window.__demo)); }
   if (fn === 'api_agregar') { window.__demo.movs.push(Object.assign({ id: 'd' + Math.random().toString(36).slice(2, 8), hora: '12:00', concepto: a[0].concepto || a[0].detalle || a[0].subcategoria || a[0].categoria || 'Traspaso' }, a[0], { importe: Math.abs(parseFloat(String(a[0].importe).replace(',', '.'))) })); }
+  if (fn === 'api_importar') { a[0].forEach(d => window.__demo.movs.push(Object.assign({ id: 'i' + Math.random().toString(36).slice(2, 8), hora: '12:00', vinculado: '', origen: 'Importado' }, d))); return a[0].length; }
   if (fn === 'api_borrar') { window.__demo.movs = window.__demo.movs.filter(m => m.id !== a[0]); }
   return true;
 }
@@ -1924,7 +2176,7 @@ function crearDemo() {
   movs.forEach(m => { if (['Hipoteca', 'Nómina · María', 'Seguro coche'].indexOf(m.concepto) > -1) m.origen = 'Recurrente'; });
   const ini = ymd(new Date(hoyD.getFullYear(), hoyD.getMonth() - 2, 0));
   return {
-    movs, config: { categorias: { Gasto: G, Ingreso: I }, metodos: ['BBVA', 'Bankinter'], personas: ['María', 'Fernando'], fijos, iconos: { 'Alimentación||': '🛒', 'Ocio||': '🎉', 'Ocio|Restaurantes|': '🍽️', 'Ocio|Cafeterías|': '☕', 'Ocio|Planes|Cine': '🎬', 'Compras||': '🛍️', 'Compras|Ropa|': '👕', 'Compras|Decoración casa|': '🛋️', 'Coche||': '🚗', 'Coche|Combustible|': '⛽', 'Coche|Seguro coche|': '🛡️', 'Cuidado personal||': '💆', 'Cuidado personal|Salud|Farmacia': '💊', 'Vivienda||': '🏠', 'Vivienda|Hipoteca|': '🏦', 'Vivienda|Suministros|Luz': '💡', 'Suscripciones y TV||': '🔁', 'Suscripciones y TV|Suscripción|Spotify': '🎵', 'Nómina||': '💸', 'Intereses y rendimientos||': '📈', 'Impuestos y tasas||': '🧾' } },
+    movs, config: { categorias: { Gasto: G, Ingreso: I }, metodos: ['BBVA', 'Bankinter'], personas: ['María', 'Fernando'], fijos, iconos: { 'Alimentación||': '🛒', 'Ocio||': '🎉', 'Ocio|Restaurantes|': '🍽️', 'Ocio|Cafeterías|': '☕', 'Ocio|Planes|Cine': '🎬', 'Compras||': '🛍️', 'Compras|Ropa|': '👕', 'Compras|Decoración casa|': '🛋️', 'Coche||': '🚗', 'Coche|Combustible|': '⛽', 'Coche|Seguro coche|': '🛡️', 'Cuidado personal||': '💆', 'Cuidado personal|Salud|Farmacia': '💊', 'Vivienda||': '🏠', 'Vivienda|Hipoteca|': '🏦', 'Vivienda|Suministros|Luz': '💡', 'Suscripciones y TV||': '🔁', 'Suscripciones y TV|Suscripción|Spotify': '🎵', 'Nómina||': '💸', 'Intereses y rendimientos||': '📈', 'Impuestos y tasas||': '🧾' }, reglas: [['mercadona', 'Alimentación', '', ''], ['repsol', 'Coche', 'Combustible', 'Gasoil'], ['loteria', 'Ocio', 'Planes', 'Actividades'], ['bymycar', 'Coche', 'Mantenimiento', 'Taller']] },
     cuentas: [{ banco: 'BBVA', saldoInicial: 1240.5, fecha: ini, logo: '' }, { banco: 'Bankinter', saldoInicial: 6380, fecha: ini, logo: '' }],
     recurrentes: [{ concepto: 'Hipoteca', importe: 650, tipo: 'Gasto', categoria: 'Vivienda', subcategoria: 'Hipoteca', detalle: '', banco: 'BBVA', dia: 1, ultimo: '', destino: '' },
       { concepto: 'Nómina · María', importe: 1820, tipo: 'Ingreso', categoria: 'Nómina', subcategoria: 'María', detalle: '', banco: 'BBVA', dia: 28, ultimo: '', destino: '' },
