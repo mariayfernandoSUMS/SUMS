@@ -1639,7 +1639,9 @@ function vAnaEvol() {
   const ingMedio = conDatos.reduce((a, x) => a + x.ing, 0) / nD, gasMedio = conDatos.reduce((a, x) => a + x.gas, 0) / nD;
   const conIng = datos.filter(x => x.ing > 0), tasaMedia = conIng.length ? conIng.reduce((a, x) => a + x.ahorro, 0) / conIng.reduce((a, x) => a + x.ing, 0) * 100 : null;
   const ahorroTot = datos.reduce((a, x) => a + x.ahorro, 0);
-  return cabDetalle('Evolución', claveMes(anaMes) !== claveMes(hoy), 'Ingresos, gastos y ahorro') + `
+  const nav = `<div class="mes"><button data-acc="evolAnt" aria-label="Mes anterior"${claveMes(m) <= primerMes() ? ' disabled' : ''}>${SVG.izq}</button>
+    <b>${cap(MESES[m.getMonth()])} de ${m.getFullYear()}</b><button data-acc="evolSig" aria-label="Mes siguiente"${claveMes(m) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
+  return cabDetalle('Evolución', claveMes(m) !== claveMes(hoy), 'Ingresos, gastos y ahorro') + nav + `
     <div class="seg">${[6, 12].map(n => `<button data-anameses="${n}" class="${n === anaMeses ? 'on' : ''}">Últimos ${n} meses</button>`).join('')}</div>
     <div class="tres" style="margin-top:12px"><div class="ing ir-zona" data-evolir="ing"><small>Ingreso medio <i class="ir">${SVG.der}</i></small><b class="num">${N(ingMedio)}</b></div>
       <div class="aho ir-zona" data-evolir="movs"><small>Ahorro total <i class="ir">${SVG.der}</i></small><b class="num">${N(ahorroTot)}</b><em class="tasa-m">Tasa media ${tasaMedia === null ? '—' : Math.round(tasaMedia) + ' %'}</em></div>
@@ -1669,7 +1671,9 @@ function vAnaFijos() {
     return Object.entries(o).filter(e => e[1] > 0.004).sort((a, b) => b[1] - a[1]);
   };
   const filas = (l, c) => l.length ? l.map(([k, v]) => `<div class="ley-f"><em style="background:${c}"></em><span class="n">${esc(k)}</span><b class="num">${fmt(v)}</b></div>`).join('') : '<div class="vacio" style="padding:10px 0">—</div>';
-  return cabDetalle('Fijos y variables', claveMes(anaMes) !== claveMes(hoy), 'Qué parte del gasto es fija') + `
+  const nav = `<div class="mes"><button data-acc="fijoAnt" aria-label="Mes anterior"${claveMes(m) <= primerMes() ? ' disabled' : ''}>${SVG.izq}</button>
+    <b>${cap(MESES[m.getMonth()])} de ${m.getFullYear()}</b><button data-acc="fijoSig" aria-label="Mes siguiente"${claveMes(m) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
+  return cabDetalle('Fijos y variables', claveMes(m) !== claveMes(hoy), 'Qué parte del gasto es fija') + nav + `
     <div class="seg">${[6, 12].map(n => `<button data-anameses="${n}" class="${n === anaMeses ? 'on' : ''}">Últimos ${n} meses</button>`).join('')}</div>
     <section class="card ana-card">
       <div class="sel-info"><b>${cap(MESES[m.getMonth()])} ${m.getFullYear()}</b>
@@ -2120,6 +2124,13 @@ $('#app').addEventListener('click', e => {
       if (anaPer === 'Mes') irAMes(new Date(anaRef.getFullYear(), anaRef.getMonth() + k, 1));
       else anaRef = new Date(anaRef.getFullYear(), anaRef.getMonth() + k, 1);
       return pintarAna();
+    }
+    if (a === 'fijoAnt' || a === 'fijoSig' || a === 'evolAnt' || a === 'evolSig') {   // ‹ Mes › en Fijos y variables / Evolución: mueve el mes marcado (y la ventana si hace falta)
+      const ev = a.startsWith('evol'), sel = ev ? anaSelEvol : anaSelFijo;
+      const ms = mesesHasta(anaMes, anaMeses), m = ms[sel === null ? ms.length - 1 : sel], k = /Ant$/.test(a) ? -1 : 1;
+      const nm = new Date(m.getFullYear(), m.getMonth() + k, 1), i = ms.findIndex(x => claveMes(x) === claveMes(nm));
+      if (i > -1 && claveMes(nm) <= claveMes(anaMes)) { if (ev) anaSelEvol = i; else anaSelFijo = i; pintar(); return animarGrafica(); }
+      irAMes(nm); pintar(); return animarGrafica();
     }
     if (a === 'anaMesAnt' || a === 'anaMesSig') { irAMes(new Date(anaMes.getFullYear(), anaMes.getMonth() + (a === 'anaMesAnt' ? -1 : 1), 1)); return pintarAna(); }
     if (a === 'prevAnt' || a === 'prevSig') { irAMes(new Date(prevRef.getFullYear(), prevRef.getMonth() + (a === 'prevAnt' ? -1 : 1), 1)); pintar(); return animarGrafica(); }
