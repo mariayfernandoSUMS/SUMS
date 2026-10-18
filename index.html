@@ -32,7 +32,7 @@
     -webkit-font-smoothing: antialiased; }
   button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
   .oculto { display: none !important; }
-  main { max-width: 520px; margin: 0 auto; padding: calc(10px + env(safe-area-inset-top)) 16px 130px; }
+  main { max-width: 520px; margin: 0 auto; padding: calc(10px + env(safe-area-inset-top)) 16px 112px; }
   .num { font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
 
   /* Cabecera */
@@ -143,13 +143,13 @@
   :root[data-tema="oscuro"] .filtros .on.f-traspaso { background: #2a2140; color: #c9b4ff; }
   .seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
   .tres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .tres div { border-radius: 16px; padding: 10px 12px; min-width: 0; }
+  .tres div { border-radius: 16px; padding: 10px 10px; min-width: 0; }
   .tres .ing { background: #e2f5e9; color: #2a7a4b; }
-  .tres .tasa-m { display: block; font-style: normal; font-size: 11px; font-weight: 700; opacity: .75; margin-top: 1px; white-space: nowrap; }
+  .tres .tasa-m { display: block; font-style: normal; font-size: 10px; font-weight: 700; opacity: .75; margin-top: 1px; white-space: nowrap; }
   .tres .gas { background: #fde6e6; color: #b8434a; }
   .tres .aho { background: #e5e8fd; color: #3d48a8; }
-  .tres small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; opacity: .75; text-transform: uppercase; }
-  .tres b { font-size: 16px; font-weight: 700; white-space: nowrap; }
+  .tres small { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: .03em; opacity: .75; text-transform: uppercase; white-space: nowrap; }
+  .tres b { font-size: 15px; font-weight: 700; white-space: nowrap; }
     .chip { display: inline-flex; align-items: center; gap: 6px; background: var(--verde-pill); color: var(--verde); font-weight: 700;
     font-size: 13px; padding: 6px 10px 6px 12px; border-radius: 99px; margin-bottom: 10px; }
 
@@ -231,26 +231,37 @@
 
   /* Barra inferior */
   /* Efecto cristal (inspirado en Liquid Glass): fondo translúcido, desenfoque y brillos en los bordes */
-  .barra { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(2px, calc(env(safe-area-inset-bottom) - 3px)); z-index: 20;
+  .barra { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(6px, calc(env(safe-area-inset-bottom) - 20px)); z-index: 20;
     display: flex; align-items: center; gap: 4px; border-radius: 99px; padding: 6px; width: min(calc(100% - 28px), 420px); justify-content: space-between;
-    background: linear-gradient(180deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,.16) 100%);
-    backdrop-filter: blur(5px) saturate(170%); -webkit-backdrop-filter: blur(5px) saturate(170%);
-    border: 1px solid rgba(255,255,255,.6);
-    box-shadow: 0 10px 30px rgba(20, 24, 28, .12), 0 1px 4px rgba(20, 24, 28, .05), inset 0 1px 1px rgba(255,255,255,.95), inset 0 -1px 2px rgba(255,255,255,.35); }
+    background: linear-gradient(180deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,.12) 100%);
+    backdrop-filter: blur(3px) saturate(190%) brightness(1.04); -webkit-backdrop-filter: blur(3px) saturate(190%) brightness(1.04);
+    box-shadow: 0 10px 30px rgba(20, 24, 28, .14), 0 1px 4px rgba(20, 24, 28, .06),
+      inset 0 0 0 .5px rgba(255,255,255,.55), inset 2px 3px 2px -2px rgba(255,255,255,.95), inset -2px -3px 2px -2px rgba(255,255,255,.7),
+      inset 0 10px 16px -12px rgba(255,255,255,.7), inset 0 -10px 16px -12px rgba(140,190,255,.35); }
+  /* Borde de la gota: el brillo cambia de tono alrededor, como la luz al atravesar el agua */
+  .barra::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.4px; pointer-events: none; z-index: 2;
+    background: conic-gradient(from 200deg, rgba(255,255,255,.95), rgba(255,236,170,.55) 12%, rgba(255,255,255,.08) 28%, rgba(160,205,255,.5) 45%, rgba(255,255,255,.9) 52%, rgba(255,255,255,.08) 68%, rgba(150,230,215,.5) 84%, rgba(255,255,255,.95));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
   .tab { position: relative; z-index: 1; height: 48px; width: 60px; border-radius: 99px; display: flex; align-items: center; justify-content: center; color: #6f747b;
     transition: color .3s, transform .25s cubic-bezier(.34,1.56,.64,1); }
   .tab svg { width: 22px; height: 22px; flex: none; }
   .tab span { display: none; }
   .tab.pulsado { transform: scale(.86); }
   .tab.on { color: var(--verde); }
-  .tab.on svg { transform: scale(1.08); transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
-  .lente { position: absolute; top: 6px; height: 48px; width: 60px; border-radius: 99px; z-index: 0; pointer-events: none;
-    background: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.55), rgba(255,255,255,.12) 55%, rgba(255,255,255,.04));
-    -webkit-backdrop-filter: blur(1.5px) saturate(1.8) brightness(1.06); backdrop-filter: blur(1.5px) saturate(1.8) brightness(1.06);
-    box-shadow: inset 0 1.5px 1px rgba(255,255,255,.95), inset 0 -1.5px 2px rgba(255,255,255,.55), inset 0 0 0 .5px rgba(255,255,255,.7),
-      inset 0 -6px 10px rgba(0,0,0,.03), 0 3px 10px rgba(0,0,0,.08), 0 0 0 .5px rgba(0,0,0,.07);
-    transition: left .5s cubic-bezier(.34,1.45,.55,1), transform .5s cubic-bezier(.34,1.45,.55,1); }
-  .lente.estira { transform: scaleX(1.18) scaleY(.92); }
+  .tab.on svg { transform: scale(1.1); transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+  /* Lente: una gota de agua sobre la pestaña activa (borde grueso, reflejo arriba y lente que aumenta un poco lo de detrás) */
+  .lente { position: absolute; top: 2px; height: 56px; width: 66px; margin-left: -3px; border-radius: 99px; z-index: 0; pointer-events: none;
+    background: radial-gradient(90% 70% at 50% 18%, rgba(255,255,255,.42), rgba(255,255,255,.08) 60%, rgba(255,255,255,.02)),
+      radial-gradient(70% 50% at 50% 100%, rgba(140,195,255,.16), transparent 70%);
+    -webkit-backdrop-filter: blur(.6px) saturate(2.1) brightness(1.08) contrast(1.06); backdrop-filter: blur(.6px) saturate(2.1) brightness(1.08) contrast(1.06);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.6), inset 3px 4px 3px -3px rgba(255,255,255,1), inset -3px -4px 4px -3px rgba(255,255,255,.85),
+      inset 0 -7px 12px -8px rgba(110,170,255,.45), inset 0 7px 12px -8px rgba(255,214,120,.35),
+      0 4px 14px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
+    transition: left .55s cubic-bezier(.34,1.45,.55,1); }
+  .lente::after { content: ''; position: absolute; left: 18%; top: 9%; width: 34%; height: 22%; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(255,255,255,.75), rgba(255,255,255,0)); filter: blur(.5px); }
+  @keyframes gota { 0% { transform: scale(1); } 25% { transform: scaleX(1.28) scaleY(.82); } 55% { transform: scaleX(.92) scaleY(1.08); } 78% { transform: scaleX(1.04) scaleY(.97); } 100% { transform: scale(1); } }
+  .lente.estira { animation: gota .6s cubic-bezier(.3,.7,.4,1); }
   .mas { position: relative; z-index: 1; width: 56px; height: 56px; border-radius: 50%; color: #fff; display: grid; place-items: center; flex: none; margin: -6px 0;
     background: #4fb57e; box-shadow: 0 6px 16px rgba(60, 160, 105, .32);
     transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
@@ -337,6 +348,14 @@
   .saldo-cta b { font-size: 22px; font-weight: 800; }
   .saldo-cta p { margin: 4px 0 0; font-size: 12px; color: var(--muted); line-height: 1.35; }
   .saldo-cta .btn { padding: 11px; font-size: 14px; }
+  .ley-evol { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--muted); }
+  .ley-evol span { display: inline-flex; align-items: center; gap: 5px; } .ley-evol em { width: 9px; height: 9px; border-radius: 2px; } .ley-evol em.lin { width: 14px; height: 2.5px; border-radius: 2px; }
+  .sin-flecha { width: 14px; flex: none; }
+  .tend-kpi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+  .tend-kpi small { display: block; font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .tend-kpi b { font-size: 16px; font-weight: 800; white-space: nowrap; } .tend-kpi b.sube { color: var(--verde); } .tend-kpi b.baja { color: #c4581b; }
+  .wbarras.wbi i { width: 11px; border-radius: 2px 2px 0 0; }
+  .wmedia { position: absolute; left: 0; right: 0; border-top: 1.5px dashed #3fae6c; opacity: .85; pointer-events: none; }
   .chips-evol { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
   .chips-evol button { display: inline-flex; align-items: center; gap: 2px; padding: 6px 11px; border-radius: 99px; font-size: 12px; font-weight: 700; color: var(--muted);
     background: var(--pista); border: 1.5px solid transparent; transition: opacity .15s; }
@@ -384,7 +403,7 @@
   .tirar.cargando svg { animation: girar .8s linear infinite; }
   @keyframes girar { to { transform: rotate(360deg); } }
   .con-aviso #toast { bottom: calc(env(safe-area-inset-bottom) + 112px); }
-  .aviso-red { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(max(2px, env(safe-area-inset-bottom) - 3px) + 72px); z-index: 19;
+  .aviso-red { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(max(6px, env(safe-area-inset-bottom) - 20px) + 72px); z-index: 19;
     background: var(--card); color: var(--muted); border: 1px solid var(--line); box-shadow: var(--sombra); border-radius: 99px;
     padding: 6px 12px; font-size: 12px; font-weight: 700; white-space: nowrap; }
   .aviso-red b { color: #c4581b; }
@@ -485,9 +504,17 @@
   .grafico.gprev.activo svg circle.fin { visibility: hidden; }
   .grafico.gprev.activo svg circle { visibility: visible; }
   .mes button:disabled { opacity: .3; }
-  .wpres { height: 9px; border-radius: 5px; background: var(--pista); margin-top: 8px; overflow: hidden; } .wpres i { display: block; height: 100%; border-radius: 5px; background: #8fd3a8; }
+  .wpres { height: 9px; border-radius: 5px; background: var(--pista); margin-top: 10px; } .wpres i { display: block; height: 100%; border-radius: 5px; background: #8fd3a8; }
   .wpres i.ojo, .pc-b i.ojo { background: #f7c27d; } .wpres i.mal { background: #f4a3a3; }
-  .wpres-l { margin-top: auto; display: grid; gap: 2px; } .wpres-l div { display: flex; justify-content: space-between; gap: 6px; font-size: 10.5px; font-weight: 700; color: var(--muted); }
+  .wid.wfull { grid-column: 1 / -1; aspect-ratio: auto; min-height: 150px; }
+  .wpres-g { display: grid; grid-template-columns: 1fr 1.1fr; gap: 16px; align-items: center; height: 100%; }
+  .wpres-i { min-width: 0; display: flex; flex-direction: column; } .wpres { position: relative; overflow: visible !important; }
+  .wpres em { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--ink); opacity: .45; }
+  .wpres-l { display: grid; gap: 7px; min-width: 0; }
+  .wpres-l div { display: grid; grid-template-columns: 1fr auto; column-gap: 6px; row-gap: 3px; font-size: 11.5px; font-weight: 700; color: var(--muted); }
+  .wpres-l div i { grid-column: 1 / -1; display: block; height: 5px; border-radius: 3px; background: var(--pista); overflow: hidden; }
+  .wpres-l div u { display: block; height: 100%; border-radius: 3px; background: #8fd3a8; } .wpres-l u.ojo { background: #f7c27d; } .wpres-l u.mal { background: #f4a3a3; }
+  .wpres-l small { font-size: 10.5px; color: var(--muted); font-weight: 600; }
   .wpres-l span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .wpres-l b.ojo { color: #c98a2b; } .wpres-l b.mal, b.mal, .num.mal { color: #c4581b; } b.ojo { color: #c98a2b; }
   .pr-f { padding: 9px 0; border-top: 1px solid var(--line); cursor: pointer; } .pr-f:first-of-type { border-top: 0; }
   .pr-c { display: flex; align-items: baseline; gap: 6px; font-size: 14px; } .pr-c .n { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -563,12 +590,16 @@
   :root[data-tema="oscuro"] .ibtn.pulsado, :root[data-tema="oscuro"] .btn.sec.pulsado, :root[data-tema="oscuro"] .opcion.pulsado { background: #2f3431; }
   :root[data-tema="oscuro"] .mov.pulsado { background: #232725; }
   :root[data-tema="oscuro"] .asa { color: #5a615d; }
-  :root[data-tema="oscuro"] .barra { background: linear-gradient(180deg, rgba(44,48,46,.45) 0%, rgba(28,31,30,.32) 100%); border-color: rgba(255,255,255,.09);
-    box-shadow: 0 12px 34px rgba(0,0,0,.45), inset 0 1px 1px rgba(255,255,255,.12), inset 0 -1px 2px rgba(255,255,255,.04); }
+  :root[data-tema="oscuro"] .barra { background: linear-gradient(180deg, rgba(60,66,72,.42) 0%, rgba(30,34,38,.30) 100%);
+    box-shadow: 0 12px 34px rgba(0,0,0,.5), inset 0 0 0 .5px rgba(255,255,255,.12), inset 2px 3px 2px -2px rgba(255,255,255,.35), inset -2px -3px 2px -2px rgba(255,255,255,.18),
+      inset 0 -10px 16px -12px rgba(120,170,255,.25); }
+  :root[data-tema="oscuro"] .barra::before { opacity: .5; }
   :root[data-tema="oscuro"] .tab { color: #98a09c; }
   :root[data-tema="oscuro"] .tab.on { color: #6fe0a2; }
-  :root[data-tema="oscuro"] .lente { background: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.16), rgba(255,255,255,.04) 60%, rgba(255,255,255,.02));
-    box-shadow: inset 0 1px 1px rgba(255,255,255,.28), inset 0 -1px 2px rgba(255,255,255,.08), inset 0 0 0 .5px rgba(255,255,255,.14), 0 3px 10px rgba(0,0,0,.35); }
+  :root[data-tema="oscuro"] .lente { background: radial-gradient(90% 70% at 50% 18%, rgba(255,255,255,.16), rgba(255,255,255,.03) 60%, transparent), radial-gradient(70% 50% at 50% 100%, rgba(120,180,255,.14), transparent 70%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.22), inset 3px 4px 3px -3px rgba(255,255,255,.6), inset -3px -4px 4px -3px rgba(255,255,255,.35),
+      inset 0 -7px 12px -8px rgba(110,170,255,.4), inset 0 7px 12px -8px rgba(255,214,120,.22), 0 4px 14px rgba(0,0,0,.4); }
+  :root[data-tema="oscuro"] .lente::after { background: radial-gradient(closest-side, rgba(255,255,255,.35), rgba(255,255,255,0)); }
   :root[data-tema="oscuro"] .tirador { background: #3a403d; }
   :root[data-tema="oscuro"] input, :root[data-tema="oscuro"] select { background: #232725; }
   :root[data-tema="oscuro"] .btn.sec, :root[data-tema="oscuro"] .opcion, :root[data-tema="oscuro"] .aviso { background: #252a27; }
@@ -1009,7 +1040,7 @@ function moverLente() {
   if (!lente) { lente = document.createElement('div'); lente.className = 'lente'; barra.prepend(lente); }
   if (!on) return;
   const nueva = on.offsetLeft + 'px';
-  if (lente.style.left && lente.style.left !== nueva) { lente.classList.add('estira'); setTimeout(() => lente.classList.remove('estira'), 220); }
+  if (lente.style.left && lente.style.left !== nueva) { lente.classList.remove('estira'); void lente.offsetWidth; lente.classList.add('estira'); setTimeout(() => lente.classList.remove('estira'), 620); }
   lente.style.left = nueva;
 }
 window.addEventListener('resize', moverLente);
@@ -1407,43 +1438,26 @@ function vAnalisis() {
     <div class="wbig num">${tot ? `<span class="cnt" data-v="${pf}" data-pre="" data-pct="1">${Math.round(pf)} %</span>` : '—'}</div><div class="ws">del gasto es fijo</div>
     <div class="wbarras apil">${fvs.map((x, i) => `<div><i style="height:${(x.fijo + x.vari) / mxf * 100}%;--d:${i}"><b style="height:${x.fijo + x.vari ? x.fijo / (x.fijo + x.vari) * 100 : 0}%;background:${C_FIJO}"></b><b style="flex:1;background:${C_VAR}"></b></i></div>`).join('')}</div>
     <div class="wley"><span><em style="background:${C_FIJO}"></em>${fmt(fv.fijo).replace(',00', '')}</span><span><em style="background:${C_VAR}"></em>${fmt(fv.vari).replace(',00', '')}</span></div></button>`;
-  const p = prevision(M), pasado = !p.actual && !p.futuro, ahoW = pasado ? p.fin.ing - p.fin.gas : p.ahoFin, bien = ahoW >= 0;
-  const errW = pasado && p.gasFin ? (p.fin.gas - p.gasFin) / p.gasFin : 0;
-  const sp = p.futuro ? '' : (() => { // minigráfica del gasto acumulado (estilo Patrimonio: curva suave, degradado y trazo que se dibuja)
-    const W = 145, H = 36, all = p.acum.concat(p.previsto), m2 = Math.max(1, ...all), X = i => i / (p.N - 1) * W, Y = v => H - 3 - v / m2 * (H - 7);
-    const pr = p.acum.map((v, i) => [X(i), Y(v)]), real = curvaSuave(pr), lp = pr[pr.length - 1];
-    const pv = [p.acum[p.acum.length - 1]].concat(p.previsto).map((v, i) => [X(p.d - 1 + i), Y(v)]);
-    return `<svg class="wspark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-      <defs><linearGradient id="grSp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--c-prev)" stop-opacity=".18"/><stop offset="1" stop-color="var(--c-prev)" stop-opacity="0"/></linearGradient></defs>
-      <path class="aparece-ana" d="${real} L${lp[0].toFixed(1)} ${H} L0 ${H} Z" fill="url(#grSp)"/>
-      <path class="trazo-ana" pathLength="1" d="${real}" fill="none" stroke="var(--c-prev)" stroke-width="1.4" stroke-linejoin="round"/>
-      ${pv.length > 1 ? `<path class="aparece-ana" d="${curvaSuave(pv)}" fill="none" stroke="var(--c-prev)" stroke-opacity=".6" stroke-width="1.1" stroke-dasharray="2.5 2.5"/>` : ''}
-      <circle class="aparece-ana" cx="${lp[0].toFixed(1)}" cy="${lp[1].toFixed(1)}" r="2.3" fill="var(--c-prev)"/></svg>`;
-  })();
-  const fW = esFuturo(M);
-  const w4 = fW ? `<button class="wid" data-ana="prev"><div class="wt">Previsión</div>
-    <div class="wbig num">${N(p.ahoFin)}</div><div class="ws">ahorro previsto</div><div class="ws">gasto previsto ${fK(p.gasFin)} €</div>
-    <span class="wpill ${p.ahoFin >= 0 ? 'ok' : 'mal'}">🔮 ${MESES[M.getMonth()]}</span></button>` : `<button class="wid" data-ana="prev"><div class="wt">Previsión</div>
-    <div class="wbig num">${N(ahoW)}</div><div class="ws">${pasado ? 'ahorro real del mes' : 'ahorro a fin de mes'}</div><div class="ws">gasto previsto ${fK(p.gasFin)} €</div>
-    ${p.vacio && pasado ? '' : sp}
-    ${pasado ? (p.vacio ? '<span class="wpill">Sin datos</span>' : Math.abs(errW) <= .05 ? '<span class="wpill ok">🎯 Cumplida</span>' : errW > 0 ? `<span class="wpill mal">+${Math.round(errW * 100)} % de gasto</span>` : `<span class="wpill ok">${Math.round(errW * 100)} % de gasto</span>`)
-      : `<span class="wpill ${bien ? 'ok' : 'mal'}">${bien ? 'Vais bien' : 'Os pasaréis'}</span>`}</button>`;
   const actual = claveMes(M) === claveMes(hoy);
   const nav = `<div class="mes"><button data-acc="anaMesAnt" aria-label="Mes anterior"${claveMes(M) <= primerMes() ? ' disabled' : ''}>${SVG.izq}</button>
     <b>${cap(MESES[M.getMonth()])} de ${M.getFullYear()}</b><button data-acc="anaMesSig" aria-label="Mes siguiente"${claveMes(M) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
-  // Ingresos por categoría (barras verdes)
-  const ingCats = {}; mes.forEach(m => { if (m.tipo === 'Ingreso') ingCats[m.categoria || 'Otros ingresos'] = (ingCats[m.categoria || 'Otros ingresos'] || 0) + m.importe; });
-  const ingL = Object.entries(ingCats).sort((a, b) => b[1] - a[1]), ingMx = ingL.length ? ingL[0][1] : 1;
+  // Ingresos: tendencia de los últimos 6 meses con la media en discontinua
+  const ingD = datos.map(x => x.ing), ingCon = ingD.filter((v, i) => claveMes(ms[i]) < claveMes(hoy) && v > 0), ingMed = ingCon.length ? ingCon.reduce((a, b) => a + b, 0) / ingCon.length : 0;
+  const mxI = Math.max(1, ...ingD, ...ingPrev6.filter(v => v !== null));
+  const difI = ingMed && !esFuturo(M) ? (r.ing - ingMed) / ingMed * 100 : null;
   const wI = `<button class="wid" data-ana="ing"><div class="wt">Ingresos</div>
-    <div class="wbig num">${N(r.ing)}</div><div class="ws">${esFuturo(M) ? 'previstos' : ingL.length ? ingL.length + (ingL.length === 1 ? ' categoría' : ' categorías') : 'sin ingresos'}</div>
-    <div class="wing">${ingL.slice(0, 4).map(([k, v], i) => `<div><span>${esc(k)}</span><i style="width:${Math.max(4, v / ingMx * 100)}%;background:${VERDES[i % VERDES.length]};--d:${i}"></i></div>`).join('')}</div></button>`;
+    <div class="wbig num">${N(r.ing)}</div><div class="ws">${ingMed ? `media ${fK(ingMed)} €/mes` : esFuturo(M) ? 'previstos' : 'sin ingresos'}</div>
+    <div class="wbarras wbi">${ingD.map((v, i) => { const pv = ingPrev6[i] > v ? ingPrev6[i] : 0, ult = i === ingD.length - 1;
+      return `<div><i class="${pv ? 'con-prev' : ''}" style="height:${(pv || v) / mxI * 100}%;--real:${pv ? v / pv * 100 : 100}%;--c:${ult ? '#4fb57e' : C_ING};background:${ult ? '#4fb57e' : C_ING};--d:${i}"></i></div>`; }).join('')}
+      ${ingMed ? `<span class="wmedia" style="bottom:${ingMed / mxI * 100}%"></span>` : ''}</div>
+    <div class="wmeses">${ms.map(m => `<span>${MESES[m.getMonth()].charAt(0).toUpperCase()}</span>`).join('')}</div></button>`;
   const fut = esFuturo(M) ? '<div class="aviso aviso-fut">🔮 Mes futuro: todo se calcula con tus <b>Recurrentes</b> previstos.</div>' : '';
-  return cabecera('Análisis', (esFuturo(M) ? 'Previsión de ' : 'Un vistazo a ') + MESES[M.getMonth()], '', !actual) + nav + fut + `<div class="widgets">${w1}${wI}${w2}${w3}${w4}${widgetPres(M)}</div>`;
+  return cabecera('Análisis', (esFuturo(M) ? 'Previsión de ' : 'Un vistazo a ') + MESES[M.getMonth()], '', !actual) + nav + fut + `<div class="widgets">${w1}${wI}${w2}${w3}${widgetPres(M)}</div>`;
 }
 const cabDetalle = (titulo, hoyActivo, sub) => `<header class="top principal detalle"><div class="tit-det"><button class="ibtn" data-acc="anaVolver" aria-label="Volver">${SVG.izq}</button>
   <div><h1>${titulo}</h1><p>${sub || ''}</p></div></div>${accionesCab('', hoyActivo)}</header>`;
 
-let anaCatI = null, evolVer = { ing: true, gas: true, tasa: true };
+let anaCatI = null, ingMs = [];
 function vAnaIng() {
   const rg = rangoAna();
   let arr = MA.filter(m => m.tipo === 'Ingreso' && m.fecha >= rg.ini && m.fecha <= rg.fin), campo = 'categoria';
@@ -1453,12 +1467,31 @@ function vAnaIng() {
   const filas = grupos.map(([k, v], i) => {
     const hay = !anaCatI && Object.keys(D.config.categorias.Ingreso[k] || {}).length > 0;
     const e = anaCatI ? emojiDe(anaCatI, k) : emojiDe(k);
-    return `<div class="ibar${hay ? ' tap' : ''}" ${hay ? `data-bajai="${esc(k)}"` : `data-movcat="${esc(anaCatI || k)}"`}>
-      <div class="ibar-c"><span class="n">${e ? `<span class="emo-ley">${e}</span>` : ''}${esc(k)}</span><b class="num">${fmt(v)}</b><small>${Math.round(v / (total || 1) * 100)} %</small>${SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);flex:none"')}</div>
+    return `<div class="ibar${hay ? ' tap' : ''}" ${hay ? `data-bajai="${esc(k)}"` : ''}>
+      <div class="ibar-c"><span class="n">${e ? `<span class="emo-ley">${e}</span>` : ''}${esc(k)}</span><b class="num">${fmt(v)}</b><small>${Math.round(v / (total || 1) * 100)} %</small>${hay ? SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);flex:none"') : '<span class="sin-flecha"></span>'}</div>
       <div class="ibar-p"><i style="width:${Math.max(2, v / mx * 100)}%;background:${VERDES[i % VERDES.length]};--d:${i}"></i></div></div>`;
   }).join('');
+  // Tendencia: ingresos de cada mes (hasta 12) desde el primer mes con datos
+  const finI = claveMes(anaRef) > claveMes(hoy) ? anaRef : hoy, pm = primerMes();
+  ingMs = mesesHasta(finI, 12).filter((m, i, a) => claveMes(m) >= pm || a.length - i <= 3);
+  const ingM = ingMs.map(m => MA.filter(x => x.tipo === 'Ingreso' && x.fecha.slice(0, 7) === claveMes(m) && (!anaCatI || (x.categoria || 'Otros ingresos') === anaCatI)).reduce((a, x) => a + x.importe, 0));
+  const pendI = previstosMes(hoy).filter(q => q.tipo === 'Ingreso' && (!anaCatI || (q.categoria || 'Otros ingresos') === anaCatI)).reduce((a, q) => a + q.importe, 0);
+  const prevI = ingMs.map((m, i) => claveMes(m) === claveMes(hoy) && pendI > 0 ? ingM[i] + pendI : null);
+  // La media y la tendencia solo usan meses cerrados con ingresos
+  const cerr = ingM.map((v, i) => ({ v, m: ingMs[i] })).filter(o => claveMes(o.m) < claveMes(hoy) && o.v > 0);
+  const medI = cerr.length ? cerr.reduce((a, o) => a + o.v, 0) / cerr.length : 0;
+  const u3 = cerr.slice(-3), a3 = cerr.slice(-6, -3), mu3 = u3.length ? u3.reduce((a, o) => a + o.v, 0) / u3.length : 0, ma3 = a3.length ? a3.reduce((a, o) => a + o.v, 0) / a3.length : 0;
+  const tend = ma3 ? (mu3 - ma3) / ma3 * 100 : null;
+  const selI = anaPer === 'Mes' ? ingMs.findIndex(m => claveMes(m) === claveMes(anaRef)) : -1;
+  const mxI = Math.max(...ingM, ...prevI.filter(v => v !== null), 0), minI = cerr.length ? Math.min(...cerr.map(o => o.v)) : 0, maxI = cerr.length ? Math.max(...cerr.map(o => o.v)) : 0;
+  const tarjetaTend = `<section class="card ana-card tend-ing">
+      <div class="tend-kpi"><div><small>Media mensual</small><b class="num">${medI ? fmt(medI) : '—'}</b></div>
+        <div><small>Tendencia</small><b class="num ${tend === null ? '' : tend >= 3 ? 'sube' : tend <= -3 ? 'baja' : ''}">${tend === null ? '—' : (tend >= 3 ? '↗ ' : tend <= -3 ? '↘ ' : '→ ') + (tend > 0 ? '+' : '') + Math.round(tend) + ' %'}</b></div>
+        <div><small>Rango</small><b class="num">${cerr.length ? fK(minI) + '–' + fK(maxI) + ' €' : '—'}</b></div></div>
+      ${mxI > 0 ? barrasSVG(ingMs, [{ vals: ingM, color: C_ING, colorPrev: '#3fae6c', prev: prevI }], { sel: selI >= 0 ? selI : null, media: medI, attr: 'data-ingcol' }) : '<div class="vacio">Aún no hay ingresos</div>'}
+      <p class="nota" style="margin-top:4px">${tend === null ? 'Toca un mes para ver su detalle' : `Tendencia: últimos 3 meses frente a los 3 anteriores · toca un mes para ver su detalle`}</p></section>`;
   const migas = `<div class="migas"><button data-migasi="0" class="${!anaCatI ? 'on' : ''}">Todas</button>${anaCatI ? `<span>›</span><button class="on">${esc(anaCatI)}</button>` : ''}</div>`;
-  return cabDetalle('Ingresos', anaPer !== 'Mes' || claveMes(anaRef) !== claveMes(hoy), 'De dónde viene el dinero') + `
+  return cabDetalle('Ingresos', anaPer !== 'Mes' || claveMes(anaRef) !== claveMes(hoy), 'Tendencia y origen') + tarjetaTend + `
     <div class="mes"><button data-acc="anaAnt" aria-label="Anterior">${SVG.izq}</button><b>${rg.txt}</b><button data-acc="anaSig" aria-label="Siguiente">${SVG.der}</button></div>
     <div class="seg seg-vista">${['Mes', 'Trimestre', 'Año'].map(p => `<button data-anaper="${p}" class="${p === anaPer ? 'on' : ''}">${p}</button>`).join('')}</div>
     ${migas}
@@ -1477,7 +1510,7 @@ function vAnaDonut() {
   const migas = `<div class="migas"><button data-migas="0" class="${!anaCat ? 'on' : ''}">Todas</button>${anaCat ? `<span>›</span><button data-migas="1" class="${!anaSub ? 'on' : ''}">${esc(anaCat)}</button>` : ''}${anaSub ? `<span>›</span><button data-migas="2" class="on">${esc(anaSub)}</button>` : ''}</div>`;
   const leyenda = grupos.map(([k, v], i) => {
     const hay = profundo && (campo === 'categoria' ? Object.keys(D.config.categorias.Gasto[k] || {}).length : (D.config.categorias.Gasto[anaCat] || {})[k] && (D.config.categorias.Gasto[anaCat][k] || []).length);
-    return `<div class="ley-f tap" ${hay ? `data-baja="${esc(k)}"` : `data-movcat="${esc(anaCat || k)}"`}><em style="background:${cols[i]}"></em><span class="n">${(() => { const e = campo === 'categoria' ? emojiDe(k) : campo === 'subcategoria' ? emojiDe(anaCat, k) : emojiDe(anaCat, anaSub, k); return e ? `<span class="emo-ley">${e}</span>` : ''; })()}${esc(k)}</span><b class="num">${fmt(v)}</b><small>${Math.round(v / total * 100)} %</small>${hay ? SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);flex:none"') : SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);opacity:.4;flex:none"')}</div>`;
+    return `<div class="ley-f${hay ? ' tap' : ''}" ${hay ? `data-baja="${esc(k)}"` : ''}><em style="background:${cols[i]}"></em><span class="n">${(() => { const e = campo === 'categoria' ? emojiDe(k) : campo === 'subcategoria' ? emojiDe(anaCat, k) : emojiDe(anaCat, anaSub, k); return e ? `<span class="emo-ley">${e}</span>` : ''; })()}${esc(k)}</span><b class="num">${fmt(v)}</b><small>${Math.round(v / total * 100)} %</small>${hay ? SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);flex:none"') : '<span class="sin-flecha"></span>'}</div>`;
   }).join('');
   return cabDetalle('Gastos', anaPer !== 'Mes' || claveMes(anaRef) !== claveMes(hoy), 'En qué se va el dinero') + `
     <div class="mes"><button data-acc="anaAnt" aria-label="Anterior">${SVG.izq}</button><b>${rg.txt}</b><button data-acc="anaSig" aria-label="Siguiente">${SVG.der}</button></div>
@@ -1517,7 +1550,7 @@ function barrasSVG(ms, series, opts) {
       series.forEach(s => { const h = s.vals[i] / top * alto; if (h <= 0) return;
         g += `<rect class="barra-g" x="${(cx - bw / 2).toFixed(1)}" y="${(acc - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${s.color}" style="--d:${i}"/>`; acc -= h; });
     } else {
-      const bw = Math.min(9, cw * .2), gap = 2, totw = series.length * bw + (series.length - 1) * gap;
+      const bw = series.length === 1 ? Math.min(16, cw * .42) : Math.min(9, cw * .2), gap = 2, totw = series.length * bw + (series.length - 1) * gap;
       series.forEach((s, k) => { const h = s.vals[i] / top * alto;
         if (s.prev && s.prev[i] > s.vals[i]) { const hp = s.prev[i] / top * alto;
           g += `<rect class="barra-g" x="${(cx - totw / 2 + k * (bw + gap) + .5).toFixed(1)}" y="${(base - hp + .5).toFixed(1)}" width="${(bw - 1).toFixed(1)}" height="${(hp - 1).toFixed(1)}" rx="1" fill="none" stroke="${s.colorPrev || s.color}" stroke-width="1" stroke-dasharray="2.5 2" style="--d:${i * 2 + k}"/>`; }
@@ -1539,7 +1572,9 @@ function barrasSVG(ms, series, opts) {
         else g += `<circle class="pto-ana" cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="${sel === i ? 3.6 : 2.2}" fill="${C_TASA}" ${sel === i ? 'stroke="var(--card)" stroke-width="1.5"' : ''}/>`; });
     }
   }
-  ms.forEach((_, i) => g += `<rect x="${pl + i * cw}" y="0" width="${cw}" height="${H}" fill="transparent" data-col="${i}" style="cursor:pointer"/>`);
+  if (opts.media) { const ym = y(opts.media).toFixed(1);
+    g += `<line x1="${pl}" x2="${W - pr}" y1="${ym}" y2="${ym}" stroke="#3fae6c" stroke-width="1.2" stroke-dasharray="4 3" opacity=".9"/><text x="${W - pr}" y="${(+ym - 4).toFixed(1)}" text-anchor="end" class="eje" style="fill:#3fae6c;font-weight:700">media ${fK(opts.media)}</text>`; }
+  ms.forEach((_, i) => g += `<rect x="${pl + i * cw}" y="0" width="${cw}" height="${H}" fill="transparent" ${opts.attr || 'data-col'}="${i}" style="cursor:pointer"/>`);
   return `<svg class="graf-ana" viewBox="0 0 ${W} ${H}">${g}</svg>`;
 }
 
@@ -1565,11 +1600,11 @@ function vAnaEvol() {
         ${ingPrevE[anaSelEvol] ? `<div class="kv"><span><em class="caja-disc" style="color:#3fae6c"></em>Ingresos previstos</span><b class="num">${fmt(ingPrevE[anaSelEvol])}</b></div>` : ''}
         <div class="kv kv-ir" data-evolir="donut" data-mes="${claveMes(m)}"><span><em style="background:${C_GAS}"></em>Gastos</span><b class="num">${fmt(s.gas)} <i class="ir">${SVG.der}</i></b></div>
         <div class="kv kv-ir" data-evolir="movs" data-mes="${claveMes(m)}"><span><em style="background:${C_TASA};border-radius:50%"></em>Ahorro</span><b class="num">${fmt(s.ahorro)} ${s.pct === null || s.pct < -100 ? '' : `<small>(${Math.round(s.pct)} %)</small>`} <i class="ir">${SVG.der}</i></b></div></div>
-      ${barrasSVG(ms, [evolVer.ing && { vals: datos.map(x => x.ing), color: C_ING, colorPrev: '#3fae6c', prev: ingPrevE }, evolVer.gas && { vals: datos.map(x => x.gas), color: C_GAS }].filter(Boolean),
-        { sel: anaSelEvol, linea: evolVer.tasa ? datos.map((x, i) => !delMes(MA, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, x.ahorro / x.ing * 100) : (x.ahorro < 0 ? -100 : 0)) : null })}
-      <div class="chips-evol">${[['ing', 'Ingresos', `<em style="background:${C_ING}"></em>`], ['gas', 'Gastos', `<em style="background:${C_GAS}"></em>`], ['tasa', 'Tasa de ahorro', `<em class="lin" style="background:${C_TASA}"></em>`]]
-        .map(([k, t, e]) => `<button data-evolver="${k}" class="${evolVer[k] ? 'on' : ''}">${e}${t}</button>`).join('')}</div>
-      <p class="nota" style="margin-top:6px">Toca una serie para ocultarla o mostrarla · toca un mes para ver su detalle</p>
+      ${barrasSVG(ms, [{ vals: datos.map(x => x.ing), color: C_ING, colorPrev: '#3fae6c', prev: ingPrevE }, { vals: datos.map(x => x.gas), color: C_GAS }],
+        { sel: anaSelEvol, linea: datos.map((x, i) => !delMes(MA, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, x.ahorro / x.ing * 100) : (x.ahorro < 0 ? -100 : 0)) })}
+      <div class="ley-evol">${[['ing', 'Ingresos', `<em style="background:${C_ING}"></em>`], ['gas', 'Gastos', `<em style="background:${C_GAS}"></em>`], ['tasa', 'Tasa de ahorro', `<em class="lin" style="background:${C_TASA}"></em>`]]
+        .map(([k, t, e]) => `<span>${e}${t}</span>`).join('')}</div>
+      <p class="nota" style="margin-top:4px">Toca un mes para ver su detalle</p>
     </section>`;
 }
 
@@ -1817,13 +1852,19 @@ function estadoPres(M) {
 const colorPres = pct => pct > 100 ? 'mal' : pct > 85 ? 'ojo' : '';
 function widgetPres(M) {
   const e = estadoPres(M);
-  if (!e.cats.length) return `<button class="wid" data-ana="pres"><div class="wt">Presupuesto</div><div class="wbig" style="font-size:20px">Sin definir</div>
-    <div class="ws">Pon un límite mensual a cada categoría y controla cuánto te queda</div><span class="wpill">＋ Crear</span></button>`;
-  const pct = e.total ? e.gastado / e.total * 100 : 0;
-  return `<button class="wid" data-ana="pres"><div class="wt">Presupuesto</div>
-    <div class="wbig num">${N(e.queda)}</div><div class="ws">${e.queda >= 0 ? 'te quedan' : 'te has pasado'} de ${fK(e.total)} €</div>
-    <div class="wpres"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i></div>
-    <div class="wpres-l">${e.cats.slice(0, 3).map(o => `<div><span>${esc(o.c)}</span><b class="${colorPres(o.pct)}">${Math.round(o.pct)} %</b></div>`).join('')}</div></button>`;
+  if (!e.cats.length) return `<button class="wid wfull" data-ana="pres"><div class="wt">Presupuesto</div><div class="wbig" style="font-size:20px">Sin definir</div>
+    <div class="ws">Pon un límite mensual a cada categoría y controla cuánto os queda</div><span class="wpill">＋ Crear presupuesto</span></button>`;
+  const pct = e.total ? e.gastado / e.total * 100 : 0, marca = e.actual ? e.dia / e.N * 100 : null;
+  const pasados = e.cats.filter(o => o.pct > 100).length;
+  const pie = e.porDia !== null ? `${fmt(e.porDia)}/día hasta fin de mes` : e.futuro ? 'mes futuro' : pasados ? `${pasados} ${pasados === 1 ? 'categoría pasada' : 'categorías pasadas'}` : 'todas dentro del límite';
+  return `<button class="wid wfull" data-ana="pres"><div class="wpres-g">
+    <div class="wpres-i"><div class="wt">Presupuesto</div>
+      <div class="wbig num">${N(Math.abs(e.queda))}</div><div class="ws">${e.queda >= 0 ? 'quedan' : 'pasados'} de ${fK(e.total)} €</div>
+      <div class="wpres"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
+      <div class="ws" style="margin-top:6px;white-space:normal">${pie}</div></div>
+    <div class="wpres-l">${e.cats.slice(0, 5).map(o => `<div><span>${emojiDe(o.c) ? emojiDe(o.c) + ' ' : ''}${esc(o.c)}</span><b class="${colorPres(o.pct)}">${Math.round(o.pct)} %</b>
+      <i><u class="${colorPres(o.pct)}" style="width:${Math.min(100, o.pct)}%"></u></i></div>`).join('')}${e.cats.length > 5 ? `<small>y ${e.cats.length - 5} más</small>` : ''}</div>
+  </div></button>`;
 }
 function vAnaPres() {
   const M = anaMes, e = estadoPres(M);
@@ -1985,7 +2026,7 @@ $('#app').addEventListener('click', e => {
     if (a === 'mesAnt' || a === 'mesSig') { irAMes(new Date(mesSel.getFullYear(), mesSel.getMonth() + (a === 'mesAnt' ? -1 : 1), 1)); return pintar(false, true); }
     if (a === 'editarPres') return abrirEditarPres();
     if (a === 'simular') return abrirSimulador();
-    if (a === 'verMovsCat') return irAMovimientos(anaVista === 'ing' ? 'Ingreso' : 'Gasto', anaVista === 'ing' ? anaCatI : anaCat);
+    if (a === 'verMovsCat') return anaVista === 'ing' ? irAMovimientos(anaCatI ? null : 'Ingreso', anaCatI) : irAMovimientos(null, anaCat);
     if (a === 'irGastos' || a === 'irEvol' || a === 'irIngresos') {
       tab = 'analisis'; anaMes = new Date(mesSel.getFullYear(), mesSel.getMonth(), 1);
       anaCat = null; anaSub = null; anaCatI = null; anaSelEvol = null; anaSelFijo = null;
@@ -2033,7 +2074,7 @@ $('#app').addEventListener('click', e => {
   const mg = e.target.closest('[data-migas]');
   if (mg) { const n = +mg.dataset.migas; if (n < 2) anaSub = null; if (n < 1) anaCat = null; return pintarAna(); }
   const pc = e.target.closest('[data-prescat]');
-  if (pc) { anaPer = 'Mes'; anaRef = new Date(anaMes); return irAMovimientos('Gasto', pc.dataset.prescat); }
+  if (pc) { anaPer = 'Mes'; anaRef = new Date(anaMes); return irAMovimientos(null, pc.dataset.prescat); }
   const mc = e.target.closest('[data-movcat]');
   if (mc) return irAMovimientos(anaVista === 'ing' ? 'Ingreso' : 'Gasto', mc.dataset.movcat);
   const bi = e.target.closest('[data-bajai]');
@@ -2042,8 +2083,6 @@ $('#app').addEventListener('click', e => {
   if (mi) { anaCatI = null; return pintarAna(); }
   const bj = e.target.closest('[data-baja]');
   if (bj) { if (!anaCat) anaCat = bj.dataset.baja; else anaSub = bj.dataset.baja; return pintarAna(); }
-  const ev = e.target.closest('[data-evolver]');
-  if (ev) { const k = ev.dataset.evolver; evolVer[k] = !evolVer[k]; if (!evolVer.ing && !evolVer.gas && !evolVer.tasa) evolVer[k] = true; pintar(); return animarGrafica(); }
   const ei = e.target.closest('[data-evolir]');
   if (ei) {
     const k = ei.dataset.evolir, mm = ei.dataset.mes ? new Date(+ei.dataset.mes.slice(0, 4), +ei.dataset.mes.slice(5, 7) - 1, 1) : anaMes;
@@ -2053,6 +2092,8 @@ $('#app').addEventListener('click', e => {
   }
   const am = e.target.closest('[data-anameses]');
   if (am) { anaMeses = +am.dataset.anameses; anaSelEvol = null; anaSelFijo = null; return pintar(true); }
+  const ic = e.target.closest('[data-ingcol]');
+  if (ic) { const m = ingMs[+ic.dataset.ingcol]; if (m) { irAMes(m); anaPer = 'Mes'; anaRef = new Date(m); } pintar(); return animarGrafica(); }
   const col = e.target.closest('[data-col]');
   if (col) { if (anaVista === 'evol') anaSelEvol = +col.dataset.col; else anaSelFijo = +col.dataset.col; return pintar(); }
   const tf = e.target.closest('[data-tipof]');
