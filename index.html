@@ -283,12 +283,22 @@
 
   /* Hojas inferiores (formularios) */
   .velo { position: fixed; inset: 0; background: rgba(15, 20, 18, .38); z-index: 40; display: flex; align-items: flex-end; }
+  .hoja { overscroll-behavior: contain; }
   .hoja { background: var(--card); width: 100%; max-width: 520px; margin: 0 auto; border-radius: 26px 26px 0 0;
     padding: 10px 18px calc(20px + env(safe-area-inset-bottom)); max-height: 92vh; overflow-y: auto; }
   .tirador { width: 40px; height: 5px; border-radius: 9px; background: #dedcd6; margin: 0 auto 12px; position: relative; touch-action: none; cursor: grab; }
   .tirador::before { content: ''; position: absolute; inset: -14px -60px; }
   .hoja > h2 { touch-action: none; }
   .hoja h2 { margin: 0 0 12px; font-size: 20px; font-weight: 800; }
+  .hoja-cab { display: flex; align-items: center; gap: 10px; margin: -4px 0 12px; touch-action: none; }
+  .hoja-cab h2 { flex: 1; min-width: 0; margin: 0; font-size: 18px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hoja-cab .hb-der { display: flex; gap: 8px; min-width: 40px; justify-content: flex-end; }
+  .hb { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--pista); color: var(--ink); }
+  .hb svg { width: 19px; height: 19px; }
+  .hb.pri { background: var(--verde); color: #fff; } .hb.rojo { color: #c4581b; }
+  .hb.txt { width: auto; padding: 0 14px; border-radius: 99px; font-weight: 800; font-size: 14px; }
+  .hb:disabled { opacity: .35; }
+  .hb.pulsado { transform: scale(.9); }
   .hoja .seg { margin: 0 0 12px; }
   .hoja .seg button { font-size: 13px; padding: 8px 4px; }
   label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin: 12px 0 5px; letter-spacing: .03em; }
@@ -327,6 +337,28 @@
   .saldo-cta b { font-size: 22px; font-weight: 800; }
   .saldo-cta p { margin: 4px 0 0; font-size: 12px; color: var(--muted); line-height: 1.35; }
   .saldo-cta .btn { padding: 11px; font-size: 14px; }
+  .chips-evol { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .chips-evol button { display: inline-flex; align-items: center; gap: 2px; padding: 6px 11px; border-radius: 99px; font-size: 12px; font-weight: 700; color: var(--muted);
+    background: var(--pista); border: 1.5px solid transparent; transition: opacity .15s; }
+  .chips-evol button.on { color: var(--ink); background: var(--card); border-color: var(--line); box-shadow: var(--sombra); }
+  .chips-evol button:not(.on) { opacity: .55; text-decoration: line-through; }
+  .kv-ir { cursor: pointer; } .kv-ir .ir { width: 10px; height: 10px; }
+  .graf-anim .barra-g { transform-box: fill-box; transform-origin: bottom; animation: crecer .6s cubic-bezier(.2,.9,.25,1.15) both; }
+  .graf-anim .trazo-ana { stroke-dasharray: 1; animation: dibujar .9s .1s cubic-bezier(.45,0,.2,1) both; }
+  .graf-anim .pto-ana { animation: aparecer .4s .7s both; }
+  .wing { display: grid; gap: 5px; margin-top: auto; }
+  .wing div { display: grid; grid-template-columns: 1fr; gap: 2px; font-size: 10px; color: var(--muted); font-weight: 700; }
+  .wing span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wing i { display: block; height: 7px; border-radius: 4px; }
+  .entra .wing i, .entra-ana .wing i, .entra .ibar-p i, .entra-ana .ibar-p i { transform-origin: left; animation: crecerX .8s cubic-bezier(.2,.9,.25,1) both; animation-delay: calc(150ms + var(--d, 0) * 60ms); }
+  .ing-total { text-align: center; margin: 4px 0 12px; } .ing-total small { display: block; color: var(--muted); font-weight: 700; font-size: 12px; }
+  .ing-total b { font-size: 26px; font-weight: 800; color: var(--ingreso); }
+  .ibar { padding: 8px 0; border-top: 1px solid var(--line); cursor: pointer; } .ibar:first-of-type { border-top: 0; }
+  .ibar-c { display: flex; align-items: center; gap: 8px; } .ibar-c .n { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ibar-c small { color: var(--muted); font-weight: 600; min-width: 36px; text-align: right; }
+  .ibar-p { height: 10px; background: var(--pista); border-radius: 6px; margin-top: 6px; overflow: hidden; } .ibar-p i { display: block; height: 100%; border-radius: 6px; }
+  .ver-movs { margin: 12px auto 0; justify-content: center; width: 100%; padding: 10px; border-radius: 12px; background: var(--pista); }
+  .aviso-fut { margin: 0 0 10px; }
   .ficha { background: var(--pista); border-radius: 16px; padding: 12px 14px; margin: 0 0 12px; }
   .ficha-c { font-weight: 800; font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; margin-bottom: 6px; }
   .ficha-f { display: flex; gap: 10px; font-size: 13px; padding: 2px 0; }
@@ -453,6 +485,33 @@
   .grafico.gprev.activo svg circle.fin { visibility: hidden; }
   .grafico.gprev.activo svg circle { visibility: visible; }
   .mes button:disabled { opacity: .3; }
+  .wpres { height: 9px; border-radius: 5px; background: var(--pista); margin-top: 8px; overflow: hidden; } .wpres i { display: block; height: 100%; border-radius: 5px; background: #8fd3a8; }
+  .wpres i.ojo, .pc-b i.ojo { background: #f7c27d; } .wpres i.mal { background: #f4a3a3; }
+  .wpres-l { margin-top: auto; display: grid; gap: 2px; } .wpres-l div { display: flex; justify-content: space-between; gap: 6px; font-size: 10.5px; font-weight: 700; color: var(--muted); }
+  .wpres-l span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .wpres-l b.ojo { color: #c98a2b; } .wpres-l b.mal, b.mal, .num.mal { color: #c4581b; } b.ojo { color: #c98a2b; }
+  .pr-f { padding: 9px 0; border-top: 1px solid var(--line); cursor: pointer; } .pr-f:first-of-type { border-top: 0; }
+  .pr-c { display: flex; align-items: baseline; gap: 6px; font-size: 14px; } .pr-c .n { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pr-c small { color: var(--muted); font-weight: 600; font-size: 12px; } .pr-s { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600; }
+  .sim-cta { display: flex; align-items: center; gap: 12px; } .sim-cta > div { flex: 1; } .sim-cta b { display: block; font-size: 16px; } .sim-cta small { color: var(--muted); font-size: 12px; font-weight: 600; }
+  .sim-cta .btn { flex: none; padding: 11px 16px; font-size: 14px; }
+  .pe-f { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); }
+  .pe-f .n { flex: 1; min-width: 0; font-weight: 600; font-size: 14px; } .pe-f .n small { display: block; color: var(--muted); font-weight: 500; font-size: 11.5px; }
+  .pe-f input { width: 110px; text-align: right; padding: 9px 12px; }
+  .sim-res { margin-top: 14px; background: var(--pista); box-shadow: none; }
+  .sim-b { display: grid; grid-template-columns: 96px 1fr auto; align-items: center; gap: 8px; font-size: 13px; margin: 6px 0; } .sim-b span { color: var(--muted); font-weight: 600; }
+  .sim-b div { height: 12px; background: var(--card); border-radius: 6px; overflow: hidden; } .sim-b i { display: block; height: 100%; background: #aeb7ff; border-radius: 6px; }
+  .sim-b i.ojo { background: #f7c27d; } .sim-b i.mal { background: #f4a3a3; }
+  .sim-ver { font-size: 14px; font-weight: 700; margin: 12px 0 0; } .sim-ver.ok { color: var(--verde); } .sim-ver.mal { color: #c4581b; }
+  .rango { color: var(--muted); font-size: 13px; font-weight: 600; margin: -2px 0 8px; } .rango b { color: var(--ink); }
+  .al-f { display: grid; grid-template-columns: 1fr auto; gap: 0 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+  .al-f:first-of-type { border-top: 0; } .al-f .n { font-weight: 700; } .al-f small { grid-column: 1; color: var(--muted); font-size: 12px; }
+  .al-f b { grid-row: 1 / span 2; grid-column: 2; align-self: center; color: #c4581b; }
+  .al-ok { color: var(--muted); font-weight: 600; font-size: 14px; padding: 6px 0; }
+  .pc-f { padding: 7px 0; } .pc-c { display: flex; align-items: baseline; gap: 6px; font-size: 14px; }
+  .pc-c .n { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pc-c small { color: var(--muted); font-weight: 600; font-size: 12px; }
+  .pc-b { position: relative; height: 8px; border-radius: 5px; background: var(--pista); margin-top: 5px; }
+  .pc-b i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: #8fd3a8; } .pc-b i.ojo { background: #f7c27d; } .pc-b i.mal { background: #f4a3a3; }
+  .pc-b em { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--ink); opacity: .45; border-radius: 1px; }
   .comp-prev { display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px 14px; align-items: center; font-size: 14px; }
   .comp-prev small { color: var(--muted); font-weight: 700; font-size: 11px; text-align: right; }
   .comp-prev span { color: var(--muted); font-weight: 600; }
@@ -518,6 +577,24 @@
   :root[data-tema="oscuro"] .velo { background: rgba(0,0,0,.55); }
   :root[data-tema="oscuro"] .marca { color: #6fe0a2; }
   :root[data-tema="oscuro"] .proximamente svg { color: #3d4340; }
+  .aj-perfil { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 14px; border-radius: 18px; background: var(--pista); }
+  .aj-perfil b { display: block; font-size: 17px; } .aj-perfil small { color: var(--muted); font-weight: 600; font-size: 13px; }
+  .aj-perfil > span:nth-child(2) { flex: 1; }
+  .aj-av { width: 46px; height: 46px; border-radius: 50%; background: var(--verde); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 20px; flex: none; }
+  .aj-lbl { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; margin: 18px 6px 6px; }
+  .aj-grupo { background: var(--pista); border-radius: 18px; overflow: hidden; }
+  .aj-pad { padding: 8px; }
+  .aj-f { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 14px; font-weight: 600; }
+  .aj-f + .aj-f { border-top: 1px solid var(--line); }
+  .aj-i { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--card); font-size: 16px; flex: none; }
+  .aj-logo .logo { width: 30px; height: 30px; border-radius: 9px; font-size: 14px; }
+  .aj-t { flex: 1; min-width: 0; } .aj-t small { display: block; color: var(--muted); font-weight: 500; font-size: 12px; }
+  .aj-x { color: var(--muted); font-weight: 700; font-size: 14px; }
+  .aj-c { width: 14px; height: 14px; color: var(--muted); opacity: .6; flex: none; } .aj-c svg { width: 100%; height: 100%; display: block; }
+  .aj-badge { background: #c4581b; color: #fff; border-radius: 99px; padding: 2px 8px; font-size: 12px; }
+  .aj-info div { display: flex; justify-content: space-between; padding: 6px 8px; font-size: 14px; } .aj-info span { color: var(--muted); font-weight: 600; }
+  .aj-salir { display: block; width: 100%; margin: 20px 0 6px; padding: 14px; border-radius: 16px; background: var(--pista); color: #c4581b; font-weight: 800; font-size: 15px; }
+  .aj-f.pulsado, .aj-perfil.pulsado, .aj-salir.pulsado { opacity: .6; }
   .temas { display: flex; gap: 6px; background: #efeee9; border-radius: 14px; padding: 4px; margin-top: 8px; }
   .temas button { flex: 1; padding: 11px 4px; border-radius: 11px; font-weight: 700; font-size: 14px; color: var(--muted); }
   .temas button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
@@ -590,6 +667,9 @@ const SVG = {
   ojo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
   ojoNo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.2A10.6 10.6 0 0 1 12 4c6.5 0 10 8 10 8a17 17 0 0 1-2.2 3.2M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="m2 2 20 20"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>',
   asa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 8h14M5 12h14M5 16h14"/></svg>',
+  ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
+  papelera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   cerrar: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   barras: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20v-6M10 20V9M15 20v-9M20 20V5"/></svg>'
 };
@@ -839,7 +919,7 @@ function emojiDe(cat, sub, det, exacto) {
 }
 function icono(m) {
   if (m.tipo === 'Traspaso') return `<div class="ico emo">🔄</div>`;
-  if (m.tipo === 'Reembolso') return `<div class="ico emo">↩️</div>`;
+  if (m.tipo === 'Reembolso') return `<div class="ico emo">${emojiDe(m.categoria, m.subcategoria, m.detalle) || '↩️'}</div>`;
   const e = emojiDe(m.categoria, m.subcategoria, m.detalle);
   if (m.tipo === 'Ingreso') return `<div class="ico${e ? ' emo' : ''}" style="background:var(--ico-in);color:var(--ingreso)">${e || esc((m.categoria || '€').charAt(0))}</div>`;
   const c = colorCat(m.categoria);
@@ -937,7 +1017,8 @@ window.addEventListener('resize', moverLente);
 function vInicio() {
   const h = hoy.getHours();
   const saludo = h >= 6 && h < 14 ? 'Buenos días' : h >= 14 && h < 21 ? 'Buenas tardes' : 'Buenas noches';
-  const mes = delMes(D.movs, mesSel), r = resumen(mes);
+  const futuroI = claveMes(mesSel) > claveMes(hoy);
+  const mes = futuroI ? previstosMes(mesSel) : delMes(D.movs, mesSel), r = resumen(mes);
   const y = mesSel.getFullYear(), mo = mesSel.getMonth(), dias = new Date(y, mo + 1, 0).getDate();
   const esActual = claveMes(mesSel) === claveMes(hoy), esFuturo = claveMes(mesSel) > claveMes(hoy);
   const quedan = esActual ? dias - hoy.getDate() : null;
@@ -956,11 +1037,11 @@ function vInicio() {
   return cabecera(`${saludo}, ${esc(USUARIO || '')}`, fechaLarga(HOY), '', claveMes(mesSel) !== claveMes(hoy)) + selectorMes() + `
     <section class="balance">
       <div class="ir-zona" data-acc="irEvol" role="button" aria-label="Ver evolución del ahorro">
-      <div class="cab"><span>Ahorro de ${MESES[mo]} <i class="ir">${SVG.der}</i></span>${quedan !== null ? `<b>Quedan ${quedan} ${quedan === 1 ? 'día' : 'días'}</b>` : ''}</div>
+      <div class="cab"><span>Ahorro ${futuroI ? 'previsto ' : ''}de ${MESES[mo]} <i class="ir">${SVG.der}</i></span>${quedan !== null ? `<b>Quedan ${quedan} ${quedan === 1 ? 'día' : 'días'}</b>` : ''}</div>
       <div class="grande num">${N(r.ahorro)}</div>
       ${r.pct === null ? `<span class="pct">Sin ingresos este mes</span>` : r.ahorro < 0 ? `<span class="pct neg">Los gastos superan a los ingresos</span>`
         : `<span class="pct">${r.pct.toLocaleString('es-ES', { maximumFractionDigits: 0 })} % de los ingresos</span>`}</div>
-      <div class="duo"><div class="caja-ing"><small>Ingresos</small><b class="in num">${N(r.ing, '+')}</b></div><div class="ir-zona caja-gas" data-acc="irGastos" role="button" aria-label="Ver gastos por categoría"><small>Gastos <i class="ir">${SVG.der}</i></small><b class="ga num">${N(r.gas, '−')}</b></div></div>
+      <div class="duo"><div class="caja-ing ir-zona" data-acc="irIngresos" role="button" aria-label="Ver ingresos por categoría"><small>Ingresos <i class="ir">${SVG.der}</i></small><b class="in num">${N(r.ing, '+')}</b></div><div class="ir-zona caja-gas" data-acc="irGastos" role="button" aria-label="Ver gastos por categoría"><small>Gastos <i class="ir">${SVG.der}</i></small><b class="ga num">${N(r.gas, '−')}</b></div></div>
       <div class="barras">${barras}</div>
       <div class="ejes"><span>1 ${mc}</span>${posHoy !== null && hoy.getDate() > 3 && hoy.getDate() < dias - 3 ? `<span class="h" style="left:${posHoy}%">Hoy · ${hoy.getDate()}</span>` : ''}<span>${dias} ${mc}</span></div>
     </section>
@@ -984,8 +1065,9 @@ function vMovs() {
   }
   h += selectorMes().replace('class="mes"', 'class="mes mes-fija"');   // se queda pegado arriba al bajar por la lista
   h += `<div class="seg seg-vista"><button data-vista="lista" class="${vistaMovs === 'lista' ? 'on' : ''}">Lista</button><button data-vista="calendario" class="${vistaMovs === 'calendario' ? 'on' : ''}">Calendario</button></div>`;
-  const mes = delMes(filtrados(), mesSel), r = resumen(mes);
-  h += `<div class="tres"><div class="ing"><small>Ingreso</small><b class="num">${N(r.ing)}</b></div>
+  const futuroM = claveMes(mesSel) > claveMes(hoy);
+  const mes = futuroM ? previstosMes(mesSel).filter(p => !bancoFiltro || p.metodo === bancoFiltro || p.destino === bancoFiltro) : delMes(filtrados(), mesSel), r = resumen(mes);
+  h += `<div class="tres"><div class="ing ir-zona" data-acc="irIngresos" role="button"><small>Ingreso <i class="ir">${SVG.der}</i></small><b class="num">${N(r.ing)}</b></div>
     <div class="gas ir-zona" data-acc="irGastos" role="button"><small>Gasto <i class="ir">${SVG.der}</i></small><b class="num">${N(r.gas)}</b></div><div class="aho ir-zona" data-acc="irEvol" role="button"><small>Ahorro <i class="ir">${SVG.der}</i></small><b class="num">${N(r.ahorro)}</b></div></div>`;
   // Filtros (desplegables con forma de botón): Tipo, Categoría, Fijo/Variable y Banco.
   // Afectan a la lista, al calendario y a los movimientos del día; los recuadros de arriba solo cambian con el banco.
@@ -1019,7 +1101,7 @@ function vMovs() {
   }
   // Calendario
   const y = mesSel.getFullYear(), mo = mesSel.getMonth(), dias = new Date(y, mo + 1, 0).getDate();
-  const prev = (bancoFiltro ? previstosMes(mesSel).filter(p => p.metodo === bancoFiltro || p.destino === bancoFiltro) : previstosMes(mesSel)).filter(pasa);
+  const prev = futuroM ? [] : (bancoFiltro ? previstosMes(mesSel).filter(p => p.metodo === bancoFiltro || p.destino === bancoFiltro) : previstosMes(mesSel)).filter(pasa);
   const vpd = !tipoFiltro || tipoFiltro === 'Gasto' || tipoFiltro === 'Reembolso' ? variablePorDia(mesF) : {};
   const max = Math.max(1, ...Object.values(vpd));
   const offset = (new Date(y, mo, 1).getDay() + 6) % 7;
@@ -1129,12 +1211,18 @@ function curvaSuave(p) {
 // Cambiar de mes en cualquier pestaña mueve también las demás (Análisis no pasa del mes actual)
 function irAMes(d) {
   d = new Date(d.getFullYear(), d.getMonth(), 1);
-  const tope = claveMes(d) > claveMes(hoy) ? new Date(hoy.getFullYear(), hoy.getMonth(), 1) : d;
+  const tope = claveMes(d) > MAX_FUTURO() ? new Date(hoy.getFullYear(), hoy.getMonth() + 12, 1) : d;
   mesSel = d;
   if (claveMes(d) === claveMes(hoy)) diaSel = HOY;
   else { const fs = delMes(D.movs, d).map(m => m.fecha).sort(); diaSel = fs.length ? fs[fs.length - 1] : ymd(d); }
   anaMes = new Date(tope); prevRef = new Date(tope); anaSelEvol = null; anaSelFijo = null;
   if (anaPer === 'Mes') anaRef = new Date(tope);
+}
+// Ir a Movimientos con filtros de tipo y categoría (desde Análisis)
+function irAMovimientos(tipo, cat) {
+  if (anaPer === 'Mes') irAMes(anaRef);
+  tab = 'movs'; vistaMovs = 'lista'; tipoFiltro = tipo || null; catFiltro = cat || null; fvFiltro = null;
+  window.scrollTo(0, 0); pintar(true);
 }
 function animarGrafica() { const app = $('#app'); app.classList.remove('graf-anim'); void app.offsetWidth; app.classList.add('graf-anim'); clearTimeout(app._ga); app._ga = setTimeout(() => app.classList.remove('graf-anim'), 1400); }
 function pintarAna() { pintar(); const app = $('#app'); void app.offsetWidth; app.classList.add('entra-ana'); contar(app); setTimeout(() => app.classList.remove('entra-ana'), 1500); }
@@ -1234,6 +1322,7 @@ function vPatri() {
 }
 // ══════════════ ANÁLISIS ══════════════
 const PASTEL = ['#9db8f5', '#f5a7a0', '#9fd8b3', '#f7cf8f', '#c3b1f5', '#93d5df', '#f2afd0', '#c5df8f', '#f8b88a', '#b7c0c9', '#90d4c4', '#d6b0f2', '#e9d27e'];
+const VERDES = ['#2f8f5b', '#55ad7c', '#7fc79c', '#a8dbbb', '#cdeedb', '#e4f6eb'];
 const C_ING = '#8fd3a8', C_GAS = '#f4a3a3', C_TASA = '#5566d6', C_FIJO = '#a9b8f5', C_VAR = '#f8c08d';
 let anaVista = null, anaPer = 'Mes', anaRef = new Date(hoy.getFullYear(), hoy.getMonth(), 1), anaCat = null, anaSub = null;
 let anaMeses = 6, anaSelEvol = null, anaSelFijo = null, anaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
@@ -1267,25 +1356,39 @@ function donutSVG(grupos, colores, tam, grosor, centro) {
     <circle cx="${tam / 2}" cy="${tam / 2}" r="${r}" fill="none" stroke="var(--pista)" stroke-width="${grosor}"/>${segs}</g></svg>${centro ? `<div class="donut-centro">${centro}</div>` : ''}`;
 }
 
+// Movimientos que usa Análisis: los reales y, para meses futuros, los previstos de Recurrentes
+let MA = [];
+function movsAna() {
+  const fin = [anaMes, prevRef, anaPer === 'Mes' ? anaRef : hoy].reduce((a, d) => claveMes(d) > a ? claveMes(d) : a, claveMes(hoy));
+  if (fin <= claveMes(hoy)) return D.movs;
+  const extra = [];
+  for (let d = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 1); claveMes(d) <= fin; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) extra.push(...previstosMes(d));
+  return D.movs.concat(extra);
+}
+const esFuturo = d => claveMes(d) > claveMes(hoy);
+const MAX_FUTURO = () => claveMes(new Date(hoy.getFullYear(), hoy.getMonth() + 12, 1));
 function vAnalisis() {
+  MA = movsAna();
+  if (anaVista === 'ing') return vAnaIng();
+  if (anaVista === 'pres') return vAnaPres();
   if (anaVista === 'donut') return vAnaDonut();
   if (anaVista === 'evol') return vAnaEvol();
   if (anaVista === 'fijos') return vAnaFijos();
   if (anaVista === 'prev') return vAnaPrev();
   // ── Vista general 2×2 ──
-  const M = anaMes, mes = delMes(D.movs, M), r = resumen(mes);
+  const M = anaMes, mes = delMes(MA, M), r = resumen(mes);
   const grupos = netoPorCampo(mes, 'categoria'), lista = Object.keys(D.config.categorias.Gasto);
   const top = grupos.slice(0, 6), resto = grupos.slice(6).reduce((a, g) => a + g[1], 0);
   if (resto > 0) top.push(['Otras', resto]);
   const w1 = `<button class="wid wid-donut" data-ana="donut"><div class="wt">Gastos</div>
     <div class="wdonut">${top.length ? donutSVG(top, top.map(g => g[0] === 'Otras' ? '#d5d7da' : colorPastel(g[0], lista)), 112, 19, `<b class="num">${N(r.gas)}</b>`) : '<div class="wvacio">Sin gastos</div>'}</div>
     ${top.length ? `<div class="ws wcat">${esc(top[0][0])} · ${Math.round(top[0][1] / (r.gas || 1) * 100)} %</div>` : ''}</button>`;
-  const ms = mesesHasta(M, 6), datos = ms.map(m => resumen(delMes(D.movs, m))), mx = Math.max(1, ...datos.map(x => Math.max(x.ing, x.gas)));
+  const ms = mesesHasta(M, 6), datos = ms.map(m => resumen(delMes(MA, m))), mx = Math.max(1, ...datos.map(x => Math.max(x.ing, x.gas)));
   const ingPrev6 = ms.map((m, i) => claveMes(m) === claveMes(hoy) ? datos[i].ing + previstosMes(hoy).filter(q => q.tipo === 'Ingreso').reduce((a, q) => a + q.importe, 0) : null);
   const mxW = Math.max(mx, ...ingPrev6.filter(v => v !== null));
   const conIng6 = datos.filter(x => x.ing > 0), tasa6 = conIng6.length ? conIng6.reduce((a, x) => a + x.ahorro, 0) / conIng6.reduce((a, x) => a + x.ing, 0) * 100 : null;
   // Línea de la tasa de ahorro sobre las barras
-  const tasas = datos.map((x, i) => !delMes(D.movs, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, Math.min(100, x.ahorro / x.ing * 100)) : (x.ahorro < 0 ? -100 : 0)), tv = tasas.filter(v => v !== null);
+  const tasas = datos.map((x, i) => !delMes(MA, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, Math.min(100, x.ahorro / x.ing * 100)) : (x.ahorro < 0 ? -100 : 0)), tv = tasas.filter(v => v !== null);
   const tendencia = tv.length < 2 ? '' : (() => {
     const hi = Math.max(10, ...tv), lo = Math.min(0, ...tv), Y = v => 6 + (1 - (v - lo) / ((hi - lo) || 1)) * 88;
     const todos = tasas.map((v, i) => v === null ? null : [(i + .5) / tasas.length * 100, Y(v), false]).filter(Boolean);
@@ -1299,14 +1402,14 @@ function vAnalisis() {
     <div class="wbarras">${datos.map((x, i) => `<div><i class="${ingPrev6[i] > x.ing ? 'con-prev' : ''}" style="height:${(ingPrev6[i] > x.ing ? ingPrev6[i] : x.ing) / mxW * 100}%;--real:${ingPrev6[i] > x.ing ? x.ing / ingPrev6[i] * 100 : 100}%;--c:${C_ING};background:${C_ING};--d:${i * 2}"></i><i style="height:${x.gas / mxW * 100}%;background:${C_GAS};--d:${i * 2 + 1}"></i></div>`).join('')}${tendencia}</div>
     <div class="wmeses">${ms.map(m => `<span>${MESES[m.getMonth()].charAt(0).toUpperCase()}</span>`).join('')}</div></button>`;
   const fv = netoFV(mes), tot = fv.fijo + fv.vari, pf = tot ? fv.fijo / tot * 100 : 0;
-  const fvs = ms.map(m => netoFV(delMes(D.movs, m))), mxf = Math.max(1, ...fvs.map(x => x.fijo + x.vari));
+  const fvs = ms.map(m => netoFV(delMes(MA, m))), mxf = Math.max(1, ...fvs.map(x => x.fijo + x.vari));
   const w3 = `<button class="wid" data-ana="fijos"><div class="wt">Fijos y variables</div>
     <div class="wbig num">${tot ? `<span class="cnt" data-v="${pf}" data-pre="" data-pct="1">${Math.round(pf)} %</span>` : '—'}</div><div class="ws">del gasto es fijo</div>
     <div class="wbarras apil">${fvs.map((x, i) => `<div><i style="height:${(x.fijo + x.vari) / mxf * 100}%;--d:${i}"><b style="height:${x.fijo + x.vari ? x.fijo / (x.fijo + x.vari) * 100 : 0}%;background:${C_FIJO}"></b><b style="flex:1;background:${C_VAR}"></b></i></div>`).join('')}</div>
     <div class="wley"><span><em style="background:${C_FIJO}"></em>${fmt(fv.fijo).replace(',00', '')}</span><span><em style="background:${C_VAR}"></em>${fmt(fv.vari).replace(',00', '')}</span></div></button>`;
-  const p = prevision(M), pasado = !p.actual, ahoW = pasado ? p.fin.ing - p.fin.gas : p.ahoFin, bien = ahoW >= 0;
+  const p = prevision(M), pasado = !p.actual && !p.futuro, ahoW = pasado ? p.fin.ing - p.fin.gas : p.ahoFin, bien = ahoW >= 0;
   const errW = pasado && p.gasFin ? (p.fin.gas - p.gasFin) / p.gasFin : 0;
-  const sp = (() => { // minigráfica del gasto acumulado (estilo Patrimonio: curva suave, degradado y trazo que se dibuja)
+  const sp = p.futuro ? '' : (() => { // minigráfica del gasto acumulado (estilo Patrimonio: curva suave, degradado y trazo que se dibuja)
     const W = 145, H = 36, all = p.acum.concat(p.previsto), m2 = Math.max(1, ...all), X = i => i / (p.N - 1) * W, Y = v => H - 3 - v / m2 * (H - 7);
     const pr = p.acum.map((v, i) => [X(i), Y(v)]), real = curvaSuave(pr), lp = pr[pr.length - 1];
     const pv = [p.acum[p.acum.length - 1]].concat(p.previsto).map((v, i) => [X(p.d - 1 + i), Y(v)]);
@@ -1317,22 +1420,54 @@ function vAnalisis() {
       ${pv.length > 1 ? `<path class="aparece-ana" d="${curvaSuave(pv)}" fill="none" stroke="var(--c-prev)" stroke-opacity=".6" stroke-width="1.1" stroke-dasharray="2.5 2.5"/>` : ''}
       <circle class="aparece-ana" cx="${lp[0].toFixed(1)}" cy="${lp[1].toFixed(1)}" r="2.3" fill="var(--c-prev)"/></svg>`;
   })();
-  const w4 = `<button class="wid" data-ana="prev"><div class="wt">Previsión</div>
+  const fW = esFuturo(M);
+  const w4 = fW ? `<button class="wid" data-ana="prev"><div class="wt">Previsión</div>
+    <div class="wbig num">${N(p.ahoFin)}</div><div class="ws">ahorro previsto</div><div class="ws">gasto previsto ${fK(p.gasFin)} €</div>
+    <span class="wpill ${p.ahoFin >= 0 ? 'ok' : 'mal'}">🔮 ${MESES[M.getMonth()]}</span></button>` : `<button class="wid" data-ana="prev"><div class="wt">Previsión</div>
     <div class="wbig num">${N(ahoW)}</div><div class="ws">${pasado ? 'ahorro real del mes' : 'ahorro a fin de mes'}</div><div class="ws">gasto previsto ${fK(p.gasFin)} €</div>
     ${p.vacio && pasado ? '' : sp}
     ${pasado ? (p.vacio ? '<span class="wpill">Sin datos</span>' : Math.abs(errW) <= .05 ? '<span class="wpill ok">🎯 Cumplida</span>' : errW > 0 ? `<span class="wpill mal">+${Math.round(errW * 100)} % de gasto</span>` : `<span class="wpill ok">${Math.round(errW * 100)} % de gasto</span>`)
       : `<span class="wpill ${bien ? 'ok' : 'mal'}">${bien ? 'Vais bien' : 'Os pasaréis'}</span>`}</button>`;
   const actual = claveMes(M) === claveMes(hoy);
   const nav = `<div class="mes"><button data-acc="anaMesAnt" aria-label="Mes anterior"${claveMes(M) <= primerMes() ? ' disabled' : ''}>${SVG.izq}</button>
-    <b>${cap(MESES[M.getMonth()])} de ${M.getFullYear()}</b><button data-acc="anaMesSig" aria-label="Mes siguiente"${actual ? ' disabled' : ''}>${SVG.der}</button></div>`;
-  return cabecera('Análisis', 'Un vistazo a ' + MESES[M.getMonth()], '', !actual) + nav + `<div class="widgets">${w1}${w2}${w3}${w4}</div>`;
+    <b>${cap(MESES[M.getMonth()])} de ${M.getFullYear()}</b><button data-acc="anaMesSig" aria-label="Mes siguiente"${claveMes(M) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
+  // Ingresos por categoría (barras verdes)
+  const ingCats = {}; mes.forEach(m => { if (m.tipo === 'Ingreso') ingCats[m.categoria || 'Otros ingresos'] = (ingCats[m.categoria || 'Otros ingresos'] || 0) + m.importe; });
+  const ingL = Object.entries(ingCats).sort((a, b) => b[1] - a[1]), ingMx = ingL.length ? ingL[0][1] : 1;
+  const wI = `<button class="wid" data-ana="ing"><div class="wt">Ingresos</div>
+    <div class="wbig num">${N(r.ing)}</div><div class="ws">${esFuturo(M) ? 'previstos' : ingL.length ? ingL.length + (ingL.length === 1 ? ' categoría' : ' categorías') : 'sin ingresos'}</div>
+    <div class="wing">${ingL.slice(0, 4).map(([k, v], i) => `<div><span>${esc(k)}</span><i style="width:${Math.max(4, v / ingMx * 100)}%;background:${VERDES[i % VERDES.length]};--d:${i}"></i></div>`).join('')}</div></button>`;
+  const fut = esFuturo(M) ? '<div class="aviso aviso-fut">🔮 Mes futuro: todo se calcula con tus <b>Recurrentes</b> previstos.</div>' : '';
+  return cabecera('Análisis', (esFuturo(M) ? 'Previsión de ' : 'Un vistazo a ') + MESES[M.getMonth()], '', !actual) + nav + fut + `<div class="widgets">${w1}${wI}${w2}${w3}${w4}${widgetPres(M)}</div>`;
 }
 const cabDetalle = (titulo, hoyActivo, sub) => `<header class="top principal detalle"><div class="tit-det"><button class="ibtn" data-acc="anaVolver" aria-label="Volver">${SVG.izq}</button>
   <div><h1>${titulo}</h1><p>${sub || ''}</p></div></div>${accionesCab('', hoyActivo)}</header>`;
 
+let anaCatI = null, evolVer = { ing: true, gas: true, tasa: true };
+function vAnaIng() {
+  const rg = rangoAna();
+  let arr = MA.filter(m => m.tipo === 'Ingreso' && m.fecha >= rg.ini && m.fecha <= rg.fin), campo = 'categoria';
+  if (anaCatI) { arr = arr.filter(m => (m.categoria || 'Otros ingresos') === anaCatI); campo = 'subcategoria'; }
+  const o = {}; arr.forEach(m => { const k = m[campo] || (campo === 'categoria' ? 'Otros ingresos' : '(sin subcategoría)'); o[k] = (o[k] || 0) + m.importe; });
+  const grupos = Object.entries(o).sort((a, b) => b[1] - a[1]), total = grupos.reduce((a, g) => a + g[1], 0), mx = grupos.length ? grupos[0][1] : 1;
+  const filas = grupos.map(([k, v], i) => {
+    const hay = !anaCatI && Object.keys(D.config.categorias.Ingreso[k] || {}).length > 0;
+    const e = anaCatI ? emojiDe(anaCatI, k) : emojiDe(k);
+    return `<div class="ibar${hay ? ' tap' : ''}" ${hay ? `data-bajai="${esc(k)}"` : `data-movcat="${esc(anaCatI || k)}"`}>
+      <div class="ibar-c"><span class="n">${e ? `<span class="emo-ley">${e}</span>` : ''}${esc(k)}</span><b class="num">${fmt(v)}</b><small>${Math.round(v / (total || 1) * 100)} %</small>${SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);flex:none"')}</div>
+      <div class="ibar-p"><i style="width:${Math.max(2, v / mx * 100)}%;background:${VERDES[i % VERDES.length]};--d:${i}"></i></div></div>`;
+  }).join('');
+  const migas = `<div class="migas"><button data-migasi="0" class="${!anaCatI ? 'on' : ''}">Todas</button>${anaCatI ? `<span>›</span><button class="on">${esc(anaCatI)}</button>` : ''}</div>`;
+  return cabDetalle('Ingresos', anaPer !== 'Mes' || claveMes(anaRef) !== claveMes(hoy), 'De dónde viene el dinero') + `
+    <div class="mes"><button data-acc="anaAnt" aria-label="Anterior">${SVG.izq}</button><b>${rg.txt}</b><button data-acc="anaSig" aria-label="Siguiente">${SVG.der}</button></div>
+    <div class="seg seg-vista">${['Mes', 'Trimestre', 'Año'].map(p => `<button data-anaper="${p}" class="${p === anaPer ? 'on' : ''}">${p}</button>`).join('')}</div>
+    ${migas}
+    <section class="card ana-card">${grupos.length ? `<div class="ing-total"><small>${anaCatI ? esc(anaCatI) : 'Ingreso total'}${anaPer === 'Mes' && esFuturo(anaRef) ? ' previsto' : ''}</small><b class="num">${N(total)}</b></div>${filas}
+      <button class="vertodos ver-movs" data-acc="verMovsCat">Ver movimientos ${SVG.flecha}</button>` : '<div class="vacio">Sin ingresos en este periodo</div>'}</section>`;
+}
 function vAnaDonut() {
   const rg = rangoAna(), lista = Object.keys(D.config.categorias.Gasto);
-  let arr = D.movs.filter(m => m.fecha >= rg.ini && m.fecha <= rg.fin);
+  let arr = MA.filter(m => m.fecha >= rg.ini && m.fecha <= rg.fin);
   let campo = 'categoria';
   if (anaCat) { arr = arr.filter(m => (m.categoria || 'Sin clasificar') === anaCat); campo = 'subcategoria'; }
   if (anaSub) { arr = arr.filter(m => (m.subcategoria || '(sin subcategoría)') === anaSub); campo = 'detalle'; }
@@ -1342,14 +1477,15 @@ function vAnaDonut() {
   const migas = `<div class="migas"><button data-migas="0" class="${!anaCat ? 'on' : ''}">Todas</button>${anaCat ? `<span>›</span><button data-migas="1" class="${!anaSub ? 'on' : ''}">${esc(anaCat)}</button>` : ''}${anaSub ? `<span>›</span><button data-migas="2" class="on">${esc(anaSub)}</button>` : ''}</div>`;
   const leyenda = grupos.map(([k, v], i) => {
     const hay = profundo && (campo === 'categoria' ? Object.keys(D.config.categorias.Gasto[k] || {}).length : (D.config.categorias.Gasto[anaCat] || {})[k] && (D.config.categorias.Gasto[anaCat][k] || []).length);
-    return `<div class="ley-f${hay ? ' tap' : ''}" ${hay ? `data-baja="${esc(k)}"` : ''}><em style="background:${cols[i]}"></em><span class="n">${(() => { const e = campo === 'categoria' ? emojiDe(k) : campo === 'subcategoria' ? emojiDe(anaCat, k) : emojiDe(anaCat, anaSub, k); return e ? `<span class="emo-ley">${e}</span>` : ''; })()}${esc(k)}</span><b class="num">${fmt(v)}</b><small>${Math.round(v / total * 100)} %</small>${hay ? SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);flex:none"') : '<i style="width:14px;flex:none"></i>'}</div>`;
+    return `<div class="ley-f tap" ${hay ? `data-baja="${esc(k)}"` : `data-movcat="${esc(anaCat || k)}"`}><em style="background:${cols[i]}"></em><span class="n">${(() => { const e = campo === 'categoria' ? emojiDe(k) : campo === 'subcategoria' ? emojiDe(anaCat, k) : emojiDe(anaCat, anaSub, k); return e ? `<span class="emo-ley">${e}</span>` : ''; })()}${esc(k)}</span><b class="num">${fmt(v)}</b><small>${Math.round(v / total * 100)} %</small>${hay ? SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);flex:none"') : SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);opacity:.4;flex:none"')}</div>`;
   }).join('');
   return cabDetalle('Gastos', anaPer !== 'Mes' || claveMes(anaRef) !== claveMes(hoy), 'En qué se va el dinero') + `
     <div class="mes"><button data-acc="anaAnt" aria-label="Anterior">${SVG.izq}</button><b>${rg.txt}</b><button data-acc="anaSig" aria-label="Siguiente">${SVG.der}</button></div>
     <div class="seg seg-vista">${['Mes', 'Trimestre', 'Año'].map(p => `<button data-anaper="${p}" class="${p === anaPer ? 'on' : ''}">${p}</button>`).join('')}</div>
     ${migas}
     <section class="card ana-card">${grupos.length ? `<div class="donut-grande">${donutSVG(grupos, cols, 220, 22, `<small>${anaSub || anaCat || 'Gasto total'}</small><b class="num">${N(total)}</b>`)}</div>
-      <div class="leyenda-ana">${leyenda}</div>` : '<div class="vacio">Sin gastos en este periodo</div>'}</section>`;
+      <div class="leyenda-ana">${leyenda}</div>
+      <button class="vertodos ver-movs" data-acc="verMovsCat">Ver movimientos${anaCat ? ' de ' + esc(anaCat) : ''} ${SVG.flecha}</button>` : '<div class="vacio">Sin gastos en este periodo</div>'}</section>`;
 }
 function netoPorCampo(arr, campo) {
   const o = {};
@@ -1368,7 +1504,7 @@ const fK = v => Math.abs(v) >= 1000 ? (v / 1000).toLocaleString('es-ES', { maxim
 function barrasSVG(ms, series, opts) {
   const W = 340, H = 186, pl = 32, pr = opts.linea ? 34 : 4, pt = 8, pb = 24, n = ms.length, cw = (W - pl - pr) / n, base = H - pb, alto = base - pt;
   let mx = 1;
-  ms.forEach((_, i) => { mx = Math.max(mx, opts.apilado ? series.reduce((a, s) => a + s.vals[i], 0) : Math.max(...series.map(s => Math.max(s.vals[i], s.prev && s.prev[i] || 0)))); });
+  ms.forEach((_, i) => { mx = Math.max(mx, opts.apilado ? series.reduce((a, s) => a + s.vals[i], 0) : Math.max(0, ...series.map(s => Math.max(s.vals[i], s.prev && s.prev[i] || 0)))); });
   const top = techo(mx / 4) * 4, y = v => base - v / top * alto, sel = opts.sel;
   let g = '';
   for (let k = 0; k <= 4; k += 2) { const v = top * k / 4, yy = y(v).toFixed(1);
@@ -1408,37 +1544,40 @@ function barrasSVG(ms, series, opts) {
 }
 
 function vAnaEvol() {
-  const ms = mesesHasta(anaMes, anaMeses), datos = ms.map(m => resumen(delMes(D.movs, m)));
+  const ms = mesesHasta(anaMes, anaMeses), datos = ms.map(m => resumen(delMes(MA, m)));
   const pendIng = previstosMes(hoy).filter(q => q.tipo === 'Ingreso').reduce((a, q) => a + q.importe, 0);
   const ingPrevE = ms.map((m, i) => claveMes(m) === claveMes(hoy) && pendIng > 0 ? datos[i].ing + pendIng : null);
   if (anaSelEvol === null || anaSelEvol >= ms.length) anaSelEvol = ms.length - 1;
   const s = datos[anaSelEvol], m = ms[anaSelEvol];
   // Las medias solo cuentan los meses con algún movimiento (los meses vacíos no bajan la media)
-  const conDatos = datos.filter((x, i) => delMes(D.movs, ms[i]).length), nD = conDatos.length || 1;
+  const conDatos = datos.filter((x, i) => delMes(MA, ms[i]).length), nD = conDatos.length || 1;
   const ingMedio = conDatos.reduce((a, x) => a + x.ing, 0) / nD, gasMedio = conDatos.reduce((a, x) => a + x.gas, 0) / nD;
   const conIng = datos.filter(x => x.ing > 0), tasaMedia = conIng.length ? conIng.reduce((a, x) => a + x.ahorro, 0) / conIng.reduce((a, x) => a + x.ing, 0) * 100 : null;
   const ahorroTot = datos.reduce((a, x) => a + x.ahorro, 0);
   return cabDetalle('Evolución', claveMes(anaMes) !== claveMes(hoy), 'Ingresos, gastos y ahorro') + `
     <div class="seg">${[6, 12].map(n => `<button data-anameses="${n}" class="${n === anaMeses ? 'on' : ''}">Últimos ${n} meses</button>`).join('')}</div>
-    <div class="tres" style="margin-top:12px"><div class="ing"><small>Ingreso medio</small><b class="num">${N(ingMedio)}</b></div>
-      <div class="aho"><small>Ahorro total</small><b class="num">${N(ahorroTot)}</b><em class="tasa-m">Tasa media ${tasaMedia === null ? '—' : Math.round(tasaMedia) + ' %'}</em></div>
-      <div class="gas"><small>Gasto medio</small><b class="num">${N(gasMedio)}</b></div></div>
+    <div class="tres" style="margin-top:12px"><div class="ing ir-zona" data-evolir="ing"><small>Ingreso medio <i class="ir">${SVG.der}</i></small><b class="num">${N(ingMedio)}</b></div>
+      <div class="aho ir-zona" data-evolir="movs"><small>Ahorro total <i class="ir">${SVG.der}</i></small><b class="num">${N(ahorroTot)}</b><em class="tasa-m">Tasa media ${tasaMedia === null ? '—' : Math.round(tasaMedia) + ' %'}</em></div>
+      <div class="gas ir-zona" data-evolir="donut"><small>Gasto medio <i class="ir">${SVG.der}</i></small><b class="num">${N(gasMedio)}</b></div></div>
     <section class="card ana-card">
       <div class="sel-info"><b>${cap(MESES[m.getMonth()])} ${m.getFullYear()}</b>
-        <div class="kv"><span><em style="background:${C_ING}"></em>Ingresos</span><b class="num">${fmt(s.ing)}</b></div>
+        <div class="kv kv-ir" data-evolir="ing" data-mes="${claveMes(m)}"><span><em style="background:${C_ING}"></em>Ingresos</span><b class="num">${fmt(s.ing)} <i class="ir">${SVG.der}</i></b></div>
         ${ingPrevE[anaSelEvol] ? `<div class="kv"><span><em class="caja-disc" style="color:#3fae6c"></em>Ingresos previstos</span><b class="num">${fmt(ingPrevE[anaSelEvol])}</b></div>` : ''}
-        <div class="kv"><span><em style="background:${C_GAS}"></em>Gastos</span><b class="num">${fmt(s.gas)}</b></div>
-        <div class="kv"><span><em style="background:${C_TASA};border-radius:50%"></em>Ahorro</span><b class="num">${fmt(s.ahorro)} ${s.pct === null || s.pct < -100 ? '' : `<small>(${Math.round(s.pct)} %)</small>`}</b></div></div>
-      ${barrasSVG(ms, [{ vals: datos.map(x => x.ing), color: C_ING, colorPrev: '#3fae6c', prev: ingPrevE }, { vals: datos.map(x => x.gas), color: C_GAS }], { sel: anaSelEvol, linea: datos.map((x, i) => !delMes(D.movs, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, x.ahorro / x.ing * 100) : (x.ahorro < 0 ? -100 : 0)) })}
-      <div class="leyenda-mini"><span><em style="background:${C_ING}"></em>Ingresos</span><span><em style="background:${C_GAS}"></em>Gastos</span><span><em class="lin" style="background:${C_TASA}"></em>Tasa de ahorro</span>${ingPrevE.some(v => v) ? '<span><em class="caja-disc" style="color:#3fae6c"></em>Ingresos previstos</span>' : ''}</div>
+        <div class="kv kv-ir" data-evolir="donut" data-mes="${claveMes(m)}"><span><em style="background:${C_GAS}"></em>Gastos</span><b class="num">${fmt(s.gas)} <i class="ir">${SVG.der}</i></b></div>
+        <div class="kv kv-ir" data-evolir="movs" data-mes="${claveMes(m)}"><span><em style="background:${C_TASA};border-radius:50%"></em>Ahorro</span><b class="num">${fmt(s.ahorro)} ${s.pct === null || s.pct < -100 ? '' : `<small>(${Math.round(s.pct)} %)</small>`} <i class="ir">${SVG.der}</i></b></div></div>
+      ${barrasSVG(ms, [evolVer.ing && { vals: datos.map(x => x.ing), color: C_ING, colorPrev: '#3fae6c', prev: ingPrevE }, evolVer.gas && { vals: datos.map(x => x.gas), color: C_GAS }].filter(Boolean),
+        { sel: anaSelEvol, linea: evolVer.tasa ? datos.map((x, i) => !delMes(MA, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, x.ahorro / x.ing * 100) : (x.ahorro < 0 ? -100 : 0)) : null })}
+      <div class="chips-evol">${[['ing', 'Ingresos', `<em style="background:${C_ING}"></em>`], ['gas', 'Gastos', `<em style="background:${C_GAS}"></em>`], ['tasa', 'Tasa de ahorro', `<em class="lin" style="background:${C_TASA}"></em>`]]
+        .map(([k, t, e]) => `<button data-evolver="${k}" class="${evolVer[k] ? 'on' : ''}">${e}${t}</button>`).join('')}</div>
+      <p class="nota" style="margin-top:6px">Toca una serie para ocultarla o mostrarla · toca un mes para ver su detalle</p>
     </section>`;
 }
 
 function vAnaFijos() {
-  const ms = mesesHasta(anaMes, anaMeses), datos = ms.map(m => netoFV(delMes(D.movs, m)));
+  const ms = mesesHasta(anaMes, anaMeses), datos = ms.map(m => netoFV(delMes(MA, m)));
   if (anaSelFijo === null || anaSelFijo >= ms.length) anaSelFijo = ms.length - 1;
   const s = datos[anaSelFijo], m = ms[anaSelFijo], tot = s.fijo + s.vari;
-  const mov = delMes(D.movs, m);
+  const mov = delMes(MA, m);
   const lista = fijo => {
     const o = {};
     mov.forEach(x => { if ((x.tipo !== 'Gasto' && x.tipo !== 'Reembolso') || esFijo(x) !== fijo) return; const k = fijo ? (x.detalle || x.subcategoria || x.categoria) : x.categoria; o[k] = (o[k] || 0) + (x.tipo === 'Gasto' ? x.importe : -x.importe); });
@@ -1463,40 +1602,66 @@ const CORTE = 15;
 let prevRef = new Date(hoy.getFullYear(), hoy.getMonth(), 1), GRAFP = null;
 const gastoNeto = arr => arr.reduce((s, m) => s + (m.tipo === 'Gasto' ? m.importe : m.tipo === 'Reembolso' ? -m.importe : 0), 0);
 const primerMes = () => D.movs.reduce((a, m) => m.fecha.slice(0, 7) < a ? m.fecha.slice(0, 7) : a, claveMes(hoy));
+// ── Previsión de fin de mes ──
+// Fijos: Recurrentes. Variables: la media de cada categoría en los últimos meses con datos (hasta 6).
+// Si una categoría ya ha gastado su media, no se espera más; si no, se espera lo que le falta.
+// Meses pasados: la previsión que se habría hecho el día CORTE, comparada con lo real. Meses futuros: solo con medias y Recurrentes.
+function mediasVariables(ref, n) {
+  n = n || 6; const meses = [];
+  for (let k = 1; k <= 24 && meses.length < n; k++) { const l = delMes(D.movs, new Date(ref.getFullYear(), ref.getMonth() - k, 1)); if (l.length) meses.push(l); }
+  const porCat = {}, totales = meses.map(l => { let t = 0; Object.entries(varPorCat(l)).forEach(([c, v]) => { porCat[c] = (porCat[c] || 0) + v; t += v; }); return Math.max(0, t); });
+  Object.keys(porCat).forEach(c => porCat[c] = Math.max(0, porCat[c] / (meses.length || 1)));
+  const media = totales.reduce((a, b) => a + b, 0) / (totales.length || 1);
+  const sd = totales.length > 1 ? Math.sqrt(totales.reduce((a, b) => a + (b - media) ** 2, 0) / (totales.length - 1)) : media * .2;
+  return { porCat, media, sd, n: meses.length };
+}
+function varPorCat(arr) {
+  const o = {};
+  arr.forEach(x => { if ((x.tipo !== 'Gasto' && x.tipo !== 'Reembolso') || esFijo(x)) return; const c = x.categoria || 'Sin clasificar'; o[c] = (o[c] || 0) + (x.tipo === 'Gasto' ? x.importe : -x.importe); });
+  return o;
+}
 function prevision(ref) {
   ref = ref || hoy;
-  const y = ref.getFullYear(), mo = ref.getMonth(), N = new Date(y, mo + 1, 0).getDate(), actual = claveMes(ref) === claveMes(hoy);
-  const d = actual ? hoy.getDate() : Math.min(CORTE, N), corte = ymd(new Date(y, mo, d));
-  const todo = delMes(D.movs, ref), mes = todo.filter(m => m.fecha <= corte);
-  const r = resumen(mes), fv = netoFV(mes);
-  const ritmo = fv.vari / d, varRest = ritmo * (N - d);
-  // Pendientes: en el mes actual salen de Recurrentes; en meses pasados, de los recurrentes que se cobraron después del corte
-  const prev = actual ? previstosMes(hoy)
+  const y = ref.getFullYear(), mo = ref.getMonth(), N = new Date(y, mo + 1, 0).getDate();
+  const actual = claveMes(ref) === claveMes(hoy), futuro = claveMes(ref) > claveMes(hoy);
+  const d = actual ? hoy.getDate() : futuro ? 0 : Math.min(CORTE, N), corte = ymd(new Date(y, mo, d));
+  const todo = futuro ? [] : delMes(D.movs, ref), mes = todo.filter(m => m.fecha <= corte);
+  const r = resumen(mes), fv = netoFV(mes), med = mediasVariables(ref), gastado = varPorCat(mes);
+  const porCat = [...new Set(Object.keys(med.porCat).concat(Object.keys(gastado)))].map(c => {
+    const g = Math.max(0, gastado[c] || 0), mm = med.porCat[c] || 0;
+    return { c, gastado: g, media: mm, falta: Math.max(0, mm - g), esperado: mm * d / N };
+  }).sort((a, b) => b.media - a.media);
+  const varRest = porCat.reduce((a, o) => a + o.falta, 0);
+  const prev = actual || futuro ? previstosMes(ref)
     : todo.filter(m => m.origen === 'Recurrente' && m.fecha > corte).map(m => Object.assign({}, m, { previsto: true }));
-  const fijosPend = prev.filter(p => p.tipo === 'Gasto'), ingPend = prev.filter(p => p.tipo === 'Ingreso');
-  const pf = fijosPend.reduce((a, p) => a + p.importe, 0), pi = ingPend.reduce((a, p) => a + p.importe, 0);
+  const fijosPend = prev.filter(q => q.tipo === 'Gasto'), ingPend = prev.filter(q => q.tipo === 'Ingreso');
+  const pf = fijosPend.reduce((a, q) => a + q.importe, 0), pi = ingPend.reduce((a, q) => a + q.importe, 0);
   const gasFin = r.gas + varRest + pf, ingFin = r.ing + pi, ahoFin = ingFin - gasFin;
+  // Margen: la variación habitual del gasto variable, en proporción a lo que queda de mes
+  const margen = med.sd * (N - d) / N;
+  const gasMin = Math.max(r.gas + pf, gasFin - margen), gasMax = gasFin + margen;
+  const alertas = d ? porCat.filter(o => o.gastado > o.esperado * 1.25 && o.gastado - o.esperado > 15).map(o => Object.assign(o, { exceso: o.gastado - o.esperado })).sort((a, b) => b.exceso - a.exceso) : [];
   const antes = mesesHasta(new Date(y, mo - 1, 1), 3).map(m => resumen(delMes(D.movs, m)).gas).filter(v => v > 0);
   const media = antes.length ? antes.reduce((a, b) => a + b, 0) / antes.length : null;
-  // Gasto acumulado por día: real (hasta hoy o todo el mes) y previsto desde el corte
-  const real = [], previsto = []; let a = 0, b = 0;
-  const ultReal = actual ? d : N;
+  // Gasto acumulado por día: real y, desde el día de la previsión, lo esperado (variables repartidos + fijos en su día)
+  const ritmo = N > d ? varRest / (N - d) : 0, real = [], previsto = []; let a = 0, b = 0;
+  const ultReal = futuro ? 0 : actual ? d : N;
   for (let i = 1; i <= N; i++) {
     const f = ymd(new Date(y, mo, i));
     if (i <= ultReal) { a += gastoNeto(todo.filter(m => m.fecha === f)); real.push(a); }
     if (i === d) b = real[d - 1];
-    if (i > d) { b += ritmo + fijosPend.filter(p => p.fecha === f).reduce((s, p) => s + p.importe, 0); previsto.push(b); }
+    if (i > d) { b += ritmo + fijosPend.filter(q => q.fecha === f).reduce((s, q) => s + q.importe, 0); previsto.push(b); }
   }
   let ant = null;
   if (actual) {
     const pm = new Date(y, mo - 1, 1), movAnt = delMes(D.movs, pm), Nant = new Date(y, mo, 0).getDate(); let c = 0;
     if (movAnt.length) { ant = []; for (let i = 1; i <= Nant; i++) { c += gastoNeto(movAnt.filter(m => m.fecha === ymd(new Date(y, mo - 1, i)))); ant.push(c); } }
   }
-  const fin = actual ? null : resumen(todo);
-  return { y, mo, N, d, actual, r, fv, ritmo, varRest, fijosPend, ingPend, pf, pi, gasFin, ingFin, ahoFin, media, acum: real, previsto, ant, fin, vacio: !todo.length };
+  const fin = actual || futuro ? null : resumen(todo);
+  return { y, mo, N, d, actual, futuro, r, fv, ritmo, varRest, fijosPend, ingPend, pf, pi, gasFin, ingFin, ahoFin, gasMin, gasMax,
+    ahoMin: ingFin - gasMax, ahoMax: ingFin - gasMin, med, porCat, alertas, media, acum: real, previsto, ant, fin, vacio: !futuro && !todo.length };
 }
 
-// Gráfica de gasto acumulado con ejes, interactiva
 function graficaPrev(p) {
   const W = 340, H = 150, pl = 34, pr = 10, pt = 10, pb = 22, base = H - pb, alto = base - pt, N = p.N;
   const todos = p.acum.concat(p.previsto).concat(p.ant ? p.ant.slice(0, N) : []);
@@ -1554,68 +1719,191 @@ function activarGrafPrev() {
 }
 
 function vAnaPrev() {
-  const p = prevision(prevRef), nom = MESES[p.mo], esAct = p.actual;
-  const minM = primerMes(), km = claveMes(prevRef);
-  const nav = `<div class="mes"><button data-acc="prevAnt" aria-label="Mes anterior"${km <= minM ? ' disabled' : ''}>${SVG.izq}</button>
-    <b>${cap(nom)} de ${p.y}</b><button data-acc="prevSig" aria-label="Mes siguiente"${esAct ? ' disabled' : ''}>${SVG.der}</button></div>`;
-  const cab = cabDetalle('Previsión', !esAct, esAct ? 'Cómo acabará el mes' : 'Lo previsto frente a lo real') + nav;
-  if (p.vacio && !esAct) return cab + `<section class="card"><div class="vacio">No hay movimientos en ${nom}</div></section>`;
+  const p = prevision(prevRef), nom = MESES[p.mo];
+  const nav = `<div class="mes"><button data-acc="prevAnt" aria-label="Mes anterior"${claveMes(prevRef) <= primerMes() ? ' disabled' : ''}>${SVG.izq}</button>
+    <b>${cap(nom)} de ${p.y}</b><button data-acc="prevSig" aria-label="Mes siguiente"${claveMes(prevRef) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
+  const sub = p.actual ? 'Cómo acabará el mes' : p.futuro ? 'Lo que se espera' : 'Lo previsto frente a lo real';
+  const cab = cabDetalle('Previsión', !p.actual, sub) + nav;
+  if (p.vacio) return cab + `<section class="card"><div class="vacio">No hay movimientos en ${nom}</div></section>`;
   const filasPend = (l, cls) => l.map(q => `<div class="ley-f"><span class="n">${esc(q.concepto)}</span><small>${fechaCorta(q.fecha)}</small><b class="num ${cls}">${cls === 'in' ? '+' : '−'}${fmt(q.importe)}</b></div>`).join('');
-  const leyenda = `<section class="leyenda-prev"><div class="leyenda-mini" style="margin-top:0"><span><em class="lin" style="background:var(--c-prev)"></em>Real</span><span><em class="lin disc" style="color:var(--c-prev)"></em>${esAct ? 'Previsto' : 'Previsto el día ' + p.d}</span>${p.ant ? '<span><em class="lin pun" style="color:var(--muted)"></em>Mes anterior</span>' : ''}</div></section>`;
-  if (esAct) {
+  const nMed = p.med.n ? `tu media de ${p.med.n} ${p.med.n === 1 ? 'mes' : 'meses'}` : 'aún sin meses anteriores';
+  // Categorías: lo que lleva gastado frente a lo normal a estas alturas
+  const filaCat = o => { const e = emojiDe(o.c), pct = o.media ? Math.min(100, o.gastado / o.media * 100) : 100, esp = o.media ? Math.min(100, o.esperado / o.media * 100) : 0;
+    return `<div class="pc-f"><div class="pc-c"><span class="n">${e ? e + ' ' : ''}${esc(o.c)}</span><b class="num">${fmt(o.gastado)}</b><small>de ~${fmt(o.media)}</small></div>
+      <div class="pc-b"><i class="${o.gastado > o.media ? 'mal' : o.gastado > o.esperado * 1.25 ? 'ojo' : ''}" style="width:${pct}%"></i>${p.d ? `<em style="left:${esp}%"></em>` : ''}</div></div>`; };
+  if (p.actual || p.futuro) {
     const bien = p.ahoFin >= 0, comp = p.media ? (p.gasFin - p.media) / p.media * 100 : null;
+    const alertas = p.alertas.length ? p.alertas.slice(0, 5).map(o => `<div class="al-f"><span class="n">${emojiDe(o.c) ? emojiDe(o.c) + ' ' : ''}${esc(o.c)}</span>
+        <small>llevas ${fmt(o.gastado)} · lo normal a día ${p.d} son ${fmt(o.esperado)}</small><b class="num">+${fmt(o.exceso)}</b></div>`).join('')
+      : '<div class="al-ok">✅ Todas las categorías van dentro de lo normal</div>';
     return cab + `
     <section class="card prev-hero">
-      <small>Ahorro estimado a fin de ${nom}</small>
+      <small>${p.futuro ? 'Ahorro previsto en ' : 'Ahorro estimado a fin de '}${nom}</small>
       <div class="grande num">${N(p.ahoFin)}</div>
+      <div class="rango">entre <b>${fmt(p.ahoMin)}</b> y <b>${fmt(p.ahoMax)}</b></div>
       <span class="wpill ${bien ? 'ok' : 'mal'}">${bien ? '👍 Vais bien' : '⚠️ Os pasaréis'}</span>
-      ${comp !== null ? `<p>El gasto previsto (${fmt(p.gasFin)}) está un <b>${Math.abs(Math.round(comp))} % ${comp >= 0 ? 'por encima' : 'por debajo'}</b> de vuestra media de los últimos meses.</p>` : ''}
+      ${comp !== null ? `<p>Gasto previsto ${fmt(p.gasFin)}: un <b>${Math.abs(Math.round(comp))} % ${comp >= 0 ? 'por encima' : 'por debajo'}</b> de vuestra media.</p>` : ''}
     </section>
-    <section class="patri prevg"><div class="lbl">GASTO ACUMULADO</div>
+    ${p.futuro ? '' : `<section class="patri prevg"><div class="lbl">GASTO ACUMULADO</div>
       <div class="grande num">${N(p.r.gas)}</div><div class="var">→ ${fmt(p.gasFin)} previstos a fin de mes</div>${graficaPrev(p)}</section>
-    ${leyenda}
+    <section class="leyenda-prev"><div class="leyenda-mini" style="margin-top:0"><span><em class="lin" style="background:var(--c-prev)"></em>Real</span><span><em class="lin disc" style="color:var(--c-prev)"></em>Previsto</span>${p.ant ? '<span><em class="lin pun" style="color:var(--muted)"></em>Mes anterior</span>' : ''}</div></section>
+    <section class="card"><div class="card-cab"><h3>VAN POR ENCIMA DE LO NORMAL</h3></div>${alertas}</section>`}
     <section class="card">
-      <div class="kv"><span>Gastado hasta hoy</span><b class="num">${fmt(p.r.gas)}</b></div>
-      <div class="kv"><span>Variables previstas (${fmt(p.ritmo)}/día × ${p.N - p.d} días)</span><b class="num">${fmt(p.varRest)}</b></div>
-      <div class="kv"><span>Recurrentes pendientes</span><b class="num">${fmt(p.pf)}</b></div>
+      ${p.futuro ? '' : `<div class="kv"><span>Gastado hasta hoy</span><b class="num">${fmt(p.r.gas)}</b></div>`}
+      <div class="kv"><span>Variables que faltan (según ${nMed})</span><b class="num">${fmt(p.varRest)}</b></div>
+      <div class="kv"><span>Fijos pendientes (Recurrentes)</span><b class="num">${fmt(p.pf)}</b></div>
       <div class="kv tot"><span>Gasto estimado</span><b class="num">${fmt(p.gasFin)}</b></div>
-      <div class="kv"><span>Ingresado hasta hoy</span><b class="num">${fmt(p.r.ing)}</b></div>
+      <div class="kv"><span>Margen habitual</span><b class="num"><small>${fmt(p.gasMin)} – ${fmt(p.gasMax)}</small></b></div>
+      ${p.futuro ? '' : `<div class="kv"><span>Ingresado hasta hoy</span><b class="num">${fmt(p.r.ing)}</b></div>`}
       <div class="kv"><span>Ingresos pendientes</span><b class="num">${fmt(p.pi)}</b></div>
       <div class="kv tot"><span>Ingreso estimado</span><b class="num">${fmt(p.ingFin)}</b></div>
     </section>
+    ${p.porCat.length ? `<section class="card"><div class="card-cab"><h3>GASTO VARIABLE POR CATEGORÍA</h3></div>${p.porCat.filter(o => o.media > 1 || o.gastado > 1).map(filaCat).join('')}
+      ${p.d ? '<p class="nota" style="text-align:left;margin:8px 0 0">La rayita marca lo normal a estas alturas del mes.</p>' : ''}</section>` : ''}
     ${p.fijosPend.length || p.ingPend.length ? `<section class="card"><div class="card-cab"><h3>PENDIENTE ESTE MES</h3></div>${filasPend(p.ingPend, 'in')}${filasPend(p.fijosPend, '')}</section>` : ''}
-    <p class="nota">La previsión usa el ritmo de gasto variable de este mes y tus recurrentes activos. Los gastos fijos que no estén en Recurrentes no se prevén. Desliza el dedo por la gráfica para ver cada día.</p>`;
+    <p class="nota">Los gastos variables se estiman con la media de cada categoría en tus últimos meses; los fijos y los ingresos, con tus Recurrentes. Desliza el dedo por la gráfica para ver cada día.</p>`;
   }
   // ── Mes pasado: previsión del día de corte frente a la realidad ──
   const f = p.fin, ahoReal = f.ing - f.gas, difG = f.gas - p.gasFin, err = p.gasFin ? Math.abs(difG) / p.gasFin : 1;
-  const acierto = err <= .05;
+  const dentro = f.gas >= p.gasMin - .5 && f.gas <= p.gasMax + .5, acierto = err <= .05 || dentro;
   const pill = acierto ? '<span class="wpill ok">🎯 Gasto según lo previsto</span>'
     : difG > 0 ? `<span class="wpill mal">Gastasteis ${fmt(difG)} más de lo previsto</span>` : `<span class="wpill ok">Gastasteis ${fmt(-difG)} menos de lo previsto</span>`;
-  const fila = (t, pv, rl, gasto) => { const d = rl - pv, malo = gasto ? d > 0 : d < 0;
-    return `<span>${t}</span><b class="num">${fmt(pv)}</b><b class="num">${fmt(rl)}</b><b class="num dif ${Math.abs(d) < .5 ? '' : malo ? 'peor' : 'mejor'}">${fmt(d, true)}</b>`; };
+  const fila = (t, pv, rl, gasto) => { const dd = rl - pv, malo = gasto ? dd > 0 : dd < 0;
+    return `<span>${t}</span><b class="num">${fmt(pv)}</b><b class="num">${fmt(rl)}</b><b class="num dif ${Math.abs(dd) < .5 ? '' : malo ? 'peor' : 'mejor'}">${fmt(dd, true)}</b>`; };
+  const realCat = varPorCat(delMes(D.movs, prevRef));
   return cab + `
     <section class="card prev-hero">
       <small>Ahorro real en ${nom}</small>
       <div class="grande num">${N(ahoReal)}</div>
       ${pill}
-      <p>El día ${p.d} la previsión era ahorrar <b>${fmt(p.ahoFin)}</b> con un gasto de ${fmt(p.gasFin)}. Se gastó <b>${fmt(f.gas)}</b>${acierto ? ', casi exacto.' : ` (${Math.round(err * 100)} % de desviación).`}</p>
+      <p>El día ${p.d} se preveía un gasto de <b>${fmt(p.gasFin)}</b> (entre ${fmt(p.gasMin)} y ${fmt(p.gasMax)}). Se gastó <b>${fmt(f.gas)}</b>.</p>
     </section>
     <section class="patri prevg"><div class="lbl">GASTO ACUMULADO</div>
       <div class="grande num">${N(f.gas)}</div><div class="var">previsto el día ${p.d}: ${fmt(p.gasFin)}</div>${graficaPrev(p)}</section>
-    ${leyenda}
+    <section class="leyenda-prev"><div class="leyenda-mini" style="margin-top:0"><span><em class="lin" style="background:var(--c-prev)"></em>Real</span><span><em class="lin disc" style="color:var(--c-prev)"></em>Previsto el día ${p.d}</span></div></section>
     <section class="card"><div class="card-cab"><h3>PREVISTO VS. REAL</h3></div>
       <div class="comp-prev"><span></span><small>Previsto</small><small>Real</small><small>Diferencia</small>
         ${fila('Gasto', p.gasFin, f.gas, true)}${fila('Ingreso', p.ingFin, f.ing, false)}${fila('Ahorro', p.ahoFin, ahoReal, false)}</div>
     </section>
-    <section class="card">
-      <div class="kv"><span>Gastado hasta el día ${p.d}</span><b class="num">${fmt(p.r.gas)}</b></div>
-      <div class="kv"><span>Variables previstas (${fmt(p.ritmo)}/día × ${p.N - p.d} días)</span><b class="num">${fmt(p.varRest)}</b></div>
-      <div class="kv"><span>Recurrentes después del día ${p.d}</span><b class="num">${fmt(p.pf)}</b></div>
-      <div class="kv tot"><span>Gasto previsto</span><b class="num">${fmt(p.gasFin)}</b></div>
-    </section>
-    <p class="nota">Para meses pasados se reconstruye la previsión que habríais visto el día ${p.d}: el ritmo de gasto variable hasta ese día más los recurrentes que se cobraron después.</p>`;
+    ${p.porCat.length ? `<section class="card"><div class="card-cab"><h3>VARIABLES: REAL FRENTE A LO NORMAL</h3></div>${p.porCat.map(o => Object.assign({}, o, { gastado: Math.max(0, realCat[o.c] || 0), esperado: o.media })).filter(o => o.media > 1 || o.gastado > 1).map(filaCat).join('')}</section>` : ''}
+    <p class="nota">Para meses pasados se reconstruye la previsión que habríais visto el día ${p.d}, con la media de los meses anteriores a ${nom}.</p>`;
 }
 
+
+// ══════════════ PRESUPUESTO ══════════════
+// Límite mensual por categoría de gasto (pestaña Presupuesto de la hoja). Cuenta todo el gasto de la categoría (fijo y variable, menos reembolsos).
+const PRES = () => (D.config && D.config.presupuesto) || {};
+const gastoPorCat = arr => { const o = {}; arr.forEach(x => { if (x.tipo !== 'Gasto' && x.tipo !== 'Reembolso') return; const c = x.categoria || 'Sin clasificar'; o[c] = (o[c] || 0) + (x.tipo === 'Gasto' ? x.importe : -x.importe); }); return o; };
+// Media mensual de gasto total (fijo + variable) por categoría en los últimos 6 meses con datos: sirve para proponer límites
+function mediaGastoCat(ref) {
+  const meses = []; for (let k = 1; k <= 24 && meses.length < 6; k++) { const l = delMes(D.movs, new Date(ref.getFullYear(), ref.getMonth() - k, 1)); if (l.length) meses.push(l); }
+  const o = {}; meses.forEach(l => Object.entries(gastoPorCat(l)).forEach(([c, v]) => o[c] = (o[c] || 0) + v));
+  Object.keys(o).forEach(c => o[c] = Math.max(0, o[c] / (meses.length || 1)));
+  return o;
+}
+function estadoPres(M) {
+  const pres = PRES(), g = gastoPorCat(delMes(MA, M)), y = M.getFullYear(), mo = M.getMonth(), N = new Date(y, mo + 1, 0).getDate();
+  const actual = claveMes(M) === claveMes(hoy), futuro = esFuturo(M), dia = actual ? hoy.getDate() : futuro ? 0 : N;
+  const med = mediaGastoCat(M);
+  const cats = Object.keys(pres).map(c => {
+    const gast = Math.max(0, g[c] || 0), lim = pres[c];
+    const prevFin = actual ? Math.max(gast, med[c] || 0) : futuro ? Math.max(gast, med[c] || 0) : gast;
+    return { c, gast, lim, pct: gast / lim * 100, queda: lim - gast, prevFin };
+  }).sort((a, b) => b.pct - a.pct);
+  const total = cats.reduce((a, o) => a + o.lim, 0), gastado = cats.reduce((a, o) => a + o.gast, 0);
+  const sin = Object.entries(g).filter(([c, v]) => !pres[c] && v > .5).sort((a, b) => b[1] - a[1]);
+  return { cats, total, gastado, queda: total - gastado, sin, actual, futuro, dia, N, porDia: actual && N - dia + 1 > 0 ? Math.max(0, total - gastado) / (N - dia + 1) : null };
+}
+const colorPres = pct => pct > 100 ? 'mal' : pct > 85 ? 'ojo' : '';
+function widgetPres(M) {
+  const e = estadoPres(M);
+  if (!e.cats.length) return `<button class="wid" data-ana="pres"><div class="wt">Presupuesto</div><div class="wbig" style="font-size:20px">Sin definir</div>
+    <div class="ws">Pon un límite mensual a cada categoría y controla cuánto te queda</div><span class="wpill">＋ Crear</span></button>`;
+  const pct = e.total ? e.gastado / e.total * 100 : 0;
+  return `<button class="wid" data-ana="pres"><div class="wt">Presupuesto</div>
+    <div class="wbig num">${N(e.queda)}</div><div class="ws">${e.queda >= 0 ? 'te quedan' : 'te has pasado'} de ${fK(e.total)} €</div>
+    <div class="wpres"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i></div>
+    <div class="wpres-l">${e.cats.slice(0, 3).map(o => `<div><span>${esc(o.c)}</span><b class="${colorPres(o.pct)}">${Math.round(o.pct)} %</b></div>`).join('')}</div></button>`;
+}
+function vAnaPres() {
+  const M = anaMes, e = estadoPres(M);
+  const nav = `<div class="mes"><button data-acc="anaMesAnt" aria-label="Mes anterior">${SVG.izq}</button><b>${cap(MESES[M.getMonth()])} de ${M.getFullYear()}</b><button data-acc="anaMesSig" aria-label="Mes siguiente"${claveMes(M) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
+  const cab = cabDetalle('Presupuesto', claveMes(M) !== claveMes(hoy), 'Límites por categoría') + nav;
+  const sim = `<section class="card sim-cta"><div><b>🧮 ¿Y si…?</b><small>Simula un gasto (un móvil, un viaje…) y mira cómo afecta a tu presupuesto y a tu ahorro</small></div>
+    <button class="btn pri" data-acc="simular">Simular</button></section>`;
+  if (!e.cats.length) return cab + `<section class="card"><div class="vacio" style="padding:12px 0">Aún no tienes presupuesto. Ponle un límite mensual a las categorías que quieras controlar.</div>
+    <button class="btn pri" style="width:100%" data-acc="editarPres">Crear presupuesto</button></section>` + sim;
+  const pct = e.total ? e.gastado / e.total * 100 : 0, marca = e.actual ? e.dia / e.N * 100 : null;
+  const fila = o => { const em = emojiDe(o.c);
+    return `<div class="pr-f" data-prescat="${esc(o.c)}"><div class="pr-c"><span class="n">${em ? em + ' ' : ''}${esc(o.c)}</span><b class="num">${fmt(o.gast)}</b><small>/ ${fmt(o.lim)}</small></div>
+      <div class="pc-b"><i class="${colorPres(o.pct)}" style="width:${Math.min(100, o.pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
+      <div class="pr-s">${o.queda >= 0 ? `Quedan ${fmt(o.queda)}` : `<b class="mal">Te has pasado ${fmt(-o.queda)}</b>`}${e.actual && o.prevFin > o.lim && o.queda >= 0 ? ` · <b class="ojo">al ritmo normal llegarás a ${fmt(o.prevFin)}</b>` : ''}</div></div>`; };
+  return cab + `
+    <section class="card prev-hero"><small>${e.queda >= 0 ? 'Te quedan' : 'Te has pasado'}</small><div class="grande num">${N(Math.abs(e.queda))}</div>
+      <div class="rango">${fmt(e.gastado)} gastados de <b>${fmt(e.total)}</b></div>
+      <div class="pc-b" style="height:12px;margin:10px 4px 4px"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
+      ${e.porDia !== null ? `<p>Puedes gastar <b>${fmt(e.porDia)} al día</b> hasta fin de mes sin pasarte.</p>` : ''}</section>
+    <section class="card"><div class="card-cab"><h3>POR CATEGORÍA</h3><button class="vertodos" data-acc="editarPres">Editar</button></div>${e.cats.map(fila).join('')}
+      ${marca !== null ? '<p class="nota" style="text-align:left;margin:8px 0 0">La rayita marca cuánto del mes ha pasado. Toca una categoría para ver sus movimientos.</p>' : ''}</section>
+    ${e.sin.length ? `<section class="card"><div class="card-cab"><h3>SIN PRESUPUESTO</h3></div>${e.sin.map(([c, v]) => `<div class="ley-f"><span class="n">${emojiDe(c) ? emojiDe(c) + ' ' : ''}${esc(c)}</span><b class="num">${fmt(v)}</b></div>`).join('')}</section>` : ''}
+    ${sim}`;
+}
+// Editar límites (se guardan en la hoja)
+function abrirEditarPres() {
+  const pres = PRES(), med = mediaGastoCat(hoy), cats = Object.keys(D.config.categorias.Gasto).filter(c => c !== 'Sin clasificar');
+  const red = v => Math.ceil(v / 10) * 10;
+  $('#hoja').innerHTML = `${cabHoja('Presupuesto', '', `<button class="hb pri" id="presOk" aria-label="Guardar">${SVG.ok}</button>`)}
+    <div class="aviso">Límite mensual por categoría. Déjalo vacío si no quieres controlarla. Debajo de cada una ves tu media de gasto mensual.</div>
+    <button class="btn sec" style="width:100%;margin-bottom:6px" id="presMedias">Rellenar con mis medias</button>
+    ${cats.map(c => `<div class="pe-f"><span class="n">${emojiDe(c) ? emojiDe(c) + ' ' : ''}${esc(c)}<small>media ${fmt(med[c] || 0)}</small></span>
+      <input inputmode="decimal" data-pres="${esc(c)}" data-media="${red(med[c] || 0)}" placeholder="—" value="${pres[c] ? String(pres[c]).replace('.', ',') : ''}"></div>`).join('')}`;
+  abrirHoja();
+  $('#presMedias').addEventListener('click', () => document.querySelectorAll('[data-pres]').forEach(i => { if (!i.value && +i.dataset.media > 0) i.value = i.dataset.media; }));
+  $('#presOk').addEventListener('click', async () => {
+    const obj = {}; document.querySelectorAll('[data-pres]').forEach(i => { const v = numImporteS(i.value); if (isFinite(v) && v > 0) obj[i.dataset.pres] = v; });
+    $('#presOk').disabled = true;
+    try { await api('api_guardarPresupuesto', obj); D.config.presupuesto = obj; cerrarHoja(); toast('Presupuesto guardado'); pintar(); recargar().catch(() => {}); }
+    catch (err) { toast(/función no disponible|importe no v/i.test(err.message) ? 'Falta actualizar Código.gs en Apps Script y publicar una nueva versión' : err.message); $('#presOk').disabled = false; }
+  });
+}
+// ── Simulador «¿Y si…?»: cómo afectaría un gasto que tienes en mente ──
+function abrirSimulador() {
+  const cats = Object.keys(D.config.categorias.Gasto);
+  $('#hoja').innerHTML = `${cabHoja('¿Y si…?')}
+    <label>¿Qué quieres comprar?</label><input id="simConc" placeholder="Ej. móvil nuevo">
+    <label>Importe</label><input id="simImp" class="grande" inputmode="decimal" placeholder="0,00 €">
+    <div class="fila2"><div><label>Categoría</label><select id="simCat">${cats.map(c => `<option value="${esc(c)}"${/compra/i.test(c) ? ' selected' : ''}>${emojiDe(c) ? emojiDe(c) + '  ' : ''}${esc(c)}</option>`).join('')}</select></div>
+      <div><label>Pago</label><select id="simPago"><option value="1">De una vez</option>${[3, 6, 10, 12, 18, 24].map(n => `<option value="${n}">En ${n} meses</option>`).join('')}</select></div></div>
+    <label>¿Cuándo?</label><select id="simMes">${Array.from({ length: 7 }, (_, k) => new Date(hoy.getFullYear(), hoy.getMonth() + k, 1)).map(d => `<option value="${claveMes(d)}">${cap(MESES[d.getMonth()])} ${d.getFullYear()}</option>`).join('')}</select>
+    <div id="simRes"></div>`;
+  abrirHoja();
+  const calc = () => {
+    const imp = numImporteS($('#simImp').value), n = +$('#simPago').value, cat = $('#simCat').value, km = $('#simMes').value;
+    if (!(imp > 0)) { $('#simRes').innerHTML = '<p class="nota" style="margin-top:14px">Escribe un importe para ver el efecto.</p>'; return; }
+    const M = new Date(+km.slice(0, 4), +km.slice(5, 7) - 1, 1), cuota = imp / n;
+    const p = prevision(M), antes = p.ahoFin, despues = antes - cuota;
+    // Ahorro medio mensual de los últimos 6 meses con datos
+    const ms = []; for (let k = 1; k <= 24 && ms.length < 6; k++) { const l = delMes(D.movs, new Date(hoy.getFullYear(), hoy.getMonth() - k, 1)); if (l.length) ms.push(resumen(l).ahorro); }
+    const ahMed = ms.length ? ms.reduce((a, b) => a + b, 0) / ms.length : null;
+    const lim = PRES()[cat], gastCat = Math.max(0, gastoPorCat(delMes(D.movs, M))[cat] || 0), prevCat = Math.max(gastCat, mediaGastoCat(M)[cat] || 0);
+    const mx = Math.max(1, Math.abs(antes), Math.abs(despues));
+    const barra = (t, v, cls) => `<div class="sim-b"><span>${t}</span><div><i class="${cls}" style="width:${Math.abs(v) / mx * 100}%"></i></div><b class="num ${v < 0 ? 'mal' : ''}">${fmt(v)}</b></div>`;
+    $('#simRes').innerHTML = `<section class="card sim-res">
+      <div class="card-cab"><h3>AHORRO DE ${MESES[M.getMonth()].toUpperCase()}</h3></div>
+      ${barra('Sin la compra', antes, '')}${barra('Con la compra', despues, despues < 0 ? 'mal' : 'ojo')}
+      ${n > 1 ? `<p class="nota" style="text-align:left">Pagando ${fmt(cuota)} al mes durante ${n} meses.</p>` : ''}
+      ${lim ? `<div class="kv"><span>Presupuesto de ${esc(cat)}</span><b class="num">${fmt(lim)}</b></div>
+        <div class="kv"><span>Con la compra llegarías a</span><b class="num ${prevCat + cuota > lim ? 'mal' : ''}">${fmt(prevCat + cuota)}</b></div>
+        <div class="kv"><span>${prevCat + cuota > lim ? 'Te pasarías' : 'Te sobrarían'}</span><b class="num ${prevCat + cuota > lim ? 'mal' : ''}">${fmt(Math.abs(lim - prevCat - cuota))}</b></div>` : `<div class="kv"><span>${esc(cat)} no tiene presupuesto</span><b></b></div>`}
+      ${ahMed !== null ? `<div class="kv tot"><span>Tu ahorro medio al mes</span><b class="num">${fmt(ahMed)}</b></div>
+        <div class="kv"><span>Equivale a</span><b class="num">${ahMed > 0 ? (imp / ahMed).toLocaleString('es-ES', { maximumFractionDigits: 1 }) + ' meses de ahorro' : '—'}</b></div>
+        <div class="kv"><span>En un año ahorraríais</span><b class="num">${fmt(ahMed * 12 - imp)}</b></div><p class="nota" style="text-align:right;margin:0">sin la compra ${fmt(ahMed * 12)}</p>` : ''}
+      <p class="sim-ver ${despues >= 0 ? 'ok' : 'mal'}">${despues >= 0 ? `👍 Puedes permitírtelo: ese mes seguirías ahorrando ${fmt(despues)}.` : `⚠️ Ese mes gastarías ${fmt(-despues)} más de lo que ingresas.${n === 1 ? ' Pagarlo a plazos lo repartiría.' : ''}`}</p>
+    </section>`;
+  };
+  ['#simImp', '#simCat', '#simPago', '#simMes'].forEach(id => { $(id).addEventListener('input', calc); $(id).addEventListener('change', calc); });
+  calc();
+}
 
 // Reordenar cuentas arrastrando las tres rayitas
 function activarArrastre() {
@@ -1695,10 +1983,13 @@ $('#app').addEventListener('click', e => {
   if (acc) {
     const a = acc.dataset.acc;
     if (a === 'mesAnt' || a === 'mesSig') { irAMes(new Date(mesSel.getFullYear(), mesSel.getMonth() + (a === 'mesAnt' ? -1 : 1), 1)); return pintar(false, true); }
-    if (a === 'irGastos' || a === 'irEvol') {
+    if (a === 'editarPres') return abrirEditarPres();
+    if (a === 'simular') return abrirSimulador();
+    if (a === 'verMovsCat') return irAMovimientos(anaVista === 'ing' ? 'Ingreso' : 'Gasto', anaVista === 'ing' ? anaCatI : anaCat);
+    if (a === 'irGastos' || a === 'irEvol' || a === 'irIngresos') {
       tab = 'analisis'; anaMes = new Date(mesSel.getFullYear(), mesSel.getMonth(), 1);
-      anaCat = null; anaSub = null; anaSelEvol = null; anaSelFijo = null;
-      if (a === 'irGastos') { anaVista = 'donut'; anaPer = 'Mes'; anaRef = new Date(anaMes); } else anaVista = 'evol';
+      anaCat = null; anaSub = null; anaCatI = null; anaSelEvol = null; anaSelFijo = null;
+      if (a === 'irGastos' || a === 'irIngresos') { anaVista = a === 'irGastos' ? 'donut' : 'ing'; anaPer = 'Mes'; anaRef = new Date(anaMes); } else anaVista = 'evol';
       window.scrollTo(0, 0); return pintar(true);
     }
     if (a === 'ajustarSaldo') return abrirAjusteSaldo(bancoFiltro);
@@ -1720,6 +2011,8 @@ $('#app').addEventListener('click', e => {
       return cambia ? pintar(false, true) : null;
     }
     if (a === 'anaVolver') { if (anaVista === 'donut' && (anaSub || anaCat)) { if (anaSub) anaSub = null; else anaCat = null; return pintar(); }
+      if (anaVista === 'ing' && anaCatI) { anaCatI = null; return pintar(); }
+      if (anaVista === 'ing' && anaPer === 'Mes') anaMes = new Date(anaRef);
       if (anaVista === 'prev') anaMes = new Date(prevRef);
       if (anaVista === 'donut' && anaPer === 'Mes') anaMes = new Date(anaRef);
       anaVista = null; window.scrollTo(0, 0); return pintar(true); }
@@ -1734,13 +2027,30 @@ $('#app').addEventListener('click', e => {
     if (a === 'ajustes') return abrirAjustes();
   }
   const w = e.target.closest('[data-ana]');
-  if (w) { anaVista = w.dataset.ana; prevRef = new Date(anaMes); anaPer = 'Mes'; anaRef = new Date(anaMes); anaCat = null; anaSub = null; anaSelEvol = null; anaSelFijo = null; window.scrollTo(0, 0); return pintar(true); }
+  if (w) { anaVista = w.dataset.ana; prevRef = new Date(anaMes); anaPer = 'Mes'; anaRef = new Date(anaMes); anaCatI = null; anaCat = null; anaSub = null; anaSelEvol = null; anaSelFijo = null; window.scrollTo(0, 0); return pintar(true); }
   const ap = e.target.closest('[data-anaper]');
   if (ap) { anaPer = ap.dataset.anaper; anaRef = new Date(hoy.getFullYear(), hoy.getMonth(), 1); return pintarAna(); }
   const mg = e.target.closest('[data-migas]');
   if (mg) { const n = +mg.dataset.migas; if (n < 2) anaSub = null; if (n < 1) anaCat = null; return pintarAna(); }
+  const pc = e.target.closest('[data-prescat]');
+  if (pc) { anaPer = 'Mes'; anaRef = new Date(anaMes); return irAMovimientos('Gasto', pc.dataset.prescat); }
+  const mc = e.target.closest('[data-movcat]');
+  if (mc) return irAMovimientos(anaVista === 'ing' ? 'Ingreso' : 'Gasto', mc.dataset.movcat);
+  const bi = e.target.closest('[data-bajai]');
+  if (bi) { anaCatI = bi.dataset.bajai; return pintarAna(); }
+  const mi = e.target.closest('[data-migasi]');
+  if (mi) { anaCatI = null; return pintarAna(); }
   const bj = e.target.closest('[data-baja]');
   if (bj) { if (!anaCat) anaCat = bj.dataset.baja; else anaSub = bj.dataset.baja; return pintarAna(); }
+  const ev = e.target.closest('[data-evolver]');
+  if (ev) { const k = ev.dataset.evolver; evolVer[k] = !evolVer[k]; if (!evolVer.ing && !evolVer.gas && !evolVer.tasa) evolVer[k] = true; pintar(); return animarGrafica(); }
+  const ei = e.target.closest('[data-evolir]');
+  if (ei) {
+    const k = ei.dataset.evolir, mm = ei.dataset.mes ? new Date(+ei.dataset.mes.slice(0, 4), +ei.dataset.mes.slice(5, 7) - 1, 1) : anaMes;
+    irAMes(mm); anaPer = 'Mes'; anaRef = new Date(mm); anaCat = null; anaSub = null; anaCatI = null;
+    if (k === 'movs') return irAMovimientos(null, null);
+    anaVista = k; window.scrollTo(0, 0); return pintar(true);
+  }
   const am = e.target.closest('[data-anameses]');
   if (am) { anaMeses = +am.dataset.anameses; anaSelEvol = null; anaSelFijo = null; return pintar(true); }
   const col = e.target.closest('[data-col]');
@@ -1757,18 +2067,27 @@ $('#app').addEventListener('click', e => {
   if (m) abrirForm(D.movs.find(x => x.id === m.dataset.id));
 });
 
+// Cabecera de las hojas: ✕ a la izquierda, título y acciones (borrar, guardar…) a la derecha, para no tener que bajar
+const cabHoja = (titulo, cerrar, derecha) => `<div class="tirador"></div><div class="hoja-cab">
+  <button class="hb" type="button" ${cerrar || 'data-aj="cerrar"'} aria-label="Cerrar">${SVG.x}</button><h2>${titulo}</h2><div class="hb-der">${derecha || ''}</div></div>`;
 // ── Ajustes ──────────────────────────────────────────────
 function abrirAjustes() {
-  $('#hoja').innerHTML = `<div class="tirador"></div><h2>Ajustes</h2>
-    <div class="ajuste-lbl">Apariencia</div>
-    <div class="temas">${[['claro', 'Claro'], ['oscuro', 'Oscuro'], ['sistema', 'Sistema']].map(([k, t]) => `<button data-tema="${k}" class="${window.TEMA === k ? 'on' : ''}">${t}</button>`).join('')}</div>
-    <div class="ajuste-lbl" style="margin-top:16px">Datos</div>
-    <button class="opcion" data-aj="importar">📥 Importar movimientos del banco <span style="color:var(--muted);font-weight:500">(Excel o CSV)</span></button>
-    <button class="opcion" data-aj="reclasificar">🏷️ Clasificar los «Sin clasificar» con las Reglas <span style="color:var(--muted);font-weight:500">(${sinClasificar().length})</span></button>
-    <div class="ajuste-lbl" style="margin-top:16px">Cuenta</div>
-    <button class="opcion" data-aj="usuario">Cambiar de usuario <span style="color:var(--muted);font-weight:500">(ahora: ${esc(USUARIO)})</span></button>
-    <button class="opcion" data-aj="salir">Cerrar sesión</button>
-    <div class="botones"><button class="btn sec" data-aj="cerrar">Cerrar</button></div>`;
+  const fila = (attr, ico, txt, extra, cls) => `<button class="aj-f${cls ? ' ' + cls : ''}" ${attr}><span class="aj-i">${ico}</span><span class="aj-t">${txt}</span>${extra ? `<span class="aj-x">${extra}</span>` : ''}<i class="aj-c">${SVG.der}</i></button>`;
+  const nSin = sinClasificar().length;
+  $('#hoja').innerHTML = `${cabHoja('Ajustes')}
+    <button class="aj-perfil" data-aj="usuario"><span class="aj-av">${esc((USUARIO || '?').charAt(0))}</span><span><b>${esc(USUARIO || '')}</b><small>Cambiar de usuario</small></span><i class="aj-c">${SVG.der}</i></button>
+    <div class="aj-lbl">Cuentas y saldos</div>
+    <div class="aj-grupo">${D.cuentas.map((c, i) => `<button class="aj-f" data-aj="saldo" data-banco="${esc(c.banco)}"><span class="aj-logo">${logoBanco(c, i)}</span><span class="aj-t">${esc(c.banco)}<small>Ajustar al saldo real</small></span><span class="aj-x num">${fmt(saldoEn(c, HOY))}</span><i class="aj-c">${SVG.der}</i></button>`).join('') || '<div class="vacio">Añade tus cuentas en la pestaña Cuentas de la hoja</div>'}</div>
+    <div class="aj-lbl">Movimientos</div>
+    <div class="aj-grupo">
+      ${fila('data-aj="importar"', '📥', 'Importar del banco<small>Excel o CSV de BBVA, Bankinter…</small>')}
+      ${fila('data-aj="reclasificar"', '🏷️', 'Sin clasificar<small>Clasificar con las Reglas</small>', nSin ? `<b class="aj-badge">${nSin}</b>` : '')}
+    </div>
+    <div class="aj-lbl">Apariencia</div>
+    <div class="aj-grupo aj-pad"><div class="temas" style="margin:0">${[['claro', 'Claro'], ['oscuro', 'Oscuro'], ['sistema', 'Sistema']].map(([k, t]) => `<button data-tema="${k}" class="${window.TEMA === k ? 'on' : ''}">${t}</button>`).join('')}</div></div>
+    <div class="aj-lbl">Información</div>
+    <div class="aj-grupo aj-pad aj-info"><div><span>Datos</span><b>Tu hoja de Google</b></div><div><span>Movimientos</span><b>${D.movs.length}</b></div><div><span>Versión</span><b>SUMS · ${claveMes(hoy)}</b></div></div>
+    <button class="aj-salir" data-aj="salir">Cerrar sesión</button>`;
   abrirHoja();
 }
 
@@ -1964,12 +2283,11 @@ function opcionesCat(f) {
 function abrirImportar() {
   IMP = null;
   const bancos = D.cuentas.map(c => c.banco).concat(D.config.metodos).filter((b, i, a) => b && a.indexOf(b) === i);
-  $('#hoja').innerHTML = `<div class="tirador"></div><h2>Importar movimientos</h2>
+  $('#hoja').innerHTML = `${cabHoja('Importar movimientos')}
     <div class="aviso">Descarga los movimientos desde la web o la app del banco (Excel o CSV) y elígelos aquí. Puedes elegir varios archivos a la vez, por ejemplo uno de BBVA y otro de Bankinter.</div>
     <label>Banco (si no se reconoce solo)</label><select id="impBanco">${bancos.map(b => `<option>${esc(b)}</option>`).join('')}</select>
     <label>Archivos</label><input id="impArchivo" type="file" multiple accept=".xlsx,.xls,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv">
-    <div class="error" id="impError"></div>
-    <div class="botones"><button class="btn sec" data-aj="cerrar">Cancelar</button></div>`;
+    <div class="error" id="impError"></div>`;
   abrirHoja();
   $('#impArchivo').addEventListener('change', async e => {
     const files = [...e.target.files]; if (!files.length) return;
@@ -1995,10 +2313,9 @@ function pintarImportar() {
         ${f.pareja || f.dup ? '' : `<label class="imp-cat sel"><span>${esc(textoCat(f))}</span><select data-impcat="${f.k}"><option value="${esc(claveImp(f))}" selected>${esc(textoCat(f))}</option></select></label>`}
       </div>
       <b class="num ${f.tipo === 'Gasto' ? '' : f.tipo === 'Traspaso' ? 'tr' : f.tipo === 'Reembolso' ? 're' : 'in'}">${f.signo < 0 ? '−' : '+'}${fmt(f.importe)}</b></div>`;
-  $('#hoja').innerHTML = `<div class="tirador"></div><h2>Revisa la importación</h2>
+  $('#hoja').innerHTML = `${cabHoja('Revisa', '', `<button class="hb pri txt" id="impGuardar" data-impok="1"${nuevos || fechasN ? '' : ' disabled'}>${nuevos ? 'Importar ' + nuevos : 'Corregir fechas'}</button>`)}
     <div class="aviso">${nuevos} nuevos${dups ? ` · ${dups} ya estaban en la hoja (desmarcados)` : ''}${fechasN ? ` · ${fechasN} con la fecha corregida` : ''}. Toca la categoría para cambiarla y la casilla para incluir o quitar un movimiento.</div>
-    <div class="imp-lista">${fs.map(fila).join('')}</div>
-    <div class="botones"><button class="btn sec" data-aj="cerrar">Cancelar</button><button class="btn pri" id="impGuardar" data-impok="1"${nuevos || fechasN ? '' : ' disabled'}>${nuevos ? 'Importar ' + nuevos : 'Corregir fechas'}</button></div>`;
+    <div class="imp-lista">${fs.map(fila).join('')}</div>`;
 }
 $('#hoja').addEventListener('focusin', e => {   // las opciones de categoría se cargan solo al tocar (la lista puede ser larga)
   const s = e.target.closest('[data-impcat]'); if (!s || s.dataset.lleno || !IMP) return;
@@ -2057,7 +2374,7 @@ function abrirReclasificar() {
   const sinRegla = lista.filter(x => !x.r).map(x => x.m);
   RECL = lista.filter(x => x.r).map(x => ({ id: x.m.id, on: true, cat: x.r[0], sub: x.r[1], det: x.r[2], m: x.m }));
   const total = sinClasificar().length;
-  $('#hoja').innerHTML = `<div class="tirador"></div><h2>Clasificar con las Reglas</h2>
+  $('#hoja').innerHTML = `${cabHoja('Sin clasificar', '', RECL.length ? `<button class="hb pri txt" id="reclOk" data-reclok="1">Clasificar ${RECL.length}</button>` : '')}
     <div class="aviso">${!total ? 'No hay ningún movimiento «Sin clasificar». 🎉' : RECL.length
       ? `Hay ${total} sin clasificar y las Reglas encuentran categoría para <b>${RECL.length}</b>. Revisa y quita la marca de los que no quieras cambiar.`
       : `Hay ${total} sin clasificar, pero ninguna Regla les encaja. Puedes clasificarlos a mano abajo o añadir palabras en la pestaña Reglas.`}</div>
@@ -2066,7 +2383,6 @@ function abrirReclasificar() {
       <div class="imp-t"><div class="t">${esc(x.m.concepto)}</div><div class="s">${fechaCorta(x.m.fecha)} · ${esc(x.m.metodo || '')}</div>
         <div class="imp-cat">${esc(textoCat({ tipo: x.m.tipo, cat: x.cat, sub: x.sub, det: x.det }))}</div></div>
       <b class="num${x.m.tipo === 'Reembolso' ? ' re' : ''}">${x.m.tipo === 'Reembolso' ? '+' : '−'}${fmt(x.m.importe)}</b></div>`).join('')}</div>
-    <div class="botones"><button class="btn sec" data-aj="cerrar">${RECL.length ? 'Cancelar' : 'Cerrar'}</button>${RECL.length ? `<button class="btn pri" id="reclOk" data-reclok="1">Clasificar ${RECL.length}</button>` : ''}</div>
     ${sinRegla.length ? `<div class="ajuste-lbl" style="margin-top:22px">Sin regla que encaje · ${sinRegla.length}</div>
       <p class="nota" style="text-align:left;margin:4px 2px 6px">Toca uno para ver toda su información y ponerle categoría. Al guardar vuelves aquí.</p>
       <div class="imp-lista sin-regla">${sinRegla.map(m => filaMov(m, true).replace('class="mov', `data-recledit="${esc(m.id)}" class="mov`)).join('')}</div>` : ''}`;
@@ -2079,7 +2395,7 @@ $('#hoja').addEventListener('click', async e => {
   if (c && RECL) { const x = RECL.find(y => y.id === c.dataset.reclchk); x.on = !x.on; c.textContent = x.on ? '✓' : ''; c.closest('.imp-f').classList.toggle('off', !x.on);
     const n = RECL.filter(y => y.on).length, b = $('#reclOk'); b.textContent = 'Clasificar ' + n; b.disabled = !n; return; }
   if (e.target.closest('[data-reclok]') && RECL) {
-    const sel = RECL.filter(x => x.on), b = $('#reclOk'); b.disabled = true; b.textContent = 'Guardando…';
+    const sel = RECL.filter(x => x.on), b = $('#reclOk'); b.disabled = true; b.textContent = '…';
     try {
       await api('api_recategorizar', sel.map(x => ({ id: x.id, categoria: x.cat, subcategoria: x.sub, detalle: x.det })));
       RECL = null; cerrarHoja(); toast(sel.length === 1 ? '1 movimiento clasificado' : sel.length + ' movimientos clasificados'); await recargar();
@@ -2094,11 +2410,11 @@ $('#hoja').addEventListener('click', async e => {
 function abrirAjusteSaldo(banco) {
   const c = D.cuentas.find(x => x.banco === banco); if (!c) return;
   const app = saldoEn(c, HOY);
-  $('#hoja').innerHTML = `<div class="tirador"></div><h2>Ajustar saldo de ${esc(banco)}</h2>
+  $('#hoja').innerHTML = `${cabHoja('Ajustar ' + esc(banco), '', `<button class="hb pri" id="ajOk" disabled aria-label="Ajustar">${SVG.ok}</button>`)}
     <div class="aviso">SUMS calcula <b>${fmt(app)}</b>. Escribe el saldo que te muestra ahora el banco y la app corregirá la diferencia sin tocar tus movimientos.</div>
     <label>Saldo real ahora en ${esc(banco)}</label><input id="ajSaldo" class="grande" inputmode="decimal" placeholder="0,00 €">
     <div class="aviso" id="ajDif" style="margin-top:10px"></div>
-    <div class="botones"><button class="btn sec" data-aj="cerrar">Cancelar</button><button class="btn pri" id="ajOk" disabled>Ajustar</button></div>`;
+`;
   abrirHoja();
   const inp = $('#ajSaldo');
   inp.addEventListener('input', () => { const v = numImporteS(inp.value); const ok = isFinite(v);
@@ -2107,11 +2423,11 @@ function abrirAjusteSaldo(banco) {
     const real = numImporteS(inp.value); if (!isFinite(real)) return;
     const hoyMovs = D.movs.filter(m => m.fecha === HOY).reduce((a, m) => a + deltaCuenta(m, banco), 0);
     const ayer = ymd(new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - 1));
-    $('#ajOk').disabled = true; $('#ajOk').textContent = 'Guardando…';
+    $('#ajOk').disabled = true;
     try {
       await api('api_ajustarCuenta', banco, Math.round((real - hoyMovs) * 100) / 100, ayer);
       cerrarHoja(); toast('Saldo de ' + banco + ' ajustado'); await recargar();
-    } catch (err) { toast(/función no disponible|importe no v/i.test(err.message) ? 'Falta actualizar Código.gs en Apps Script y publicar una nueva versión' : err.message); $('#ajOk').disabled = false; $('#ajOk').textContent = 'Ajustar'; }
+    } catch (err) { toast(/función no disponible|importe no v/i.test(err.message) ? 'Falta actualizar Código.gs en Apps Script y publicar una nueva versión' : err.message); $('#ajOk').disabled = false; }
   });
 }
 const numImporteS = v => { let t = String(v == null ? '' : v).trim().replace(/[^\d,.\-]/g, ''); if (!t) return NaN; if (t.indexOf(',') > -1) t = t.replace(/\./g, '').replace(',', '.'); return parseFloat(t); };
@@ -2125,7 +2441,8 @@ function abrirForm(m, preset) {
   const p = m || preset || {};
   form = { id: m ? m.id : null, tipo: p.tipo || 'Gasto', vinculado: p.vinculado || '', conceptoOriginal: m ? m.concepto : (p.concepto || ''), autoConcepto: m ? autoGenerado(m) : true, mov: m || null };
   const bancos = D.config.metodos;
-  $('#hoja').innerHTML = `<div class="tirador"></div><h2>${m ? 'Editar movimiento' : preset ? 'Nuevo reembolso' : 'Nuevo movimiento'}</h2>
+  $('#hoja').innerHTML = `${cabHoja(m ? 'Editar movimiento' : preset ? 'Nuevo reembolso' : 'Nuevo movimiento', 'data-f="cancelar"',
+    (m ? `<button class="hb rojo" type="button" data-f="borrar" aria-label="Borrar">${SVG.papelera}</button>` : '') + `<button class="hb pri" type="button" data-f="guardar" id="fGuardar" aria-label="Guardar">${SVG.ok}</button>`)}
     <div class="seg" id="fTipo">${['Gasto', 'Ingreso', 'Reembolso', 'Traspaso'].map(t => `<button type="button" data-t="${t}" class="${t === form.tipo ? 'on' : ''}">${t}</button>`).join('')}</div>
     ${m ? fichaMov(m) : ''}
     <div class="aviso oculto" id="fAviso"></div>
@@ -2143,12 +2460,7 @@ function abrirForm(m, preset) {
     <label>Concepto</label><input id="fConc" placeholder="Opcional (si lo dejas vacío se usa la categoría)" value="${esc(m ? m.concepto : (p.concepto || ''))}">
     <label>Fecha</label><input id="fFecha" type="date" value="${p.fecha || HOY}">
     <label>Notas</label><input id="fNotas" placeholder="Opcional" value="${esc(p.notas || '')}">
-    <div class="botones">
-      ${m && m.tipo === 'Gasto' ? '<button class="btn borde" type="button" data-f="reemb">↩ Añadir reembolso a este gasto</button>' : ''}
-      ${m ? '<button class="btn rojo" type="button" data-f="borrar">Borrar</button>' : ''}
-      <button class="btn sec" type="button" data-f="cancelar">Cancelar</button>
-      <button class="btn pri" type="button" data-f="guardar" id="fGuardar">Guardar</button>
-    </div>`;
+    ${m && m.tipo === 'Gasto' ? '<div class="botones"><button class="btn borde" type="button" data-f="reemb">↩ Añadir reembolso a este gasto</button></div>' : ''}`;
   ponerTipo(form.tipo, p);
   abrirHoja();
   if (!m && !preset) setTimeout(() => $('#fImp').focus(), 120);
@@ -2207,6 +2519,7 @@ $('#hoja').addEventListener('click', async e => {
   const aj = e.target.closest('[data-aj]');
   if (aj) {
     if (aj.dataset.aj === 'importar') { abrirImportar(); return; }
+    if (aj.dataset.aj === 'saldo') { abrirAjusteSaldo(aj.dataset.banco); return; }
     if (aj.dataset.aj === 'reclasificar') { abrirReclasificar(); return; }
     if (aj.dataset.aj === 'usuario') { cerrarHoja(); pedirUsuario(); }
     else if (aj.dataset.aj === 'salir') { guardar('fin_token', null); guardar('sums_api', null); API_URL = null; guardar('sums_usuario', null); TOKEN = null; USUARIO = null; cerrarHoja(); pantalla('login'); }
@@ -2268,20 +2581,34 @@ function abrirHoja() {
   const v = $('#velo'), h = $('#hoja');
   clearTimeout(v._t); h.style.transform = ''; h.classList.remove('vuelve'); h.scrollTop = 0;
   if (!v.classList.contains('oculto') && !v.classList.contains('cierra')) return;   // ya abierta: solo cambia el contenido, sin volver a animar
+  bloquearFondo();
   v.classList.remove('oculto', 'cierra'); v.classList.add('abre');
   h.addEventListener('animationend', () => v.classList.remove('abre'), { once: true });
+}
+// Mientras hay una hoja abierta, lo de detrás no se mueve aunque el dedo se escape
+let FONDO_Y = null;
+function bloquearFondo() {
+  if (FONDO_Y !== null) return;
+  FONDO_Y = window.scrollY; const b = document.body.style;
+  b.position = 'fixed'; b.top = -FONDO_Y + 'px'; b.left = '0'; b.right = '0'; b.width = '100%';
+}
+function liberarFondo() {
+  if (FONDO_Y === null) return;
+  const b = document.body.style, y = FONDO_Y; FONDO_Y = null;
+  b.position = ''; b.top = ''; b.left = ''; b.right = ''; b.width = '';
+  window.scrollTo(0, y);
 }
 function cerrarHoja() {
   const v = $('#velo'), h = $('#hoja');
   if (v.classList.contains('oculto') || v.classList.contains('cierra')) return;
   v.classList.remove('abre'); v.classList.add('cierra');
-  v._t = setTimeout(() => { v.classList.add('oculto'); v.classList.remove('cierra'); h.style.transform = ''; }, 300);
+  v._t = setTimeout(() => { v.classList.add('oculto'); v.classList.remove('cierra'); h.style.transform = ''; liberarFondo(); }, 300);
 }
 // Arrastrar hacia abajo desde la barrita (o el título) para cerrar
 (() => {
   const h = $('#hoja'); let y0 = null, t0 = 0, dy = 0;
   h.addEventListener('pointerdown', e => {
-    if (!e.target.closest('.tirador') && !e.target.closest('.hoja > h2')) return;
+    if (!e.target.closest('.tirador') && !(e.target.closest('.hoja-cab') && !e.target.closest('button'))) return;
     y0 = e.clientY; t0 = performance.now(); dy = 0; h.classList.remove('vuelve'); h.setPointerCapture(e.pointerId);
   });
   h.addEventListener('pointermove', e => {
@@ -2308,6 +2635,7 @@ function demoApi(fn, ...a) {
   if (fn === 'api_recategorizar') { a[0].forEach(c => { const m = window.__demo.movs.find(x => x.id === c.id); if (m) Object.assign(m, { categoria: c.categoria, subcategoria: c.subcategoria, detalle: c.detalle }); }); return a[0].length; }
   if (fn === 'api_ajustarCuenta') { const c = window.__demo.cuentas.find(x => x.banco === a[0]); Object.assign(c, { saldoInicial: a[1], fecha: a[2] }); return true; }
   if (fn === 'api_cambiarFechas') { a[0].forEach(c => { const m = window.__demo.movs.find(x => x.id === c.id); if (m) m.fecha = c.fecha; }); return a[0].length; }
+  if (fn === 'api_guardarPresupuesto') { window.__demo.config.presupuesto = a[0]; return true; }
   if (fn === 'api_borrar') { window.__demo.movs = window.__demo.movs.filter(m => m.id !== a[0]); }
   return true;
 }
@@ -2351,7 +2679,7 @@ function crearDemo() {
   movs.forEach(m => { if (['Hipoteca', 'Nómina · María', 'Seguro coche'].indexOf(m.concepto) > -1) m.origen = 'Recurrente'; });
   const ini = ymd(new Date(hoyD.getFullYear(), hoyD.getMonth() - 2, 0));
   return {
-    movs, config: { categorias: { Gasto: G, Ingreso: I }, metodos: ['BBVA', 'Bankinter'], personas: ['María', 'Fernando'], fijos, iconos: { 'Alimentación||': '🛒', 'Ocio||': '🎉', 'Ocio|Restaurantes|': '🍽️', 'Ocio|Cafeterías|': '☕', 'Ocio|Planes|Cine': '🎬', 'Compras||': '🛍️', 'Compras|Ropa|': '👕', 'Compras|Decoración casa|': '🛋️', 'Coche||': '🚗', 'Coche|Combustible|': '⛽', 'Coche|Seguro coche|': '🛡️', 'Cuidado personal||': '💆', 'Cuidado personal|Salud|Farmacia': '💊', 'Vivienda||': '🏠', 'Vivienda|Hipoteca|': '🏦', 'Vivienda|Suministros|Luz': '💡', 'Suscripciones y TV||': '🔁', 'Suscripciones y TV|Suscripción|Spotify': '🎵', 'Nómina||': '💸', 'Intereses y rendimientos||': '📈', 'Impuestos y tasas||': '🧾' }, reglas: [['mercadona', 'Alimentación', '', ''], ['repsol', 'Coche', 'Combustible', 'Gasoil'], ['loteria', 'Ocio', 'Planes', 'Actividades'], ['bymycar', 'Coche', 'Mantenimiento', 'Taller']] },
+    movs, config: { categorias: { Gasto: G, Ingreso: I }, metodos: ['BBVA', 'Bankinter'], personas: ['María', 'Fernando'], fijos, iconos: { 'Alimentación||': '🛒', 'Ocio||': '🎉', 'Ocio|Restaurantes|': '🍽️', 'Ocio|Cafeterías|': '☕', 'Ocio|Planes|Cine': '🎬', 'Compras||': '🛍️', 'Compras|Ropa|': '👕', 'Compras|Decoración casa|': '🛋️', 'Coche||': '🚗', 'Coche|Combustible|': '⛽', 'Coche|Seguro coche|': '🛡️', 'Cuidado personal||': '💆', 'Cuidado personal|Salud|Farmacia': '💊', 'Vivienda||': '🏠', 'Vivienda|Hipoteca|': '🏦', 'Vivienda|Suministros|Luz': '💡', 'Suscripciones y TV||': '🔁', 'Suscripciones y TV|Suscripción|Spotify': '🎵', 'Nómina||': '💸', 'Intereses y rendimientos||': '📈', 'Impuestos y tasas||': '🧾' }, presupuesto: { 'Alimentación': 300, 'Ocio': 200, 'Coche': 150, 'Compras': 120 }, reglas: [['mercadona', 'Alimentación', '', ''], ['repsol', 'Coche', 'Combustible', 'Gasoil'], ['loteria', 'Ocio', 'Planes', 'Actividades'], ['bymycar', 'Coche', 'Mantenimiento', 'Taller']] },
     cuentas: [{ banco: 'BBVA', saldoInicial: 1240.5, fecha: ini, logo: '' }, { banco: 'Bankinter', saldoInicial: 6380, fecha: ini, logo: '' }],
     recurrentes: [{ concepto: 'Hipoteca', importe: 650, tipo: 'Gasto', categoria: 'Vivienda', subcategoria: 'Hipoteca', detalle: '', banco: 'BBVA', dia: 1, ultimo: '', destino: '' },
       { concepto: 'Nómina · María', importe: 1820, tipo: 'Ingreso', categoria: 'Nómina', subcategoria: 'María', detalle: '', banco: 'BBVA', dia: 28, ultimo: '', destino: '' },
@@ -2408,6 +2736,32 @@ if (INSTALADA && 'serviceWorker' in navigator) {
 document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 // Sombra un poco más marcada cuando el selector de mes de Movimientos está pegado arriba
 window.addEventListener('scroll', () => { const m = document.querySelector('.mes-fija'); if (m) m.classList.toggle('pegada', window.scrollY > 90); }, { passive: true });
+// Deslizar desde el borde izquierdo hacia la derecha para volver atrás (en las pantallas de detalle de Análisis)
+(function () {
+  let x0 = null, y0 = 0, dx = 0, activo = false;
+  const app = $('#app');
+  document.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    x0 = t.clientX < 28 && tab === 'analisis' && anaVista && $('#velo').classList.contains('oculto') ? t.clientX : null;
+    y0 = t.clientY; dx = 0; activo = false;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (x0 === null) return;
+    const t = e.touches[0]; dx = t.clientX - x0; const dy = Math.abs(t.clientY - y0);
+    if (!activo && dy > 30 && dy > dx) { x0 = null; return; }
+    if (dx > 10) { activo = true; app.style.transition = 'none'; app.style.transform = `translateX(${Math.max(0, dx * .9)}px)`; app.style.opacity = String(Math.max(.4, 1 - dx / 600)); }
+    if (activo && e.cancelable) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('touchend', () => {
+    if (x0 === null) return; x0 = null;
+    if (!activo) return;
+    app.style.transition = 'transform .22s ease, opacity .22s ease';
+    if (dx > 90) {
+      app.style.transform = 'translateX(100%)'; app.style.opacity = '0';
+      setTimeout(() => { app.style.transition = 'none'; app.style.transform = ''; app.style.opacity = ''; const b = $('[data-acc="anaVolver"]'); if (b) b.click(); }, 200);
+    } else { app.style.transform = ''; app.style.opacity = ''; }
+  });
+})();
 cargar();
 </script>
 </body>
