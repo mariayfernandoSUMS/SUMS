@@ -1829,7 +1829,23 @@ function reglaPara(texto) {
   const t = ' ' + sinAc(texto) + ' ';
   const rs = (D.config.reglas || []).map(r => [sinAc(r[0]).replace(/^\s+/, ''), r[1], r[2], r[3]]).sort((a, b) => b[0].length - a[0].length);
   const hit = rs.find(r => { let i = t.indexOf(r[0]); while (i > -1) { if (!/[a-z0-9]/.test(t.charAt(i - 1))) return true; i = t.indexOf(r[0], i + 1); } return false; });
-  return hit ? hit.slice(1) : null;
+  if (hit) return hit.slice(1);
+  return porNombreCategoria(t);
+}
+// Si ninguna regla encaja, busca en el texto el nombre de un detalle, subcategoría o categoría de gasto
+// («alojamiento» → Ocio › Viajes › Alojamiento). Gana el más concreto y, a igualdad, el más largo.
+function porNombreCategoria(t) {
+  const arbol = D.config.categorias.Gasto, cand = [];
+  const prueba = (nombre, ruta, nivel) => {
+    const n = sinAc(nombre).trim();
+    if (n.length < 4 || /^(otros?|sin clasificar|material|planes|varios)$/.test(n)) return;
+    const re = new RegExp('(^|[^a-z0-9])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)');
+    if (re.test(t)) cand.push({ ruta, nivel, largo: n.length });
+  };
+  Object.keys(arbol).forEach(c => { prueba(c, [c, '', ''], 1);
+    Object.keys(arbol[c]).forEach(su => { prueba(su, [c, su, ''], 2); arbol[c][su].forEach(d => prueba(d, [c, su, d], 3)); }); });
+  cand.sort((a, b) => b.nivel - a.nivel || b.largo - a.largo);
+  return cand.length ? cand[0].ruta : null;
 }
 // Lee una hoja del banco: busca la fila de cabecera (Fecha… Importe…) y las columnas útiles
 function leerExtracto(filas, nombreArchivo) {
@@ -1874,7 +1890,7 @@ function prepararImportacion(movs) {
       x.tipo === 'Traspaso' ? (pos ? bancoDe(x.destino) === m.banco : bancoDe(x.metodo) === m.banco)
         : bancoDe(x.metodo) === m.banco && (pos ? x.tipo !== 'Gasto' : x.tipo === 'Gasto')));
     if (dup) usados.add(lado(dup));
-    return { k, texto: m.texto, fecha: m.fecha, importe: abs, signo: pos ? 1 : -1, concepto: m.concepto, banco: m.banco, tipo, cat, sub, det, destino: '', dup: dup ? dup.concepto : '', on: !dup, pareja: false };
+    return { k, texto: m.texto, fecha: m.fecha, importe: abs, signo: pos ? 1 : -1, concepto: m.concepto, banco: m.banco, tipo, cat, sub, det, otro: '', concepto0: m.concepto, dup: dup ? dup.concepto : '', on: !dup, pareja: false };
   });
   // Traspasos entre tus cuentas: sale de un banco y entra lo mismo en otro en ±3 días
   filas.filter(f => f.signo < 0 && !f.dup).forEach(sal => {
@@ -1882,21 +1898,24 @@ function prepararImportacion(movs) {
     const ent = filas.find(f => f.signo > 0 && !f.dup && !f.pareja && f.banco && f.banco !== sal.banco && Math.abs(f.importe - sal.importe) < .005 && dias(f.fecha, sal.fecha) <= 3
       && !/bizum/i.test(f.texto) && !/bizum/i.test(sal.texto) && (esTransf(f) || esTransf(sal)));
     if (!ent || !sal.banco) return;
-    sal.tipo = 'Traspaso'; sal.destino = ent.banco; sal.cat = sal.sub = sal.det = ''; sal.concepto = `Traspaso ${sal.banco} → ${ent.banco}`;
+    sal.tipo = 'Traspaso'; sal.otro = ent.banco; sal.cat = sal.sub = sal.det = ''; sal.concepto = `Traspaso ${sal.banco} → ${ent.banco}`;
     ent.pareja = true; ent.on = false;
   });
   return filas.sort((a, b) => b.fecha.localeCompare(a.fecha));
 }
-const claveImp = f => [f.tipo, f.cat, f.sub, f.det].join('|');
+const claveImp = f => f.tipo === 'Traspaso' ? 'Traspaso|' + f.otro : [f.tipo, f.cat, f.sub, f.det].join('|');
+const desdeImp = f => f.tipo === 'Traspaso' && f.signo > 0 ? f.otro : f.banco, haciaImp = f => f.tipo !== 'Traspaso' ? '' : f.signo > 0 ? f.banco : f.otro;
 function textoCat(f) {
-  if (f.tipo === 'Traspaso') return `⇄ ${f.banco} → ${f.destino}`;
+  if (f.tipo === 'Traspaso') return `⇄ ${desdeImp(f)} → ${haciaImp(f)}`;
   const e = emojiDe(f.cat, f.sub, f.det);
   return (f.tipo === 'Reembolso' ? '↩ ' : '') + (e ? e + ' ' : '') + [f.cat, f.sub, f.det].filter(Boolean).join(' › ');
 }
-function opcionesCat() {
+function opcionesCat(f) {
   const rutas = arbol => Object.keys(arbol).flatMap(c => [[c, '', '']].concat(Object.keys(arbol[c]).flatMap(s => [[c, s, '']].concat(arbol[c][s].map(d => [c, s, d])))));
   const grupo = (tipo, etiqueta, arbol, pre) => `<optgroup label="${etiqueta}">${rutas(arbol).map(([c, s, d]) => `<option value="${esc([tipo, c, s, d].join('|'))}">${pre}${esc([c, s, d].filter(Boolean).join(' › '))}</option>`).join('')}</optgroup>`;
-  return grupo('Gasto', 'Gasto', D.config.categorias.Gasto, '') + grupo('Ingreso', 'Ingreso', D.config.categorias.Ingreso, '') + grupo('Reembolso', 'Reembolso (resta de un gasto)', D.config.categorias.Gasto, '↩ ');
+  const otros = f ? D.cuentas.map(c => c.banco).concat(D.config.metodos).filter((b, i, a) => b && a.indexOf(b) === i && b !== f.banco) : [];
+  const tras = otros.length ? `<optgroup label="Traspaso entre tus cuentas">${otros.map(b => `<option value="${esc('Traspaso|' + b)}">⇄ ${esc(f.signo < 0 ? f.banco + ' → ' + b : b + ' → ' + f.banco)}</option>`).join('')}</optgroup>` : '';
+  return grupo('Gasto', 'Gasto', D.config.categorias.Gasto, '') + grupo('Ingreso', 'Ingreso', D.config.categorias.Ingreso, '') + grupo('Reembolso', 'Reembolso (resta de un gasto)', D.config.categorias.Gasto, '↩ ') + tras;
 }
 function abrirImportar() {
   IMP = null;
@@ -1929,7 +1948,7 @@ function pintarImportar() {
       <button class="imp-chk" data-impchk="${f.k}" aria-label="Incluir">${f.on ? '✓' : ''}</button>
       <div class="imp-t"><div class="t">${esc(f.concepto)}</div>
         <div class="s">${fechaCorta(f.fecha)} · ${esc(f.banco)}${f.dup ? ` · <b>Ya está: ${esc(f.dup)}</b>` : f.pareja ? ' · <b>Parte del traspaso</b>' : ''}</div>
-        ${f.pareja || f.dup ? '' : f.tipo === 'Traspaso' ? `<div class="imp-cat">${esc(textoCat(f))}</div>` : `<label class="imp-cat sel"><span>${esc(textoCat(f))}</span><select data-impcat="${f.k}"><option value="${esc(claveImp(f))}" selected>${esc(textoCat(f))}</option></select></label>`}
+        ${f.pareja || f.dup ? '' : `<label class="imp-cat sel"><span>${esc(textoCat(f))}</span><select data-impcat="${f.k}"><option value="${esc(claveImp(f))}" selected>${esc(textoCat(f))}</option></select></label>`}
       </div>
       <b class="num ${f.tipo === 'Gasto' ? '' : f.tipo === 'Traspaso' ? 'tr' : f.tipo === 'Reembolso' ? 're' : 'in'}">${f.signo < 0 ? '−' : '+'}${fmt(f.importe)}</b></div>`;
   $('#hoja').innerHTML = `<div class="tirador"></div><h2>Revisa la importación</h2>
@@ -1938,16 +1957,29 @@ function pintarImportar() {
     <div class="botones"><button class="btn sec" data-aj="cerrar">Cancelar</button><button class="btn pri" id="impGuardar" data-impok="1"${nuevos ? '' : ' disabled'}>Importar ${nuevos}</button></div>`;
 }
 $('#hoja').addEventListener('focusin', e => {   // las opciones de categoría se cargan solo al tocar (la lista puede ser larga)
-  const s = e.target.closest('[data-impcat]'); if (!s || s.dataset.lleno) return;
-  const v = s.value; s.innerHTML = opcionesCat(); s.value = v; s.dataset.lleno = '1';
+  const s = e.target.closest('[data-impcat]'); if (!s || s.dataset.lleno || !IMP) return;
+  const v = s.value; s.innerHTML = opcionesCat(IMP.filas.find(x => x.k === +s.dataset.impcat)); s.value = v; s.dataset.lleno = '1';
 });
 $('#hoja').addEventListener('touchstart', e => {
-  const s = e.target.closest('[data-impcat]'); if (!s || s.dataset.lleno) return;
-  const v = s.value; s.innerHTML = opcionesCat(); s.value = v; s.dataset.lleno = '1';
+  const s = e.target.closest('[data-impcat]'); if (!s || s.dataset.lleno || !IMP) return;
+  const v = s.value; s.innerHTML = opcionesCat(IMP.filas.find(x => x.k === +s.dataset.impcat)); s.value = v; s.dataset.lleno = '1';
 }, { passive: true });
 $('#hoja').addEventListener('change', e => {
   const s = e.target.closest('[data-impcat]'); if (!s || !IMP) return;
-  const f = IMP.filas.find(x => x.k === +s.dataset.impcat); [f.tipo, f.cat, f.sub, f.det] = s.value.split('|');
+  const f = IMP.filas.find(x => x.k === +s.dataset.impcat), v = s.value.split('|');
+  const eraTr = f.tipo === 'Traspaso';
+  if (v[0] === 'Traspaso') {
+    f.tipo = 'Traspaso'; f.otro = v[1]; f.cat = f.sub = f.det = ''; f.concepto = `Traspaso ${desdeImp(f)} → ${haciaImp(f)}`;
+    // Si la otra mitad del traspaso viene en otro archivo, se quita para no contarlo dos veces
+    const par = IMP.filas.find(x => x !== f && x.banco === f.otro && x.signo === -f.signo && Math.abs(x.importe - f.importe) < .005 && !x.dup && !x.pareja
+      && Math.abs((desdeYmd(x.fecha) - desdeYmd(f.fecha)) / 864e5) <= 3);
+    if (par) { par.pareja = true; par.on = false; }
+  } else {
+    [f.tipo, f.cat, f.sub, f.det] = v; f.otro = '';
+    if (eraTr) { f.concepto = f.concepto0; IMP.filas.filter(x => x.pareja && x.banco !== f.banco && Math.abs(x.importe - f.importe) < .005).forEach(x => { x.pareja = false; x.on = true; }); }
+  }
+  f.on = true;
+  if (v[0] === 'Traspaso' || eraTr) return pintarImportar();
   s.previousElementSibling.textContent = textoCat(f);
   f.on = true; const r = s.closest('.imp-f'); r.classList.remove('off'); r.querySelector('.imp-chk').textContent = '✓'; contarImp();
 });
@@ -1958,11 +1990,15 @@ $('#hoja').addEventListener('click', async e => {
   if (e.target.closest('[data-impok]') && IMP) {
     const sel = IMP.filas.filter(f => f.on), b = $('#impGuardar'); b.disabled = true;
     const datos = sel.map(f => ({ fecha: f.fecha, importe: f.importe, tipo: f.tipo, concepto: f.concepto, categoria: f.cat, subcategoria: f.sub, detalle: f.det,
-      metodo: f.banco, destino: f.destino, quien: USUARIO, notas: 'Importado del banco' }));
+      metodo: desdeImp(f), destino: haciaImp(f), quien: USUARIO, notas: 'Importado del banco' }));
     try {
       for (let i = 0; i < datos.length; i += 150) { b.textContent = `Importando… ${Math.min(i + 150, datos.length)}/${datos.length}`; await api('api_importar', datos.slice(i, i + 150)); }
       IMP = null; cerrarHoja(); toast(datos.length === 1 ? '1 movimiento importado' : datos.length + ' movimientos importados'); await recargar();
-    } catch (err) { toast(err.message === SIN_RED ? 'Sin conexión: inténtalo con cobertura' : err.message); b.disabled = false; contarImp(); }
+    } catch (err) {
+      const viejo = /importe no v[aá]lido: undefined|función no disponible/i.test(err.message);
+      toast(err.message === SIN_RED ? 'Sin conexión: inténtalo con cobertura' : viejo ? 'Falta actualizar Código.gs en Apps Script y publicar una nueva versión' : err.message);
+      b.disabled = false; contarImp();
+    }
   }
 });
 
