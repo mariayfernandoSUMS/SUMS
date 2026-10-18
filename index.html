@@ -315,6 +315,7 @@
     letter-spacing: 0; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .imp-cat select { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; padding: 0; border: 0; font-size: 16px; }
   .imp-f > b { white-space: nowrap; font-size: 14px; } .imp-f > b.in { color: var(--ingreso); } .imp-f > b.re { color: var(--reemb); } .imp-f > b.tr { color: var(--traspaso); }
+  .sin-regla .mov { padding: 9px 4px; }
   .ficha { background: var(--pista); border-radius: 16px; padding: 12px 14px; margin: 0 0 12px; }
   .ficha-c { font-weight: 800; font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; margin-bottom: 6px; }
   .ficha-f { display: flex; gap: 10px; font-size: 13px; padding: 2px 0; }
@@ -2013,22 +2014,29 @@ $('#hoja').addEventListener('click', async e => {
 const sinClasificar = () => D.movs.filter(m => (m.tipo === 'Gasto' || m.tipo === 'Reembolso') && !m.pendiente && (!m.categoria || m.categoria === 'Sin clasificar'));
 let RECL = null;
 function abrirReclasificar() {
-  const lista = sinClasificar().map(m => ({ m, r: reglaPara([m.concepto, m.detalle, m.subcategoria, m.notas].filter(Boolean).join(' ')) })).filter(x => x.r);
-  RECL = lista.map(x => ({ id: x.m.id, on: true, cat: x.r[0], sub: x.r[1], det: x.r[2], m: x.m }));
+  // (lista con todos; los que no encajan con ninguna Regla se muestran aparte para clasificarlos a mano)
+  const lista = sinClasificar().sort((a, b) => b.fecha.localeCompare(a.fecha)).map(m => ({ m, r: reglaPara([m.concepto, m.detalle, m.subcategoria, m.notas].filter(Boolean).join(' ')) }));
+  const sinRegla = lista.filter(x => !x.r).map(x => x.m);
+  RECL = lista.filter(x => x.r).map(x => ({ id: x.m.id, on: true, cat: x.r[0], sub: x.r[1], det: x.r[2], m: x.m }));
   const total = sinClasificar().length;
   $('#hoja').innerHTML = `<div class="tirador"></div><h2>Clasificar con las Reglas</h2>
     <div class="aviso">${!total ? 'No hay ningún movimiento «Sin clasificar». 🎉' : RECL.length
       ? `Hay ${total} sin clasificar y las Reglas encuentran categoría para <b>${RECL.length}</b>. Revisa y quita la marca de los que no quieras cambiar.`
-      : `Hay ${total} sin clasificar, pero ninguna Regla les encaja. Añade palabras en la pestaña Reglas de la hoja y vuelve a probar.`}</div>
+      : `Hay ${total} sin clasificar, pero ninguna Regla les encaja. Puedes clasificarlos a mano abajo o añadir palabras en la pestaña Reglas.`}</div>
     <div class="imp-lista">${RECL.map(x => `<div class="imp-f" data-k="${esc(x.id)}">
       <button class="imp-chk" data-reclchk="${esc(x.id)}" aria-label="Incluir">✓</button>
       <div class="imp-t"><div class="t">${esc(x.m.concepto)}</div><div class="s">${fechaCorta(x.m.fecha)} · ${esc(x.m.metodo || '')}</div>
         <div class="imp-cat">${esc(textoCat({ tipo: x.m.tipo, cat: x.cat, sub: x.sub, det: x.det }))}</div></div>
       <b class="num${x.m.tipo === 'Reembolso' ? ' re' : ''}">${x.m.tipo === 'Reembolso' ? '+' : '−'}${fmt(x.m.importe)}</b></div>`).join('')}</div>
-    <div class="botones"><button class="btn sec" data-aj="cerrar">${RECL.length ? 'Cancelar' : 'Cerrar'}</button>${RECL.length ? `<button class="btn pri" id="reclOk" data-reclok="1">Clasificar ${RECL.length}</button>` : ''}</div>`;
+    <div class="botones"><button class="btn sec" data-aj="cerrar">${RECL.length ? 'Cancelar' : 'Cerrar'}</button>${RECL.length ? `<button class="btn pri" id="reclOk" data-reclok="1">Clasificar ${RECL.length}</button>` : ''}</div>
+    ${sinRegla.length ? `<div class="ajuste-lbl" style="margin-top:22px">Sin regla que encaje · ${sinRegla.length}</div>
+      <p class="nota" style="text-align:left;margin:4px 2px 6px">Toca uno para ver toda su información y ponerle categoría. Al guardar vuelves aquí.</p>
+      <div class="imp-lista sin-regla">${sinRegla.map(m => filaMov(m, true).replace('class="mov', `data-recledit="${esc(m.id)}" class="mov`)).join('')}</div>` : ''}`;
   abrirHoja();
 }
 $('#hoja').addEventListener('click', async e => {
+  const ed = e.target.closest('[data-recledit]');
+  if (ed) { const m = D.movs.find(x => x.id === ed.dataset.recledit); if (m) { abrirForm(m); form.volver = 'reclasificar'; } return; }
   const c = e.target.closest('[data-reclchk]');
   if (c && RECL) { const x = RECL.find(y => y.id === c.dataset.reclchk); x.on = !x.on; c.textContent = x.on ? '✓' : ''; c.closest('.imp-f').classList.toggle('off', !x.on);
     const n = RECL.filter(y => y.on).length, b = $('#reclOk'); b.textContent = 'Clasificar ' + n; b.disabled = !n; return; }
@@ -2167,7 +2175,8 @@ $('#hoja').addEventListener('click', async e => {
     $('#fGuardar').disabled = true;
     try {
       await (form.id ? api('api_editar', form.id, d) : api('api_agregar', d));
-      cerrarHoja(); toast(form.id ? 'Cambios guardados' : 'Movimiento añadido'); await recargar();
+      const volver = form.volver; cerrarHoja(); toast(form.id ? 'Cambios guardados' : 'Movimiento añadido'); await recargar();
+      if (volver === 'reclasificar') setTimeout(abrirReclasificar, 350);
     } catch (err) {
       if (err.message === SIN_RED && !form.id && INSTALADA) {
         if (!(numImporte(d.importe) > 0)) { toast('Escribe un importe'); $('#fGuardar').disabled = false; return; }
