@@ -1894,6 +1894,7 @@ function leerExtracto(filas, nombreArchivo) {
   const cab = filas[iCab].map(norm);
   const col = re => cab.findIndex(c => re.test(c));
   const cImp = col(/^importe/), cFechas = cab.map((c, i) => /^(fecha|f\.? ?valor)/.test(c) ? i : -1).filter(i => i > -1);
+  const cFechaBuena = cFechas.filter(i => !/valor/.test(cab[i]));
   const cDesc = cab.map((c, i) => /concepto|descripci|movimiento|observaci|detalle/.test(c) ? i : -1).filter(i => i > -1);
   const todo = filas.slice(0, iCab + 1).flat().map(norm).join(' ') + ' ' + norm(nombreArchivo);
   const bancos = D.cuentas.map(c => c.banco).concat(D.config.metodos).filter((b, i, a) => b && a.indexOf(b) === i);
@@ -1903,7 +1904,8 @@ function leerExtracto(filas, nombreArchivo) {
   const out = [];
   for (let i = iCab + 1; i < filas.length; i++) {
     const r = filas[i]; const imp = nImp(r[cImp]);
-    const fechas = cFechas.map(c => fImp(r[c])).filter(Boolean).sort();
+    // La fecha que muestra la app del banco: la columna «Fecha» / «Fecha contable» (no la fecha valor)
+    const fechas = cFechaBuena.concat(cFechas).map(c => fImp(r[c])).filter(Boolean);
     if (!fechas.length || !isFinite(imp) || !imp) continue;
     const textos = cDesc.map(c => String(r[c] || '').trim()).filter(Boolean);
     let concepto = textos[0] || 'Sin concepto';
@@ -1930,7 +1932,8 @@ function prepararImportacion(movs) {
       x.tipo === 'Traspaso' ? (pos ? bancoDe(x.destino) === m.banco : bancoDe(x.metodo) === m.banco)
         : bancoDe(x.metodo) === m.banco && (pos ? x.tipo !== 'Gasto' : x.tipo === 'Gasto')));
     if (dup) usados.add(lado(dup));
-    return { k, texto: m.texto, fecha: m.fecha, importe: abs, signo: pos ? 1 : -1, concepto: m.concepto, banco: m.banco, tipo, cat, sub, det, otro: '', concepto0: m.concepto, dup: dup ? dup.concepto : '', on: !dup, pareja: false };
+    const nuevaFecha = dup && dup.origen === 'Importado' && dup.fecha !== m.fecha ? m.fecha : '';
+    return { k, texto: m.texto, fecha: m.fecha, importe: abs, signo: pos ? 1 : -1, concepto: m.concepto, banco: m.banco, tipo, cat, sub, det, otro: '', concepto0: m.concepto, dup: dup ? dup.concepto : '', dupId: dup ? dup.id : '', nuevaFecha, on: !dup, pareja: false };
   });
   // Traspasos entre tus cuentas: sale de un banco y entra lo mismo en otro en ±3 días
   filas.filter(f => f.signo < 0 && !f.dup).forEach(sal => {
@@ -1983,18 +1986,18 @@ function abrirImportar() {
   });
 }
 function pintarImportar() {
-  const fs = IMP.filas, nuevos = fs.filter(f => f.on).length, dups = fs.filter(f => f.dup).length;
+  const fs = IMP.filas, nuevos = fs.filter(f => f.on).length, dups = fs.filter(f => f.dup).length, fechasN = fs.filter(f => f.nuevaFecha).length;
   const fila = f => `<div class="imp-f${f.on ? '' : ' off'}" data-k="${f.k}">
       <button class="imp-chk" data-impchk="${f.k}" aria-label="Incluir">${f.on ? '✓' : ''}</button>
       <div class="imp-t"><div class="t">${esc(f.concepto)}</div>
-        <div class="s">${fechaCorta(f.fecha)} · ${esc(f.banco)}${f.dup ? ` · <b>Ya está: ${esc(f.dup)}</b>` : f.pareja ? ' · <b>Parte del traspaso</b>' : ''}</div>
+        <div class="s">${fechaCorta(f.fecha)} · ${esc(f.banco)}${f.dup ? ` · <b>Ya está: ${esc(f.dup)}</b>${f.nuevaFecha ? ' · se corrige su fecha' : ''}` : f.pareja ? ' · <b>Parte del traspaso</b>' : ''}</div>
         ${f.pareja || f.dup ? '' : `<label class="imp-cat sel"><span>${esc(textoCat(f))}</span><select data-impcat="${f.k}"><option value="${esc(claveImp(f))}" selected>${esc(textoCat(f))}</option></select></label>`}
       </div>
       <b class="num ${f.tipo === 'Gasto' ? '' : f.tipo === 'Traspaso' ? 'tr' : f.tipo === 'Reembolso' ? 're' : 'in'}">${f.signo < 0 ? '−' : '+'}${fmt(f.importe)}</b></div>`;
   $('#hoja').innerHTML = `<div class="tirador"></div><h2>Revisa la importación</h2>
-    <div class="aviso">${nuevos} nuevos${dups ? ` · ${dups} ya estaban en la hoja (desmarcados)` : ''}. Toca la categoría para cambiarla y la casilla para incluir o quitar un movimiento.</div>
+    <div class="aviso">${nuevos} nuevos${dups ? ` · ${dups} ya estaban en la hoja (desmarcados)` : ''}${fechasN ? ` · ${fechasN} con la fecha corregida` : ''}. Toca la categoría para cambiarla y la casilla para incluir o quitar un movimiento.</div>
     <div class="imp-lista">${fs.map(fila).join('')}</div>
-    <div class="botones"><button class="btn sec" data-aj="cerrar">Cancelar</button><button class="btn pri" id="impGuardar" data-impok="1"${nuevos ? '' : ' disabled'}>Importar ${nuevos}</button></div>`;
+    <div class="botones"><button class="btn sec" data-aj="cerrar">Cancelar</button><button class="btn pri" id="impGuardar" data-impok="1"${nuevos || fechasN ? '' : ' disabled'}>${nuevos ? 'Importar ' + nuevos : 'Corregir fechas'}</button></div>`;
 }
 $('#hoja').addEventListener('focusin', e => {   // las opciones de categoría se cargan solo al tocar (la lista puede ser larga)
   const s = e.target.closest('[data-impcat]'); if (!s || s.dataset.lleno || !IMP) return;
@@ -2023,7 +2026,7 @@ $('#hoja').addEventListener('change', e => {
   s.previousElementSibling.textContent = textoCat(f);
   f.on = true; const r = s.closest('.imp-f'); r.classList.remove('off'); r.querySelector('.imp-chk').textContent = '✓'; contarImp();
 });
-function contarImp() { const n = IMP.filas.filter(f => f.on).length; const b = $('#impGuardar'); b.textContent = 'Importar ' + n; b.disabled = !n; }
+function contarImp() { const n = IMP.filas.filter(f => f.on).length, fc = IMP.filas.filter(f => f.nuevaFecha).length; const b = $('#impGuardar'); b.textContent = n ? 'Importar ' + n : 'Corregir fechas'; b.disabled = !n && !fc; }
 $('#hoja').addEventListener('click', async e => {
   const c = e.target.closest('[data-impchk]');
   if (c && IMP) { const f = IMP.filas.find(x => x.k === +c.dataset.impchk); f.on = !f.on; c.textContent = f.on ? '✓' : ''; c.closest('.imp-f').classList.toggle('off', !f.on); return contarImp(); }
@@ -2032,8 +2035,10 @@ $('#hoja').addEventListener('click', async e => {
     const datos = sel.map(f => ({ fecha: f.fecha, importe: f.importe, tipo: f.tipo, concepto: f.concepto, categoria: f.cat, subcategoria: f.sub, detalle: f.det,
       metodo: desdeImp(f), destino: haciaImp(f), quien: USUARIO, notas: f.texto }));
     try {
+      const fechas = IMP.filas.filter(f => f.nuevaFecha).map(f => ({ id: f.dupId, fecha: f.nuevaFecha }));
+      if (fechas.length) { b.textContent = 'Corrigiendo fechas…'; await api('api_cambiarFechas', fechas); }
       for (let i = 0; i < datos.length; i += 150) { b.textContent = `Importando… ${Math.min(i + 150, datos.length)}/${datos.length}`; await api('api_importar', datos.slice(i, i + 150)); }
-      IMP = null; cerrarHoja(); toast(datos.length === 1 ? '1 movimiento importado' : datos.length + ' movimientos importados'); await recargar();
+      IMP = null; cerrarHoja(); toast([datos.length ? (datos.length === 1 ? '1 movimiento importado' : datos.length + ' movimientos importados') : '', fechas.length ? (fechas.length === 1 ? '1 fecha corregida' : fechas.length + ' fechas corregidas') : ''].filter(Boolean).join(' · ')); await recargar();
     } catch (err) {
       const viejo = /importe no v[aá]lido: undefined|función no disponible/i.test(err.message);
       toast(err.message === SIN_RED ? 'Sin conexión: inténtalo con cobertura' : viejo ? 'Falta actualizar Código.gs en Apps Script y publicar una nueva versión' : err.message);
@@ -2301,6 +2306,7 @@ function demoApi(fn, ...a) {
   if (fn === 'api_importar') { a[0].forEach(d => window.__demo.movs.push(Object.assign({ id: 'i' + Math.random().toString(36).slice(2, 8), hora: '12:00', vinculado: '', origen: 'Importado' }, d))); return a[0].length; }
   if (fn === 'api_recategorizar') { a[0].forEach(c => { const m = window.__demo.movs.find(x => x.id === c.id); if (m) Object.assign(m, { categoria: c.categoria, subcategoria: c.subcategoria, detalle: c.detalle }); }); return a[0].length; }
   if (fn === 'api_ajustarCuenta') { const c = window.__demo.cuentas.find(x => x.banco === a[0]); Object.assign(c, { saldoInicial: a[1], fecha: a[2] }); return true; }
+  if (fn === 'api_cambiarFechas') { a[0].forEach(c => { const m = window.__demo.movs.find(x => x.id === c.id); if (m) m.fecha = c.fecha; }); return a[0].length; }
   if (fn === 'api_borrar') { window.__demo.movs = window.__demo.movs.filter(m => m.id !== a[0]); }
   return true;
 }
