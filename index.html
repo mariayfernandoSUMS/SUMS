@@ -320,6 +320,13 @@
   .imp-cat select { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; padding: 0; border: 0; font-size: 16px; }
   .imp-f > b { white-space: nowrap; font-size: 14px; } .imp-f > b.in { color: var(--ingreso); } .imp-f > b.re { color: var(--reemb); } .imp-f > b.tr { color: var(--traspaso); }
   .sin-regla .mov { padding: 9px 4px; }
+  .saldo-tras { display: block; font-size: 10.5px; color: var(--muted); font-weight: 600; text-align: right; margin-top: 1px; }
+  .mov:has(.saldo-tras) { flex-wrap: wrap; } .mov .saldo-tras { flex-basis: 100%; margin-top: -4px; }
+  .saldo-cta { display: grid; gap: 10px; }
+  .saldo-cta small { display: block; color: var(--muted); font-weight: 700; font-size: 12px; }
+  .saldo-cta b { font-size: 22px; font-weight: 800; }
+  .saldo-cta p { margin: 4px 0 0; font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .saldo-cta .btn { padding: 11px; font-size: 14px; }
   .ficha { background: var(--pista); border-radius: 16px; padding: 12px 14px; margin: 0 0 12px; }
   .ficha-c { font-weight: 800; font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; margin-bottom: 6px; }
   .ficha-f { display: flex; gap: 10px; font-size: 13px; padding: 2px 0; }
@@ -1003,6 +1010,10 @@ function vMovs() {
   const mesF = mes.filter(pasa);
   const nada = tipoFiltro || catFiltro || fvFiltro ? 'No hay movimientos con estos filtros este mes' : 'No hay movimientos este mes';
   if (vistaMovs === 'lista') {
+    const cta = bancoFiltro && D.cuentas.find(c => c.banco === bancoFiltro);
+    if (cta) h += `<section class="card saldo-cta"><div><small>Saldo de ${esc(cta.banco)} hoy en SUMS</small><b class="num">${fmt(saldoEn(cta, HOY))}</b>
+      <p>A la derecha de cada movimiento ves el saldo que quedaba después. Compáralo con el «Disponible» o «Saldo» del banco para encontrar dónde deja de cuadrar.</p></div>
+      <button class="btn sec" data-acc="ajustarSaldo">Ajustar al saldo real</button></section>`;
     h += `<section class="card">${mesF.length ? agruparPorDia(ordenar(mesF)) : `<div class="vacio">${nada}</div>`}</section>`;
     return h;
   }
@@ -1032,7 +1043,16 @@ function vMovs() {
   }
   return h;
 }
+function saldosTras(banco) {   // saldo de la cuenta justo después de cada movimiento (para compararlo con el «Disponible» del banco)
+  const c = D.cuentas.find(x => x.banco === banco); if (!c) return null;
+  const o = {}, l = D.movs.filter(m => deltaCuenta(m, banco)).sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+  const antes = l.filter(m => m.fecha <= c.fecha), despues = l.filter(m => m.fecha > c.fecha);
+  let s = c.saldoInicial; despues.forEach(m => { s += deltaCuenta(m, banco); o[m.id] = s; });
+  s = c.saldoInicial; antes.reverse().forEach(m => { o[m.id] = s; s -= deltaCuenta(m, banco); });
+  return o;
+}
 function agruparPorDia(lista, conMes) {
+  const sal = bancoFiltro && bancoFiltro !== SIN_BANCO ? saldosTras(bancoFiltro) : null;
   let h = '', ult = '';
   lista.forEach(m => {
     if (m.fecha !== ult) {
@@ -1040,7 +1060,7 @@ function agruparPorDia(lista, conMes) {
       const d = desdeYmd(m.fecha);
       h += `<div class="grupo">${fechaLarga(m.fecha)}${conMes ? ' ' + d.getFullYear() : ''}</div>`;
     }
-    h += filaMov(m);
+    h += sal && sal[m.id] !== undefined ? filaMov(m).replace(/<\/div>$/, `<span class="saldo-tras num">${fmt(sal[m.id])}</span></div>`) : filaMov(m);
   });
   return h;
 }
@@ -1061,10 +1081,17 @@ function deltaCuenta(m, banco) {
   if (bancoDe(m.metodo) !== banco) return 0;
   return m.tipo === 'Gasto' ? -m.importe : m.importe;
 }
-function saldoEn(c, f) { return D.movs.reduce((a, m) => a + (m.fecha > c.fecha && m.fecha <= f ? deltaCuenta(m, c.banco) : 0), c.saldoInicial); }
+// Saldo de una cuenta en una fecha: parte del «Saldo inicial» de la pestaña Cuentas y suma lo posterior (o resta lo anterior, para el histórico)
+function saldoEn(c, f) {
+  if (f >= c.fecha) return D.movs.reduce((a, m) => a + (m.fecha > c.fecha && m.fecha <= f ? deltaCuenta(m, c.banco) : 0), c.saldoInicial);
+  return D.movs.reduce((a, m) => a - (m.fecha > f && m.fecha <= c.fecha ? deltaCuenta(m, c.banco) : 0), c.saldoInicial);
+}
 function seriePatrimonio() {
   if (!D.cuentas.length) return [];
-  const inicio = D.cuentas.map(c => c.fecha).sort().pop();
+  // Empieza en el primer movimiento de alguna cuenta (máximo 3 años atrás), así se ve también el historial importado
+  const tope = ymd(new Date(hoy.getFullYear() - 3, hoy.getMonth(), hoy.getDate()));
+  const primero = D.movs.filter(m => D.cuentas.some(c => deltaCuenta(m, c.banco))).reduce((a, m) => m.fecha < a ? m.fecha : a, D.cuentas.map(c => c.fecha).sort()[0]);
+  const inicio = primero < tope ? tope : primero;
   const serie = [];
   for (let d = desdeYmd(inicio); ymd(d) <= HOY; d.setDate(d.getDate() + 1)) {
     const f = ymd(d); serie.push({ f, v: D.cuentas.reduce((a, c) => a + saldoEn(c, f), 0) });
@@ -1673,6 +1700,7 @@ $('#app').addEventListener('click', e => {
       if (a === 'irGastos') { anaVista = 'donut'; anaPer = 'Mes'; anaRef = new Date(anaMes); } else anaVista = 'evol';
       window.scrollTo(0, 0); return pintar(true);
     }
+    if (a === 'ajustarSaldo') return abrirAjusteSaldo(bancoFiltro);
     if (a === 'verTodos') { tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
     if (a === 'buscar') { busqueda = ''; return pintar(); }
     if (a === 'cerrarBusqueda') { busqueda = null; return pintar(); }
@@ -2055,6 +2083,32 @@ $('#hoja').addEventListener('click', async e => {
     }
   }
 });
+// ── Cuadrar el saldo de una cuenta con el saldo real del banco ──
+// Se guarda en Cuentas: Saldo inicial = saldo real − movimientos de hoy, con fecha de ayer (así lo que apuntes hoy sigue contando)
+function abrirAjusteSaldo(banco) {
+  const c = D.cuentas.find(x => x.banco === banco); if (!c) return;
+  const app = saldoEn(c, HOY);
+  $('#hoja').innerHTML = `<div class="tirador"></div><h2>Ajustar saldo de ${esc(banco)}</h2>
+    <div class="aviso">SUMS calcula <b>${fmt(app)}</b>. Escribe el saldo que te muestra ahora el banco y la app corregirá la diferencia sin tocar tus movimientos.</div>
+    <label>Saldo real ahora en ${esc(banco)}</label><input id="ajSaldo" class="grande" inputmode="decimal" placeholder="0,00 €">
+    <div class="aviso" id="ajDif" style="margin-top:10px"></div>
+    <div class="botones"><button class="btn sec" data-aj="cerrar">Cancelar</button><button class="btn pri" id="ajOk" disabled>Ajustar</button></div>`;
+  abrirHoja();
+  const inp = $('#ajSaldo');
+  inp.addEventListener('input', () => { const v = numImporteS(inp.value); const ok = isFinite(v);
+    $('#ajOk').disabled = !ok; $('#ajDif').innerHTML = ok ? `Diferencia: <b>${fmt(v - app, true)}</b>` : ''; });
+  $('#ajOk').addEventListener('click', async () => {
+    const real = numImporteS(inp.value); if (!isFinite(real)) return;
+    const hoyMovs = D.movs.filter(m => m.fecha === HOY).reduce((a, m) => a + deltaCuenta(m, banco), 0);
+    const ayer = ymd(new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - 1));
+    $('#ajOk').disabled = true; $('#ajOk').textContent = 'Guardando…';
+    try {
+      await api('api_ajustarCuenta', banco, Math.round((real - hoyMovs) * 100) / 100, ayer);
+      cerrarHoja(); toast('Saldo de ' + banco + ' ajustado'); await recargar();
+    } catch (err) { toast(/función no disponible|importe no v/i.test(err.message) ? 'Falta actualizar Código.gs en Apps Script y publicar una nueva versión' : err.message); $('#ajOk').disabled = false; $('#ajOk').textContent = 'Ajustar'; }
+  });
+}
+const numImporteS = v => { let t = String(v == null ? '' : v).trim().replace(/[^\d,.\-]/g, ''); if (!t) return NaN; if (t.indexOf(',') > -1) t = t.replace(/\./g, '').replace(',', '.'); return parseFloat(t); };
 // ── Formulario de movimiento ─────────────────────────────
 const opciones = (lista, valor, vacio, emoji) => {
   const l = lista.slice(); if (valor && l.indexOf(valor) < 0) l.push(valor);
@@ -2246,6 +2300,7 @@ function demoApi(fn, ...a) {
   if (fn === 'api_agregar') { window.__demo.movs.push(Object.assign({ id: 'd' + Math.random().toString(36).slice(2, 8), hora: '12:00', concepto: a[0].concepto || a[0].detalle || a[0].subcategoria || a[0].categoria || 'Traspaso' }, a[0], { importe: Math.abs(parseFloat(String(a[0].importe).replace(',', '.'))) })); }
   if (fn === 'api_importar') { a[0].forEach(d => window.__demo.movs.push(Object.assign({ id: 'i' + Math.random().toString(36).slice(2, 8), hora: '12:00', vinculado: '', origen: 'Importado' }, d))); return a[0].length; }
   if (fn === 'api_recategorizar') { a[0].forEach(c => { const m = window.__demo.movs.find(x => x.id === c.id); if (m) Object.assign(m, { categoria: c.categoria, subcategoria: c.subcategoria, detalle: c.detalle }); }); return a[0].length; }
+  if (fn === 'api_ajustarCuenta') { const c = window.__demo.cuentas.find(x => x.banco === a[0]); Object.assign(c, { saldoInicial: a[1], fecha: a[2] }); return true; }
   if (fn === 'api_borrar') { window.__demo.movs = window.__demo.movs.filter(m => m.id !== a[0]); }
   return true;
 }
