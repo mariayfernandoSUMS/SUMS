@@ -59,6 +59,10 @@
   .mes button { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: var(--muted); }
   .mes button.pulsado { background: var(--bg); }
   .mes svg { width: 18px; height: 18px; }
+  .mes-fija { position: sticky; top: calc(env(safe-area-inset-top) + 8px); z-index: 15; }
+  .mes-fija.pegada { box-shadow: 0 6px 20px rgba(20, 24, 28, .14); }
+  .mes-fija.pegada::before { content: ''; position: absolute; left: -16px; right: -16px; top: calc(-8px - env(safe-area-inset-top)); height: calc(8px + env(safe-area-inset-top));
+    background: var(--bg); pointer-events: none; }
 
   /* Bloque balance (oscuro) */
   .balance { --b-ink: var(--ink); --b-sub: #8a857a; --b-cristal: rgba(255,255,255,.65); --b-barra: #c9c4b8; --b-barra-hoy: #6f695e;
@@ -971,7 +975,7 @@ function vMovs() {
       <section class="card">${q.length < 2 ? '<div class="vacio">Escribe al menos 2 letras</div>' : res.length ? agruparPorDia(res, true) : '<div class="vacio">Sin resultados</div>'}</section>`;
     return h;
   }
-  h += selectorMes();
+  h += selectorMes().replace('class="mes"', 'class="mes mes-fija"');   // se queda pegado arriba al bajar por la lista
   h += `<div class="seg seg-vista"><button data-vista="lista" class="${vistaMovs === 'lista' ? 'on' : ''}">Lista</button><button data-vista="calendario" class="${vistaMovs === 'calendario' ? 'on' : ''}">Calendario</button></div>`;
   const mes = delMes(filtrados(), mesSel), r = resumen(mes);
   h += `<div class="tres"><div class="ing"><small>Ingreso</small><b class="num">${N(r.ing)}</b></div>
@@ -2175,8 +2179,16 @@ $('#hoja').addEventListener('click', async e => {
     $('#fGuardar').disabled = true;
     try {
       await (form.id ? api('api_editar', form.id, d) : api('api_agregar', d));
-      const volver = form.volver; cerrarHoja(); toast(form.id ? 'Cambios guardados' : 'Movimiento añadido'); await recargar();
-      if (volver === 'reclasificar') setTimeout(abrirReclasificar, 350);
+      if (form.volver === 'reclasificar') {
+        // Se queda en la lista de «Sin clasificar»: se actualiza el movimiento aquí mismo y la hoja se recarga por detrás
+        const m = form.mov;
+        Object.assign(m, { tipo: d.tipo, categoria: d.categoria || (d.tipo === 'Ingreso' ? 'Otros ingresos' : 'Sin clasificar'), subcategoria: d.subcategoria, detalle: d.detalle,
+          concepto: d.concepto || m.concepto, metodo: d.metodo, destino: d.destino, notas: d.notas, fecha: d.fecha || m.fecha });
+        abrirReclasificar(); toast('Cambios guardados');
+        recargar().then(() => pintar()).catch(() => {});
+        return;
+      }
+      cerrarHoja(); toast(form.id ? 'Cambios guardados' : 'Movimiento añadido'); await recargar();
     } catch (err) {
       if (err.message === SIN_RED && !form.id && INSTALADA) {
         if (!(numImporte(d.importe) > 0)) { toast('Escribe un importe'); $('#fGuardar').disabled = false; return; }
@@ -2194,7 +2206,8 @@ $('#hoja').addEventListener('click', async e => {
 // Abrir y cerrar la hoja con animación (sube al abrir, baja al cerrar)
 function abrirHoja() {
   const v = $('#velo'), h = $('#hoja');
-  clearTimeout(v._t); h.style.transform = ''; h.classList.remove('vuelve');
+  clearTimeout(v._t); h.style.transform = ''; h.classList.remove('vuelve'); h.scrollTop = 0;
+  if (!v.classList.contains('oculto') && !v.classList.contains('cierra')) return;   // ya abierta: solo cambia el contenido, sin volver a animar
   v.classList.remove('oculto', 'cierra'); v.classList.add('abre');
   h.addEventListener('animationend', () => v.classList.remove('abre'), { once: true });
 }
@@ -2331,6 +2344,8 @@ if (INSTALADA && 'serviceWorker' in navigator) {
 // Sin zoom: ni con dos dedos ni con doble toque
 ['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
 document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+// Sombra un poco más marcada cuando el selector de mes de Movimientos está pegado arriba
+window.addEventListener('scroll', () => { const m = document.querySelector('.mes-fija'); if (m) m.classList.toggle('pegada', window.scrollY > 90); }, { passive: true });
 cargar();
 </script>
 </body>
