@@ -1721,8 +1721,10 @@ function prevision(ref) {
   const varRest = porCat.reduce((a, o) => a + o.falta, 0);
   const prev = actual || futuro ? previstosMes(ref)
     : todo.filter(m => m.origen === 'Recurrente' && m.fecha > corte).map(m => Object.assign({}, m, { previsto: true }));
-  const fijosPend = prev.filter(q => q.tipo === 'Gasto'), ingPend = prev.filter(q => q.tipo === 'Ingreso');
-  const pf = fijosPend.reduce((a, q) => a + q.importe, 0), pi = ingPend.reduce((a, q) => a + q.importe, 0);
+  // Los reembolsos previstos (Recurrentes con Tipo = Reembolso) restan gasto, igual que los reales
+  const sg = q => q.tipo === 'Reembolso' ? -q.importe : q.importe;
+  const fijosPend = prev.filter(q => q.tipo === 'Gasto' || q.tipo === 'Reembolso'), ingPend = prev.filter(q => q.tipo === 'Ingreso');
+  const pf = fijosPend.reduce((a, q) => a + sg(q), 0), pi = ingPend.reduce((a, q) => a + q.importe, 0);
   const gasFin = r.gas + varRest + pf, ingFin = r.ing + pi, ahoFin = ingFin - gasFin;
   // Margen: la variación habitual del gasto variable, en proporción a lo que queda de mes
   const margen = med.sd * (N - d) / N;
@@ -1737,7 +1739,7 @@ function prevision(ref) {
     const f = ymd(new Date(y, mo, i));
     if (i <= ultReal) { a += gastoNeto(todo.filter(m => m.fecha === f)); real.push(a); }
     if (i === d) b = real[d - 1];
-    if (i > d) { b += ritmo + fijosPend.filter(q => q.fecha === f).reduce((s, q) => s + q.importe, 0); previsto.push(b); }
+    if (i > d) { b += ritmo + fijosPend.filter(q => q.fecha === f).reduce((s, q) => s + sg(q), 0); previsto.push(b); }
   }
   let ant = null;
   if (actual) {
@@ -1812,7 +1814,7 @@ function vAnaPrev() {
   const sub = p.actual ? 'Cómo acabará el mes' : p.futuro ? 'Lo que se espera' : 'Lo previsto frente a lo real';
   const cab = cabDetalle('Previsión', !p.actual, sub) + nav;
   if (p.vacio) return cab + `<section class="card"><div class="vacio">No hay movimientos en ${nom}</div></section>`;
-  const filasPend = (l, cls) => l.map(q => `<div class="ley-f"><span class="n">${esc(q.concepto)}</span><small>${fechaCorta(q.fecha)}</small><b class="num ${cls}">${cls === 'in' ? '+' : '−'}${fmt(q.importe)}</b></div>`).join('');
+  const filasPend = (l, cls) => l.map(q => `<div class="ley-f"><span class="n">${esc(q.concepto)}</span><small>${fechaCorta(q.fecha)}</small><b class="num ${q.tipo === 'Reembolso' ? 'in' : cls}">${cls === 'in' || q.tipo === 'Reembolso' ? '+' : '−'}${fmt(q.importe)}</b></div>`).join('');
   const nMed = p.med.n ? `tu media de ${p.med.n} ${p.med.n === 1 ? 'mes' : 'meses'}` : 'aún sin meses anteriores';
   // Categorías: lo que lleva gastado frente a lo normal a estas alturas
   const filaCat = o => { const e = emojiDe(o.c), pct = o.media ? Math.min(100, o.gastado / o.media * 100) : 100, esp = o.media ? Math.min(100, o.esperado / o.media * 100) : 0;
