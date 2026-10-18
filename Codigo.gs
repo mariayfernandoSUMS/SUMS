@@ -230,7 +230,7 @@ function doGet(e) {
 // Funciones que puede usar la app instalada (cada una comprueba la clave)
 const API_APP_ = { api_datos: (...a) => api_datos(...a), api_agregar: (...a) => api_agregar(...a), api_editar: (...a) => api_editar(...a),
   api_borrar: (...a) => api_borrar(...a), api_ordenCuentas: (...a) => api_ordenCuentas(...a), api_listar: (...a) => api_listar(...a),
-  api_importar: (...a) => api_importar(...a) };
+  api_importar: (...a) => api_importar(...a), api_recategorizar: (...a) => api_recategorizar(...a) };
 function doPost(e) {
   try {
     let d = {};
@@ -238,6 +238,7 @@ function doPost(e) {
     catch (_) { d = e.parameter || {}; }
     // Llamadas de la app instalada (SUMS en GitHub Pages): { accion: 'api_datos', token, args: [...] }
     if (d.accion && API_APP_[d.accion]) return json_({ ok: true, datos: API_APP_[d.accion].apply(null, [d.token].concat(d.args || [])) });
+    if (d.accion) throw new Error('Función no disponible: ' + d.accion + '. Actualiza Código.gs');
     comprobarToken_(d.token);
     const m = agregar_(d, 'Atajo');
     const ruta = m.tipo === 'Traspaso' ? m.metodo + ' → ' + m.destino
@@ -302,6 +303,24 @@ function api_importar(token, filas) {
     h.getRange(h.getLastRow() + 1, 1, datos.length, CAB_MOV.length).setValues(datos);
   });
   return datos.length;
+}
+// Cambia la categoría de varios movimientos de golpe: [{ id, categoria, subcategoria, detalle }]
+function api_recategorizar(token, cambios) {
+  comprobarToken_(token);
+  if (!Array.isArray(cambios) || !cambios.length) return 0;
+  return conBloqueo_(() => {
+    const h = hoja_(H.MOV), n = h.getLastRow() - 1;
+    if (n < 1) return 0;
+    const ids = h.getRange(2, C.ID + 1, n, 1).getValues().map(r => String(r[0]));
+    const bloque = h.getRange(2, C.CAT + 1, n, 3), vals = bloque.getValues();
+    let hechos = 0;
+    cambios.forEach(c => {
+      const i = ids.indexOf(String(c.id)); if (i < 0) return;
+      vals[i] = [String(c.categoria || ''), String(c.subcategoria || ''), String(c.detalle || '')]; hechos++;
+    });
+    if (hechos) bloque.setValues(vals);
+    return hechos;
+  });
 }
 function api_agregar(token, d) { comprobarToken_(token); agregar_(d, 'App'); return true; }
 
@@ -635,7 +654,19 @@ function categorizar_(concepto) {
     }
     return false;
   });
-  return hit ? hit.slice(1) : null;
+  if (hit) return hit.slice(1);
+  // Sin regla: busca el nombre de un detalle, subcategoría o categoría de gasto dentro del concepto
+  const arbol = config_().categorias.Gasto, cand = [];
+  const prueba = (nombre, ruta, nivel) => {
+    const n = sinAcentos_(nombre).trim();
+    if (n.length < 4 || /^(otros?|sin clasificar|material|planes|varios)$/.test(n)) return;
+    const re = new RegExp('(^|[^a-z0-9])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)');
+    if (re.test(texto)) cand.push({ ruta, nivel, largo: n.length });
+  };
+  Object.keys(arbol).forEach(c => { prueba(c, [c, '', ''], 1);
+    Object.keys(arbol[c]).forEach(su => { prueba(su, [c, su, ''], 2); arbol[c][su].forEach(d => prueba(d, [c, su, d], 3)); }); });
+  cand.sort((a, b) => b.nivel - a.nivel || b.largo - a.largo);
+  return cand.length ? cand[0].ruta : null;
 }
 
 function parsearImporte_(v) {

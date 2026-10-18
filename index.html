@@ -99,16 +99,16 @@
   .vacio { color: var(--muted); text-align: center; padding: 22px 0; font-size: 14px; }
 
   /* Fila de movimiento */
-  .mov { display: flex; align-items: center; gap: 12px; padding: 11px 0; cursor: pointer; }
+  .mov { display: flex; align-items: center; gap: 12px; padding: 9px 0; cursor: pointer; }
   .mov + .mov { border-top: 1px solid var(--line); }
   .ico { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; flex: none; font-weight: 800; font-size: 15px; }
-  .ico.emo { font-size: 25px; font-weight: 400; line-height: 1; background: none !important; }
+  .ico.emo { font-size: 23px; font-weight: 400; line-height: 1; background: none !important; }
   .emo-ley { margin-right: 6px; }
   .mov .txt { flex: 1; min-width: 0; }
-  .mov .t { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mov .s { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mov .imp { font-weight: 700; white-space: nowrap; text-align: right; }
-  .mov .imp small { display: block; font-size: 12px; color: var(--reemb); font-weight: 600; }
+  .mov .t { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mov .s { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mov .imp { font-weight: 700; font-size: 14px; white-space: nowrap; text-align: right; }
+  .mov .imp small { display: block; font-size: 11px; color: var(--reemb); font-weight: 600; }
   .mov .tachado { text-decoration: line-through; color: var(--muted); font-weight: 500; }
   .mov.previsto { opacity: .6; }
   .mov.previsto .ico { background: transparent !important; border: 1.5px dashed var(--muted); color: var(--muted) !important; }
@@ -315,6 +315,11 @@
     letter-spacing: 0; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .imp-cat select { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; padding: 0; border: 0; font-size: 16px; }
   .imp-f > b { white-space: nowrap; font-size: 14px; } .imp-f > b.in { color: var(--ingreso); } .imp-f > b.re { color: var(--reemb); } .imp-f > b.tr { color: var(--traspaso); }
+  .ficha { background: var(--pista); border-radius: 16px; padding: 12px 14px; margin: 0 0 12px; }
+  .ficha-c { font-weight: 800; font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; margin-bottom: 6px; }
+  .ficha-f { display: flex; gap: 10px; font-size: 13px; padding: 2px 0; }
+  .ficha-f span { color: var(--muted); font-weight: 600; min-width: 52px; flex: none; }
+  .ficha-f b { font-weight: 600; overflow-wrap: anywhere; }
   .opcion { display: block; width: 100%; text-align: left; padding: 16px; border-radius: 16px; background: #f6f5f1; font-weight: 700; margin-top: 8px; }
 
   /* Pantallas de entrada */
@@ -1725,6 +1730,7 @@ function abrirAjustes() {
     <div class="temas">${[['claro', 'Claro'], ['oscuro', 'Oscuro'], ['sistema', 'Sistema']].map(([k, t]) => `<button data-tema="${k}" class="${window.TEMA === k ? 'on' : ''}">${t}</button>`).join('')}</div>
     <div class="ajuste-lbl" style="margin-top:16px">Datos</div>
     <button class="opcion" data-aj="importar">📥 Importar movimientos del banco <span style="color:var(--muted);font-weight:500">(Excel o CSV)</span></button>
+    <button class="opcion" data-aj="reclasificar">🏷️ Clasificar los «Sin clasificar» con las Reglas <span style="color:var(--muted);font-weight:500">(${sinClasificar().length})</span></button>
     <div class="ajuste-lbl" style="margin-top:16px">Cuenta</div>
     <button class="opcion" data-aj="usuario">Cambiar de usuario <span style="color:var(--muted);font-weight:500">(ahora: ${esc(USUARIO)})</span></button>
     <button class="opcion" data-aj="salir">Cerrar sesión</button>
@@ -1869,7 +1875,8 @@ function leerExtracto(filas, nombreArchivo) {
     const textos = cDesc.map(c => String(r[c] || '').trim()).filter(Boolean);
     let concepto = textos[0] || 'Sin concepto';
     if (textos[1] && /bizum|transferencia|traspaso|trans |recibo|devoluci/i.test(concepto) && !/^(otros|pago con tarjeta)$/i.test(textos[1])) concepto += ' · ' + textos[1];
-    out.push({ fecha: fechas[0], importe: imp, concepto: concepto.replace(/\s+/g, ' ').slice(0, 80), texto: textos.join(' '), banco });
+    const unicos = textos.filter((t, i) => textos.findIndex(u => sinAc(u).replace(/\s+/g, ' ') === sinAc(t).replace(/\s+/g, ' ')) === i);
+    out.push({ fecha: fechas[0], importe: imp, concepto: concepto.replace(/\s+/g, ' ').slice(0, 80), texto: unicos.join(' · ').replace(/\s+/g, ' '), banco });
   }
   return out;
 }
@@ -1990,7 +1997,7 @@ $('#hoja').addEventListener('click', async e => {
   if (e.target.closest('[data-impok]') && IMP) {
     const sel = IMP.filas.filter(f => f.on), b = $('#impGuardar'); b.disabled = true;
     const datos = sel.map(f => ({ fecha: f.fecha, importe: f.importe, tipo: f.tipo, concepto: f.concepto, categoria: f.cat, subcategoria: f.sub, detalle: f.det,
-      metodo: desdeImp(f), destino: haciaImp(f), quien: USUARIO, notas: 'Importado del banco' }));
+      metodo: desdeImp(f), destino: haciaImp(f), quien: USUARIO, notas: f.texto }));
     try {
       for (let i = 0; i < datos.length; i += 150) { b.textContent = `Importando… ${Math.min(i + 150, datos.length)}/${datos.length}`; await api('api_importar', datos.slice(i, i + 150)); }
       IMP = null; cerrarHoja(); toast(datos.length === 1 ? '1 movimiento importado' : datos.length + ' movimientos importados'); await recargar();
@@ -2002,6 +2009,40 @@ $('#hoja').addEventListener('click', async e => {
   }
 });
 
+// ── Reclasificar con las Reglas los movimientos que quedaron «Sin clasificar» ──
+const sinClasificar = () => D.movs.filter(m => (m.tipo === 'Gasto' || m.tipo === 'Reembolso') && !m.pendiente && (!m.categoria || m.categoria === 'Sin clasificar'));
+let RECL = null;
+function abrirReclasificar() {
+  const lista = sinClasificar().map(m => ({ m, r: reglaPara([m.concepto, m.detalle, m.subcategoria, m.notas].filter(Boolean).join(' ')) })).filter(x => x.r);
+  RECL = lista.map(x => ({ id: x.m.id, on: true, cat: x.r[0], sub: x.r[1], det: x.r[2], m: x.m }));
+  const total = sinClasificar().length;
+  $('#hoja').innerHTML = `<div class="tirador"></div><h2>Clasificar con las Reglas</h2>
+    <div class="aviso">${!total ? 'No hay ningún movimiento «Sin clasificar». 🎉' : RECL.length
+      ? `Hay ${total} sin clasificar y las Reglas encuentran categoría para <b>${RECL.length}</b>. Revisa y quita la marca de los que no quieras cambiar.`
+      : `Hay ${total} sin clasificar, pero ninguna Regla les encaja. Añade palabras en la pestaña Reglas de la hoja y vuelve a probar.`}</div>
+    <div class="imp-lista">${RECL.map(x => `<div class="imp-f" data-k="${esc(x.id)}">
+      <button class="imp-chk" data-reclchk="${esc(x.id)}" aria-label="Incluir">✓</button>
+      <div class="imp-t"><div class="t">${esc(x.m.concepto)}</div><div class="s">${fechaCorta(x.m.fecha)} · ${esc(x.m.metodo || '')}</div>
+        <div class="imp-cat">${esc(textoCat({ tipo: x.m.tipo, cat: x.cat, sub: x.sub, det: x.det }))}</div></div>
+      <b class="num${x.m.tipo === 'Reembolso' ? ' re' : ''}">${x.m.tipo === 'Reembolso' ? '+' : '−'}${fmt(x.m.importe)}</b></div>`).join('')}</div>
+    <div class="botones"><button class="btn sec" data-aj="cerrar">${RECL.length ? 'Cancelar' : 'Cerrar'}</button>${RECL.length ? `<button class="btn pri" id="reclOk" data-reclok="1">Clasificar ${RECL.length}</button>` : ''}</div>`;
+  abrirHoja();
+}
+$('#hoja').addEventListener('click', async e => {
+  const c = e.target.closest('[data-reclchk]');
+  if (c && RECL) { const x = RECL.find(y => y.id === c.dataset.reclchk); x.on = !x.on; c.textContent = x.on ? '✓' : ''; c.closest('.imp-f').classList.toggle('off', !x.on);
+    const n = RECL.filter(y => y.on).length, b = $('#reclOk'); b.textContent = 'Clasificar ' + n; b.disabled = !n; return; }
+  if (e.target.closest('[data-reclok]') && RECL) {
+    const sel = RECL.filter(x => x.on), b = $('#reclOk'); b.disabled = true; b.textContent = 'Guardando…';
+    try {
+      await api('api_recategorizar', sel.map(x => ({ id: x.id, categoria: x.cat, subcategoria: x.sub, detalle: x.det })));
+      RECL = null; cerrarHoja(); toast(sel.length === 1 ? '1 movimiento clasificado' : sel.length + ' movimientos clasificados'); await recargar();
+    } catch (err) {
+      toast(err.message === SIN_RED ? 'Sin conexión: inténtalo con cobertura' : /función no disponible|importe no v/i.test(err.message) ? 'Falta actualizar Código.gs en Apps Script y publicar una nueva versión' : err.message);
+      b.disabled = false; b.textContent = 'Clasificar ' + RECL.filter(x => x.on).length;
+    }
+  }
+});
 // ── Formulario de movimiento ─────────────────────────────
 const opciones = (lista, valor, vacio, emoji) => {
   const l = lista.slice(); if (valor && l.indexOf(valor) < 0) l.push(valor);
@@ -2014,6 +2055,7 @@ function abrirForm(m, preset) {
   const bancos = D.config.metodos;
   $('#hoja').innerHTML = `<div class="tirador"></div><h2>${m ? 'Editar movimiento' : preset ? 'Nuevo reembolso' : 'Nuevo movimiento'}</h2>
     <div class="seg" id="fTipo">${['Gasto', 'Ingreso', 'Reembolso', 'Traspaso'].map(t => `<button type="button" data-t="${t}" class="${t === form.tipo ? 'on' : ''}">${t}</button>`).join('')}</div>
+    ${m ? fichaMov(m) : ''}
     <div class="aviso oculto" id="fAviso"></div>
     <input id="fImp" class="grande" inputmode="decimal" placeholder="0,00 €" value="${p.importe ? String(p.importe).replace('.', ',') : ''}">
     <div id="fCats">
@@ -2026,6 +2068,7 @@ function abrirForm(m, preset) {
       <div><label>Desde</label><select id="fDesde">${opciones(bancos, p.tipo === 'Traspaso' ? p.metodo : bancos[0])}</select></div>
       <div><label>Hacia</label><select id="fHacia">${opciones(bancos, p.tipo === 'Traspaso' ? p.destino : bancos[1] || bancos[0])}</select></div>
     </div>
+    <label>Concepto</label><input id="fConc" placeholder="Opcional (si lo dejas vacío se usa la categoría)" value="${esc(m ? m.concepto : (p.concepto || ''))}">
     <label>Fecha</label><input id="fFecha" type="date" value="${p.fecha || HOY}">
     <label>Notas</label><input id="fNotas" placeholder="Opcional" value="${esc(p.notas || '')}">
     <div class="botones">
@@ -2037,6 +2080,16 @@ function abrirForm(m, preset) {
   ponerTipo(form.tipo, p);
   abrirHoja();
   if (!m && !preset) setTimeout(() => $('#fImp').focus(), 120);
+}
+// Toda la información del movimiento (concepto completo, texto del banco, banco, quién y de dónde vino)
+function fichaMov(m) {
+  const d = desdeYmd(m.fecha);
+  const origen = { Atajo: 'Atajo', 'Atajo Apple Pay': 'Apple Pay', App: 'App', Recurrente: 'Recurrente', Importado: 'Importado del banco' }[m.origen] || m.origen || '';
+  const banco = m.tipo === 'Traspaso' ? `${m.metodo} → ${m.destino}` : m.metodo;
+  const filas = [['Fecha', `${cap(DIAS[d.getDay()])}, ${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}${m.hora && m.hora !== '00:00' && m.hora !== '12:00' ? ' · ' + m.hora : ''}`],
+    ['Banco', banco], ['Quién', m.quien], ['Origen', origen], ['Notas', m.notas]].filter(f => f[1]);
+  return `<div class="ficha"><div class="ficha-c">${esc(m.concepto)}</div>
+    ${filas.map(([k, v]) => `<div class="ficha-f"><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>`;
 }
 function autoGenerado(m) {
   const c = sinAc(m.concepto);
@@ -2082,6 +2135,7 @@ $('#hoja').addEventListener('click', async e => {
   const aj = e.target.closest('[data-aj]');
   if (aj) {
     if (aj.dataset.aj === 'importar') { abrirImportar(); return; }
+    if (aj.dataset.aj === 'reclasificar') { abrirReclasificar(); return; }
     if (aj.dataset.aj === 'usuario') { cerrarHoja(); pedirUsuario(); }
     else if (aj.dataset.aj === 'salir') { guardar('fin_token', null); guardar('sums_api', null); API_URL = null; guardar('sums_usuario', null); TOKEN = null; USUARIO = null; cerrarHoja(); pantalla('login'); }
     else cerrarHoja();
@@ -2104,7 +2158,7 @@ $('#hoja').addEventListener('click', async e => {
   if (f.dataset.f === 'guardar') {
     const tr = form.tipo === 'Traspaso';
     const d = { tipo: form.tipo, importe: $('#fImp').value, fecha: $('#fFecha').value, notas: $('#fNotas').value, quien: (form.mov && form.mov.quien) || USUARIO,
-      concepto: form.autoConcepto ? '' : form.conceptoOriginal,
+      concepto: (() => { const v = $('#fConc').value.trim(); return v === form.conceptoOriginal && form.autoConcepto ? '' : v; })(),
       categoria: tr ? '' : $('#fCat').value, subcategoria: tr ? '' : $('#fSub').value, detalle: tr ? '' : $('#fDet').value,
       metodo: tr ? $('#fDesde').value : $('#fBanco').value, destino: tr ? $('#fHacia').value : '',
       vinculado: form.tipo === 'Reembolso' ? form.vinculado : '' };
@@ -2169,6 +2223,7 @@ function demoApi(fn, ...a) {
   if (fn === 'api_datos') { if (!window.__demo) window.__demo = crearDemo(); return JSON.parse(JSON.stringify(window.__demo)); }
   if (fn === 'api_agregar') { window.__demo.movs.push(Object.assign({ id: 'd' + Math.random().toString(36).slice(2, 8), hora: '12:00', concepto: a[0].concepto || a[0].detalle || a[0].subcategoria || a[0].categoria || 'Traspaso' }, a[0], { importe: Math.abs(parseFloat(String(a[0].importe).replace(',', '.'))) })); }
   if (fn === 'api_importar') { a[0].forEach(d => window.__demo.movs.push(Object.assign({ id: 'i' + Math.random().toString(36).slice(2, 8), hora: '12:00', vinculado: '', origen: 'Importado' }, d))); return a[0].length; }
+  if (fn === 'api_recategorizar') { a[0].forEach(c => { const m = window.__demo.movs.find(x => x.id === c.id); if (m) Object.assign(m, { categoria: c.categoria, subcategoria: c.subcategoria, detalle: c.detalle }); }); return a[0].length; }
   if (fn === 'api_borrar') { window.__demo.movs = window.__demo.movs.filter(m => m.id !== a[0]); }
   return true;
 }
