@@ -32,7 +32,7 @@
     -webkit-font-smoothing: antialiased; }
   button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
   .oculto { display: none !important; }
-  main { max-width: 520px; margin: 0 auto; padding: calc(10px + env(safe-area-inset-top)) 16px 112px; }
+  main { max-width: 520px; margin: 0 auto; padding: calc(10px + env(safe-area-inset-top)) 16px 118px; }
   .num { font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
 
   /* Cabecera */
@@ -231,7 +231,7 @@
 
   /* Barra inferior */
   /* Efecto cristal (inspirado en Liquid Glass): fondo translúcido, desenfoque y brillos en los bordes */
-  .barra { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(6px, calc(env(safe-area-inset-bottom) - 20px)); z-index: 20;
+  .barra { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(10px, calc(env(safe-area-inset-bottom) - 11px)); z-index: 20;
     display: flex; align-items: center; gap: 4px; border-radius: 99px; padding: 6px; width: min(calc(100% - 28px), 420px); justify-content: space-between;
     background: linear-gradient(180deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,.12) 100%);
     backdrop-filter: blur(3px) saturate(190%) brightness(1.04); -webkit-backdrop-filter: blur(3px) saturate(190%) brightness(1.04);
@@ -242,12 +242,12 @@
   .barra::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.4px; pointer-events: none; z-index: 2;
     background: conic-gradient(from 200deg, rgba(255,255,255,.95), rgba(255,236,170,.55) 12%, rgba(255,255,255,.08) 28%, rgba(160,205,255,.5) 45%, rgba(255,255,255,.9) 52%, rgba(255,255,255,.08) 68%, rgba(150,230,215,.5) 84%, rgba(255,255,255,.95));
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
-  .tab { position: relative; z-index: 1; height: 48px; width: 60px; border-radius: 99px; display: flex; align-items: center; justify-content: center; color: #6f747b;
+  .tab { position: relative; z-index: 1; height: 48px; width: 60px; border-radius: 99px; display: flex; align-items: center; justify-content: center; color: #15181b;
     transition: color .3s, transform .25s cubic-bezier(.34,1.56,.64,1); }
   .tab svg { width: 22px; height: 22px; flex: none; }
   .tab span { display: none; }
   .tab.pulsado { transform: scale(.86); }
-  .tab.on { color: var(--verde); }
+  .tab.on { color: #000; } .tab svg { stroke-width: 2.1; } .tab.on svg { stroke-width: 2.4; }
   .tab.on svg { transform: scale(1.1); transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
   /* Lente: una gota de agua sobre la pestaña activa (borde grueso, reflejo arriba y lente que aumenta un poco lo de detrás) */
   .lente { position: absolute; top: 2px; height: 56px; width: 66px; margin-left: -3px; border-radius: 99px; z-index: 0; pointer-events: none;
@@ -352,9 +352,14 @@
   .ley-evol span { display: inline-flex; align-items: center; gap: 5px; } .ley-evol em { width: 9px; height: 9px; border-radius: 2px; } .ley-evol em.lin { width: 14px; height: 2.5px; border-radius: 2px; }
   .sin-flecha { width: 14px; flex: none; }
   .tend-kpi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
-  .tend-kpi small { display: block; font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .tend-kpi small { display: block; white-space: nowrap; font-size: 9.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
   .tend-kpi b { font-size: 16px; font-weight: 800; white-space: nowrap; } .tend-kpi b.sube { color: var(--verde); } .tend-kpi b.baja { color: #c4581b; }
   .wbarras.wbi i { width: 11px; border-radius: 2px 2px 0 0; }
+  .wbarras > div.fut i { background: transparent !important; border: 1.2px dashed var(--c, #9aa3b5); border-bottom: 0; }
+  .wbarras.apil > div.fut i { border-color: #9aa3b5; } .wbarras.apil > div.fut b { opacity: .3; }
+  .wtasa-p.fut { background: var(--card) !important; box-shadow: inset 0 0 0 1.3px #5566d6; }
+  .ibar-p.fut i { background: transparent !important; border: 1.3px dashed var(--c); }
+  .wpres.fut { background: transparent; outline: 1.2px dashed var(--muted); outline-offset: -1.2px; } .wpres.fut i { opacity: .5; }
   .wmedia { position: absolute; left: 0; right: 0; border-top: 1.5px dashed #3fae6c; opacity: .85; pointer-events: none; }
   .chips-evol { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
   .chips-evol button { display: inline-flex; align-items: center; gap: 2px; padding: 6px 11px; border-radius: 99px; font-size: 12px; font-weight: 700; color: var(--muted);
@@ -403,7 +408,7 @@
   .tirar.cargando svg { animation: girar .8s linear infinite; }
   @keyframes girar { to { transform: rotate(360deg); } }
   .con-aviso #toast { bottom: calc(env(safe-area-inset-bottom) + 112px); }
-  .aviso-red { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(max(6px, env(safe-area-inset-bottom) - 20px) + 72px); z-index: 19;
+  .aviso-red { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(max(10px, env(safe-area-inset-bottom) - 11px) + 72px); z-index: 19;
     background: var(--card); color: var(--muted); border: 1px solid var(--line); box-shadow: var(--sombra); border-radius: 99px;
     padding: 6px 12px; font-size: 12px; font-weight: 700; white-space: nowrap; }
   .aviso-red b { color: #c4581b; }
@@ -506,11 +511,11 @@
   .mes button:disabled { opacity: .3; }
   .wpres { height: 9px; border-radius: 5px; background: var(--pista); margin-top: 10px; } .wpres i { display: block; height: 100%; border-radius: 5px; background: #8fd3a8; }
   .wpres i.ojo, .pc-b i.ojo { background: #f7c27d; } .wpres i.mal { background: #f4a3a3; }
-  .wid.wfull { grid-column: 1 / -1; aspect-ratio: auto; min-height: 150px; }
+  .wid.wfull { grid-column: 1 / -1; aspect-ratio: auto; height: calc((min(100vw, 520px) - 44px) / 2); }
   .wpres-g { display: grid; grid-template-columns: 1fr 1.1fr; gap: 16px; align-items: center; height: 100%; }
   .wpres-i { min-width: 0; display: flex; flex-direction: column; } .wpres { position: relative; overflow: visible !important; }
   .wpres em { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--ink); opacity: .45; }
-  .wpres-l { display: grid; gap: 7px; min-width: 0; }
+  .wpres-l { display: grid; gap: 6px; min-width: 0; }
   .wpres-l div { display: grid; grid-template-columns: 1fr auto; column-gap: 6px; row-gap: 3px; font-size: 11.5px; font-weight: 700; color: var(--muted); }
   .wpres-l div i { grid-column: 1 / -1; display: block; height: 5px; border-radius: 3px; background: var(--pista); overflow: hidden; }
   .wpres-l div u { display: block; height: 100%; border-radius: 3px; background: #8fd3a8; } .wpres-l u.ojo { background: #f7c27d; } .wpres-l u.mal { background: #f4a3a3; }
@@ -594,8 +599,8 @@
     box-shadow: 0 12px 34px rgba(0,0,0,.5), inset 0 0 0 .5px rgba(255,255,255,.12), inset 2px 3px 2px -2px rgba(255,255,255,.35), inset -2px -3px 2px -2px rgba(255,255,255,.18),
       inset 0 -10px 16px -12px rgba(120,170,255,.25); }
   :root[data-tema="oscuro"] .barra::before { opacity: .5; }
-  :root[data-tema="oscuro"] .tab { color: #98a09c; }
-  :root[data-tema="oscuro"] .tab.on { color: #6fe0a2; }
+  :root[data-tema="oscuro"] .tab { color: #f2f4f3; }
+  :root[data-tema="oscuro"] .tab.on { color: #fff; }
   :root[data-tema="oscuro"] .lente { background: radial-gradient(90% 70% at 50% 18%, rgba(255,255,255,.16), rgba(255,255,255,.03) 60%, transparent), radial-gradient(70% 50% at 50% 100%, rgba(120,180,255,.14), transparent 70%);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.22), inset 3px 4px 3px -3px rgba(255,255,255,.6), inset -3px -4px 4px -3px rgba(255,255,255,.35),
       inset 0 -7px 12px -8px rgba(110,170,255,.4), inset 0 7px 12px -8px rgba(255,214,120,.22), 0 4px 14px rgba(0,0,0,.4); }
@@ -989,6 +994,8 @@ function accionesCab(extra, hoyActivo) {
   return `<div class="acciones">${extra || ''}${hoyBtn}<button class="ibtn" data-acc="ajustes" aria-label="Ajustes">${SVG.ajustes}</button></div>`;
 }
 function cabecera(titulo, sub, extra, hoyActivo) {
+  if (PILA.length) return `<header class="top principal detalle"><div class="tit-det"><button class="ibtn" data-acc="volver" aria-label="Volver">${SVG.izq}</button>
+    <div><h1>${titulo}</h1>${sub ? `<p>${sub}</p>` : ''}</div></div>${accionesCab(extra, hoyActivo)}</header>`;
   return `<header class="top principal"><div><h1>${titulo}</h1>${sub ? `<p>${sub}</p>` : ''}</div>${accionesCab(extra, hoyActivo)}</header>`;
 }
 const selectorMes = () => `<div class="mes"><button data-acc="mesAnt" aria-label="Mes anterior">${SVG.izq}</button>
@@ -1250,10 +1257,29 @@ function irAMes(d) {
   if (anaPer === 'Mes') anaRef = new Date(tope);
 }
 // Ir a Movimientos con filtros de tipo y categoría (desde Análisis)
-function irAMovimientos(tipo, cat) {
+function irAMovimientos(tipo, cat, fv, yaApilado) {
+  if (!yaApilado) apilar();
   if (anaPer === 'Mes') irAMes(anaRef);
-  tab = 'movs'; vistaMovs = 'lista'; tipoFiltro = tipo || null; catFiltro = cat || null; fvFiltro = null;
+  tab = 'movs'; vistaMovs = 'lista'; tipoFiltro = tipo || null; catFiltro = cat || null; fvFiltro = fv || null;
   window.scrollTo(0, 0); pintar(true);
+}
+// Pila de navegación: los enlaces internos (widgets, «Ver movimientos», Inicio → Análisis…) guardan dónde estabas,
+// y la flecha ‹ (o deslizar desde el borde) te devuelve exactamente ahí. Pulsar una pestaña de la barra la vacía.
+let PILA = [];
+function apilar() {
+  PILA.push({ tab, anaVista, anaCat, anaSub, anaCatI, anaPer, anaRef: new Date(anaRef), anaMes: new Date(anaMes), mesSel: new Date(mesSel), diaSel, anaSelEvol, anaSelFijo, anaMeses,
+    tipoFiltro, catFiltro, fvFiltro, bancoFiltro, vistaMovs, y: window.scrollY });
+  if (PILA.length > 30) PILA.shift();
+}
+function volver() {
+  const f = PILA.pop(); if (!f) return false;
+  ({ tab, anaVista, anaCat, anaSub, anaCatI, anaPer, anaSelEvol, anaSelFijo, anaMeses, tipoFiltro, catFiltro, fvFiltro, bancoFiltro, vistaMovs } = f);
+  // Evolución y Fijos/variables vuelven tal cual (su ventana de meses y el mes marcado);
+  // el resto se queda en el mes que estés viendo ahora, como en toda la app
+  if (tab === 'analisis' && (anaVista === 'evol' || anaVista === 'fijos')) { irAMes(f.anaMes); anaPer = f.anaPer; anaRef = new Date(f.anaRef); anaSelEvol = f.anaSelEvol; anaSelFijo = f.anaSelFijo; }
+  else anaRef = anaPer === 'Mes' ? new Date(anaMes) : new Date(f.anaRef);
+  pintar(true); requestAnimationFrame(() => window.scrollTo(0, f.y));
+  return true;
 }
 function animarGrafica() { const app = $('#app'); app.classList.remove('graf-anim'); void app.offsetWidth; app.classList.add('graf-anim'); clearTimeout(app._ga); app._ga = setTimeout(() => app.classList.remove('graf-anim'), 1400); }
 function pintarAna() { pintar(); const app = $('#app'); void app.offsetWidth; app.classList.add('entra-ana'); contar(app); setTimeout(() => app.classList.remove('entra-ana'), 1500); }
@@ -1374,7 +1400,7 @@ function rangoAna() {
 }
 
 // Donut SVG (segmentos con hueco y animación de dibujo)
-function donutSVG(grupos, colores, tam, grosor, centro) {
+function donutSVG(grupos, colores, tam, grosor, centro, fut) {
   const r = (tam - grosor) / 2, C = 2 * Math.PI * r, total = grupos.reduce((a, g) => a + g[1], 0) || 1;
   let acc = 0;
   const segs = grupos.map(([k, v], i) => {
@@ -1384,7 +1410,8 @@ function donutSVG(grupos, colores, tam, grosor, centro) {
     acc += len; return s;
   }).join('');
   return `<svg class="donut" viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}"><g transform="rotate(-90 ${tam / 2} ${tam / 2})">
-    <circle cx="${tam / 2}" cy="${tam / 2}" r="${r}" fill="none" stroke="var(--pista)" stroke-width="${grosor}"/>${segs}</g></svg>${centro ? `<div class="donut-centro">${centro}</div>` : ''}`;
+    <circle cx="${tam / 2}" cy="${tam / 2}" r="${r}" fill="none" stroke="var(--pista)" stroke-width="${grosor}"/><g${fut ? ' opacity=".45"' : ''}>${segs}</g>
+    ${fut ? [r - grosor / 2, r + grosor / 2].map(rr => `<circle cx="${tam / 2}" cy="${tam / 2}" r="${rr - .6}" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="4 3"/>`).join('') : ''}</g></svg>${centro ? `<div class="donut-centro">${centro}</div>` : ''}`;
 }
 
 // Movimientos que usa Análisis: los reales y, para meses futuros, los previstos de Recurrentes
@@ -1412,7 +1439,7 @@ function vAnalisis() {
   const top = grupos.slice(0, 6), resto = grupos.slice(6).reduce((a, g) => a + g[1], 0);
   if (resto > 0) top.push(['Otras', resto]);
   const w1 = `<button class="wid wid-donut" data-ana="donut"><div class="wt">Gastos</div>
-    <div class="wdonut">${top.length ? donutSVG(top, top.map(g => g[0] === 'Otras' ? '#d5d7da' : colorPastel(g[0], lista)), 112, 19, `<b class="num">${N(r.gas)}</b>`) : '<div class="wvacio">Sin gastos</div>'}</div>
+    <div class="wdonut">${top.length ? donutSVG(top, top.map(g => g[0] === 'Otras' ? '#d5d7da' : colorPastel(g[0], lista)), 112, 19, `<b class="num">${N(r.gas)}</b>`, esFuturo(M)) : '<div class="wvacio">Sin gastos</div>'}</div>
     ${top.length ? `<div class="ws wcat">${esc(top[0][0])} · ${Math.round(top[0][1] / (r.gas || 1) * 100)} %</div>` : ''}</button>`;
   const ms = mesesHasta(M, 6), datos = ms.map(m => resumen(delMes(MA, m))), mx = Math.max(1, ...datos.map(x => Math.max(x.ing, x.gas)));
   const ingPrev6 = ms.map((m, i) => claveMes(m) === claveMes(hoy) ? datos[i].ing + previstosMes(hoy).filter(q => q.tipo === 'Ingreso').reduce((a, q) => a + q.importe, 0) : null);
@@ -1422,21 +1449,23 @@ function vAnalisis() {
   const tasas = datos.map((x, i) => !delMes(MA, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, Math.min(100, x.ahorro / x.ing * 100)) : (x.ahorro < 0 ? -100 : 0)), tv = tasas.filter(v => v !== null);
   const tendencia = tv.length < 2 ? '' : (() => {
     const hi = Math.max(10, ...tv), lo = Math.min(0, ...tv), Y = v => 6 + (1 - (v - lo) / ((hi - lo) || 1)) * 88;
-    const todos = tasas.map((v, i) => v === null ? null : [(i + .5) / tasas.length * 100, Y(v), false]).filter(Boolean);
-    const pts = todos.filter(q => !q[2]);
-    return `<svg class="wtasa" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline class="aparece-ana" points="${pts.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ')}" fill="none" stroke="${C_TASA}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>`
-      + pts.map(q => `<span class="wtasa-p aparece-ana" style="left:${q[0].toFixed(1)}%;top:${q[1].toFixed(1)}%;background:${C_TASA}"></span>`).join('')
+    const todos = tasas.map((v, i) => v === null ? null : [(i + .5) / tasas.length * 100, Y(v), esFuturo(ms[i])]).filter(Boolean);
+    const pts = todos.filter(q => !q[2]), fpts = (pts.length ? [pts[pts.length - 1]] : []).concat(todos.filter(q => q[2]));
+    const pl = l => l.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ');
+    return `<svg class="wtasa" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline class="aparece-ana" points="${pl(pts)}" fill="none" stroke="${C_TASA}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      ${fpts.length > 1 && todos.some(q => q[2]) ? `<polyline class="aparece-ana" points="${pl(fpts)}" fill="none" stroke="${C_TASA}" stroke-width="1.4" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>` : ''}</svg>`
+      + todos.map(q => `<span class="wtasa-p aparece-ana${q[2] ? ' fut' : ''}" style="left:${q[0].toFixed(1)}%;top:${q[1].toFixed(1)}%;background:${C_TASA}"></span>`).join('')
 
   })();
   const w2 = `<button class="wid" data-ana="evol"><div class="wt">Evolución</div>
     <div class="wbig num">${tasa6 === null ? '—' : `<span class="cnt" data-v="${tasa6}" data-pre="" data-pct="1">${Math.round(tasa6)} %</span>`}</div><div class="ws">ahorro medio · 6 meses</div>
-    <div class="wbarras">${datos.map((x, i) => `<div><i class="${ingPrev6[i] > x.ing ? 'con-prev' : ''}" style="height:${(ingPrev6[i] > x.ing ? ingPrev6[i] : x.ing) / mxW * 100}%;--real:${ingPrev6[i] > x.ing ? x.ing / ingPrev6[i] * 100 : 100}%;--c:${C_ING};background:${C_ING};--d:${i * 2}"></i><i style="height:${x.gas / mxW * 100}%;background:${C_GAS};--d:${i * 2 + 1}"></i></div>`).join('')}${tendencia}</div>
+    <div class="wbarras">${datos.map((x, i) => `<div class="${esFuturo(ms[i]) ? 'fut' : ''}"><i class="${ingPrev6[i] > x.ing ? 'con-prev' : ''}" style="height:${(ingPrev6[i] > x.ing ? ingPrev6[i] : x.ing) / mxW * 100}%;--real:${ingPrev6[i] > x.ing ? x.ing / ingPrev6[i] * 100 : 100}%;--c:${C_ING};background:${C_ING};--d:${i * 2}"></i><i style="height:${x.gas / mxW * 100}%;background:${C_GAS};--c:${C_GAS};--d:${i * 2 + 1}"></i></div>`).join('')}${tendencia}</div>
     <div class="wmeses">${ms.map(m => `<span>${MESES[m.getMonth()].charAt(0).toUpperCase()}</span>`).join('')}</div></button>`;
   const fv = netoFV(mes), tot = fv.fijo + fv.vari, pf = tot ? fv.fijo / tot * 100 : 0;
   const fvs = ms.map(m => netoFV(delMes(MA, m))), mxf = Math.max(1, ...fvs.map(x => x.fijo + x.vari));
   const w3 = `<button class="wid" data-ana="fijos"><div class="wt">Fijos y variables</div>
     <div class="wbig num">${tot ? `<span class="cnt" data-v="${pf}" data-pre="" data-pct="1">${Math.round(pf)} %</span>` : '—'}</div><div class="ws">del gasto es fijo</div>
-    <div class="wbarras apil">${fvs.map((x, i) => `<div><i style="height:${(x.fijo + x.vari) / mxf * 100}%;--d:${i}"><b style="height:${x.fijo + x.vari ? x.fijo / (x.fijo + x.vari) * 100 : 0}%;background:${C_FIJO}"></b><b style="flex:1;background:${C_VAR}"></b></i></div>`).join('')}</div>
+    <div class="wbarras apil">${fvs.map((x, i) => `<div class="${esFuturo(ms[i]) ? 'fut' : ''}"><i style="height:${(x.fijo + x.vari) / mxf * 100}%;--d:${i}"><b style="height:${x.fijo + x.vari ? x.fijo / (x.fijo + x.vari) * 100 : 0}%;background:${C_FIJO}"></b><b style="flex:1;background:${C_VAR}"></b></i></div>`).join('')}</div>
     <div class="wley"><span><em style="background:${C_FIJO}"></em>${fmt(fv.fijo).replace(',00', '')}</span><span><em style="background:${C_VAR}"></em>${fmt(fv.vari).replace(',00', '')}</span></div></button>`;
   const actual = claveMes(M) === claveMes(hoy);
   const nav = `<div class="mes"><button data-acc="anaMesAnt" aria-label="Mes anterior"${claveMes(M) <= primerMes() ? ' disabled' : ''}>${SVG.izq}</button>
@@ -1448,10 +1477,10 @@ function vAnalisis() {
   const wI = `<button class="wid" data-ana="ing"><div class="wt">Ingresos</div>
     <div class="wbig num">${N(r.ing)}</div><div class="ws">${ingMed ? `media ${fK(ingMed)} €/mes` : esFuturo(M) ? 'previstos' : 'sin ingresos'}</div>
     <div class="wbarras wbi">${ingD.map((v, i) => { const pv = ingPrev6[i] > v ? ingPrev6[i] : 0, ult = i === ingD.length - 1;
-      return `<div><i class="${pv ? 'con-prev' : ''}" style="height:${(pv || v) / mxI * 100}%;--real:${pv ? v / pv * 100 : 100}%;--c:${ult ? '#4fb57e' : C_ING};background:${ult ? '#4fb57e' : C_ING};--d:${i}"></i></div>`; }).join('')}
+      return `<div class="${esFuturo(ms[i]) ? 'fut' : ''}"><i class="${pv ? 'con-prev' : ''}" style="height:${(pv || v) / mxI * 100}%;--real:${pv ? v / pv * 100 : 100}%;--c:${ult ? '#4fb57e' : C_ING};background:${ult ? '#4fb57e' : C_ING};--d:${i}"></i></div>`; }).join('')}
       ${ingMed ? `<span class="wmedia" style="bottom:${ingMed / mxI * 100}%"></span>` : ''}</div>
     <div class="wmeses">${ms.map(m => `<span>${MESES[m.getMonth()].charAt(0).toUpperCase()}</span>`).join('')}</div></button>`;
-  const fut = esFuturo(M) ? '<div class="aviso aviso-fut">🔮 Mes futuro: todo se calcula con tus <b>Recurrentes</b> previstos.</div>' : '';
+  const fut = '';
   return cabecera('Análisis', (esFuturo(M) ? 'Previsión de ' : 'Un vistazo a ') + MESES[M.getMonth()], '', !actual) + nav + fut + `<div class="widgets">${w1}${wI}${w2}${w3}${widgetPres(M)}</div>`;
 }
 const cabDetalle = (titulo, hoyActivo, sub) => `<header class="top principal detalle"><div class="tit-det"><button class="ibtn" data-acc="anaVolver" aria-label="Volver">${SVG.izq}</button>
@@ -1469,32 +1498,44 @@ function vAnaIng() {
     const e = anaCatI ? emojiDe(anaCatI, k) : emojiDe(k);
     return `<div class="ibar${hay ? ' tap' : ''}" ${hay ? `data-bajai="${esc(k)}"` : ''}>
       <div class="ibar-c"><span class="n">${e ? `<span class="emo-ley">${e}</span>` : ''}${esc(k)}</span><b class="num">${fmt(v)}</b><small>${Math.round(v / (total || 1) * 100)} %</small>${hay ? SVG.der.replace('<svg', '<svg width="14" height="14" style="color:var(--muted);flex:none"') : '<span class="sin-flecha"></span>'}</div>
-      <div class="ibar-p"><i style="width:${Math.max(2, v / mx * 100)}%;background:${VERDES[i % VERDES.length]};--d:${i}"></i></div></div>`;
+      <div class="ibar-p${rg.ini > ymd(hoy) ? ' fut' : ''}"><i style="width:${Math.max(2, v / mx * 100)}%;background:${VERDES[i % VERDES.length]};--c:${VERDES[i % VERDES.length]};--d:${i}"></i></div></div>`;
   }).join('');
-  // Tendencia: ingresos de cada mes (hasta 12) desde el primer mes con datos
-  const finI = claveMes(anaRef) > claveMes(hoy) ? anaRef : hoy, pm = primerMes();
-  ingMs = mesesHasta(finI, 12).filter((m, i, a) => claveMes(m) >= pm || a.length - i <= 3);
-  const ingM = ingMs.map(m => MA.filter(x => x.tipo === 'Ingreso' && x.fecha.slice(0, 7) === claveMes(m) && (!anaCatI || (x.categoria || 'Otros ingresos') === anaCatI)).reduce((a, x) => a + x.importe, 0));
-  const pendI = previstosMes(hoy).filter(q => q.tipo === 'Ingreso' && (!anaCatI || (q.categoria || 'Otros ingresos') === anaCatI)).reduce((a, q) => a + q.importe, 0);
-  const prevI = ingMs.map((m, i) => claveMes(m) === claveMes(hoy) && pendI > 0 ? ingM[i] + pendI : null);
-  // La media y la tendencia solo usan meses cerrados con ingresos
-  const cerr = ingM.map((v, i) => ({ v, m: ingMs[i] })).filter(o => claveMes(o.m) < claveMes(hoy) && o.v > 0);
+  // Tendencia por periodos (meses, trimestres o años según el selector), desde el primer mes con datos
+  const paso = { Mes: 1, Trimestre: 3, 'Año': 12 }[anaPer], nP = { Mes: 12, Trimestre: 8, 'Año': 5 }[anaPer];
+  const iniDe = d => anaPer === 'Mes' ? new Date(d.getFullYear(), d.getMonth(), 1) : anaPer === 'Trimestre' ? new Date(d.getFullYear(), Math.floor(d.getMonth() / 3) * 3, 1) : new Date(d.getFullYear(), 0, 1);
+  const pHoy = iniDe(hoy), pSel = iniDe(anaRef);
+  let finP = pSel > pHoy ? pSel : pHoy; if (pSel < new Date(pHoy.getFullYear(), pHoy.getMonth() - paso * (nP - 1), 1)) finP = new Date(pSel.getFullYear(), pSel.getMonth() + paso * (nP - 1), 1);
+  const pm = primerMes();
+  ingMs = Array.from({ length: nP }, (_, k) => new Date(finP.getFullYear(), finP.getMonth() - paso * (nP - 1 - k), 1))
+    .filter((d, i, a) => claveMes(new Date(d.getFullYear(), d.getMonth() + paso - 1, 1)) >= pm || a.length - i <= 3);
+  const clavesDe = d => Array.from({ length: paso }, (_, k) => claveMes(new Date(d.getFullYear(), d.getMonth() + k, 1)));
+  const okCat = x => !anaCatI || (x.categoria || 'Otros ingresos') === anaCatI;
+  const ingM = ingMs.map(d => { const cl = clavesDe(d); return MA.filter(x => x.tipo === 'Ingreso' && cl.includes(x.fecha.slice(0, 7)) && okCat(x)).reduce((a, x) => a + x.importe, 0); });
+  const pendI = previstosMes(hoy).filter(q => q.tipo === 'Ingreso' && okCat(q)).reduce((a, q) => a + q.importe, 0);
+  const prevI = ingMs.map((d, i) => claveMes(d) === claveMes(pHoy) && pendI > 0 ? ingM[i] + pendI : null);
+  const futI = ingMs.map(d => d > pHoy);
+  const etq = ingMs.map(d => anaPer === 'Mes' ? mesCorto(d) : anaPer === 'Trimestre' ? `T${Math.floor(d.getMonth() / 3) + 1} '${String(d.getFullYear()).slice(2)}` : String(d.getFullYear()));
+  // Media y tendencia: solo periodos cerrados con ingresos
+  const cerr = ingM.map((v, i) => ({ v, d: ingMs[i] })).filter(o => o.d < pHoy && o.v > 0);
   const medI = cerr.length ? cerr.reduce((a, o) => a + o.v, 0) / cerr.length : 0;
-  const u3 = cerr.slice(-3), a3 = cerr.slice(-6, -3), mu3 = u3.length ? u3.reduce((a, o) => a + o.v, 0) / u3.length : 0, ma3 = a3.length ? a3.reduce((a, o) => a + o.v, 0) / a3.length : 0;
+  const kT = anaPer === 'Mes' ? 3 : anaPer === 'Trimestre' ? 2 : 1;
+  const u3 = cerr.slice(-kT), a3 = cerr.slice(-2 * kT, -kT), mu3 = u3.length ? u3.reduce((a, o) => a + o.v, 0) / u3.length : 0, ma3 = a3.length === kT ? a3.reduce((a, o) => a + o.v, 0) / a3.length : 0;
   const tend = ma3 ? (mu3 - ma3) / ma3 * 100 : null;
-  const selI = anaPer === 'Mes' ? ingMs.findIndex(m => claveMes(m) === claveMes(anaRef)) : -1;
+  const selI = ingMs.findIndex(d => claveMes(d) === claveMes(pSel));
   const mxI = Math.max(...ingM, ...prevI.filter(v => v !== null), 0), minI = cerr.length ? Math.min(...cerr.map(o => o.v)) : 0, maxI = cerr.length ? Math.max(...cerr.map(o => o.v)) : 0;
+  const nomP = { Mes: ['mensual', 'meses'], Trimestre: ['trimestral', 'trimestres'], 'Año': ['anual', 'años'] }[anaPer];
+  const notaT = tend === null ? '' : kT === 1 ? 'Tendencia: último año cerrado frente al anterior · ' : `Tendencia: últimos ${kT} ${nomP[1]} frente a los ${kT} anteriores · `;
   const tarjetaTend = `<section class="card ana-card tend-ing">
-      <div class="tend-kpi"><div><small>Media mensual</small><b class="num">${medI ? fmt(medI) : '—'}</b></div>
+      <div class="tend-kpi"><div><small>Media ${nomP[0]}</small><b class="num">${medI ? fmt(medI) : '—'}</b></div>
         <div><small>Tendencia</small><b class="num ${tend === null ? '' : tend >= 3 ? 'sube' : tend <= -3 ? 'baja' : ''}">${tend === null ? '—' : (tend >= 3 ? '↗ ' : tend <= -3 ? '↘ ' : '→ ') + (tend > 0 ? '+' : '') + Math.round(tend) + ' %'}</b></div>
         <div><small>Rango</small><b class="num">${cerr.length ? fK(minI) + '–' + fK(maxI) + ' €' : '—'}</b></div></div>
-      ${mxI > 0 ? barrasSVG(ingMs, [{ vals: ingM, color: C_ING, colorPrev: '#3fae6c', prev: prevI }], { sel: selI >= 0 ? selI : null, media: medI, attr: 'data-ingcol' }) : '<div class="vacio">Aún no hay ingresos</div>'}
-      <p class="nota" style="margin-top:4px">${tend === null ? 'Toca un mes para ver su detalle' : `Tendencia: últimos 3 meses frente a los 3 anteriores · toca un mes para ver su detalle`}</p></section>`;
+      ${mxI > 0 ? barrasSVG(ingMs, [{ vals: ingM, color: C_ING, colorPrev: '#3fae6c', prev: prevI }], { sel: selI >= 0 ? selI : null, media: medI, attr: 'data-ingcol', etq, fut: futI }) : '<div class="vacio">Aún no hay ingresos</div>'}
+      <p class="nota" style="margin-top:4px">${notaT}toca una barra para verla</p></section>`;
   const migas = `<div class="migas"><button data-migasi="0" class="${!anaCatI ? 'on' : ''}">Todas</button>${anaCatI ? `<span>›</span><button class="on">${esc(anaCatI)}</button>` : ''}</div>`;
-  return cabDetalle('Ingresos', anaPer !== 'Mes' || claveMes(anaRef) !== claveMes(hoy), 'Tendencia y origen') + tarjetaTend + `
+  return cabDetalle('Ingresos', anaPer !== 'Mes' || claveMes(anaRef) !== claveMes(hoy), 'Tendencia y origen') + `
     <div class="mes"><button data-acc="anaAnt" aria-label="Anterior">${SVG.izq}</button><b>${rg.txt}</b><button data-acc="anaSig" aria-label="Siguiente">${SVG.der}</button></div>
     <div class="seg seg-vista">${['Mes', 'Trimestre', 'Año'].map(p => `<button data-anaper="${p}" class="${p === anaPer ? 'on' : ''}">${p}</button>`).join('')}</div>
-    ${migas}
+    ${tarjetaTend}${migas}
     <section class="card ana-card">${grupos.length ? `<div class="ing-total"><small>${anaCatI ? esc(anaCatI) : 'Ingreso total'}${anaPer === 'Mes' && esFuturo(anaRef) ? ' previsto' : ''}</small><b class="num">${N(total)}</b></div>${filas}
       <button class="vertodos ver-movs" data-acc="verMovsCat">Ver movimientos ${SVG.flecha}</button>` : '<div class="vacio">Sin ingresos en este periodo</div>'}</section>`;
 }
@@ -1516,7 +1557,7 @@ function vAnaDonut() {
     <div class="mes"><button data-acc="anaAnt" aria-label="Anterior">${SVG.izq}</button><b>${rg.txt}</b><button data-acc="anaSig" aria-label="Siguiente">${SVG.der}</button></div>
     <div class="seg seg-vista">${['Mes', 'Trimestre', 'Año'].map(p => `<button data-anaper="${p}" class="${p === anaPer ? 'on' : ''}">${p}</button>`).join('')}</div>
     ${migas}
-    <section class="card ana-card">${grupos.length ? `<div class="donut-grande">${donutSVG(grupos, cols, 220, 22, `<small>${anaSub || anaCat || 'Gasto total'}</small><b class="num">${N(total)}</b>`)}</div>
+    <section class="card ana-card">${grupos.length ? `<div class="donut-grande">${donutSVG(grupos, cols, 220, 22, `<small>${anaSub || anaCat || 'Gasto total'}</small><b class="num">${N(total)}</b>`, rg.ini > ymd(hoy))}</div>
       <div class="leyenda-ana">${leyenda}</div>
       <button class="vertodos ver-movs" data-acc="verMovsCat">Ver movimientos${anaCat ? ' de ' + esc(anaCat) : ''} ${SVG.flecha}</button>` : '<div class="vacio">Sin gastos en este periodo</div>'}</section>`;
 }
@@ -1544,19 +1585,20 @@ function barrasSVG(ms, series, opts) {
     g += `<line x1="${pl}" x2="${W - pr}" y1="${yy}" y2="${yy}" class="${k ? 'grid' : 'grid base'}"/><text x="${pl - 6}" y="${(+yy + 3.5).toFixed(1)}" text-anchor="end" class="eje">${fK(v)}</text>`; }
   if (sel !== null && sel !== undefined) g += `<rect x="${pl + sel * cw + 1}" y="${pt}" width="${cw - 2}" height="${alto}" class="banda"/>`;
   ms.forEach((m, i) => {
-    const cx = pl + i * cw + cw / 2;
+    const cx = pl + i * cw + cw / 2, fu = opts.fut ? opts.fut[i] : esFuturo(m);
+    const est = c => fu ? `fill="${c}" fill-opacity=".28" stroke="${c}" stroke-width="1.2" stroke-dasharray="3 2"` : `fill="${c}"`;
     if (opts.apilado) {
       const bw = Math.min(16, cw * .38); let acc = base;
       series.forEach(s => { const h = s.vals[i] / top * alto; if (h <= 0) return;
-        g += `<rect class="barra-g" x="${(cx - bw / 2).toFixed(1)}" y="${(acc - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${s.color}" style="--d:${i}"/>`; acc -= h; });
+        g += `<rect class="barra-g" x="${(cx - bw / 2).toFixed(1)}" y="${(acc - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" ${est(s.color)} style="--d:${i}"/>`; acc -= h; });
     } else {
       const bw = series.length === 1 ? Math.min(16, cw * .42) : Math.min(9, cw * .2), gap = 2, totw = series.length * bw + (series.length - 1) * gap;
       series.forEach((s, k) => { const h = s.vals[i] / top * alto;
         if (s.prev && s.prev[i] > s.vals[i]) { const hp = s.prev[i] / top * alto;
           g += `<rect class="barra-g" x="${(cx - totw / 2 + k * (bw + gap) + .5).toFixed(1)}" y="${(base - hp + .5).toFixed(1)}" width="${(bw - 1).toFixed(1)}" height="${(hp - 1).toFixed(1)}" rx="1" fill="none" stroke="${s.colorPrev || s.color}" stroke-width="1" stroke-dasharray="2.5 2" style="--d:${i * 2 + k}"/>`; }
-        g += `<rect class="barra-g" x="${(cx - totw / 2 + k * (bw + gap)).toFixed(1)}" y="${(base - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0, h).toFixed(1)}" rx="1" fill="${s.color}" style="--d:${i * 2 + k}"/>`; });
+        g += `<rect class="barra-g" x="${(cx - totw / 2 + k * (bw + gap)).toFixed(1)}" y="${(base - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0, h).toFixed(1)}" rx="1" ${est(s.color)} style="--d:${i * 2 + k}"/>`; });
     }
-    g += `<text x="${cx.toFixed(1)}" y="${H - 7}" text-anchor="middle" class="eje${sel === i ? ' on' : ''}">${mesCorto(m)}</text>`;
+    g += `<text x="${cx.toFixed(1)}" y="${H - 7}" text-anchor="middle" class="eje${sel === i ? ' on' : ''}">${opts.etq ? opts.etq[i] : mesCorto(m)}</text>`;
   });
   if (opts.linea) {
     const vs = opts.linea.filter(v => v !== null);
@@ -1564,9 +1606,12 @@ function barrasSVG(ms, series, opts) {
       const hi = Math.max(10, Math.ceil(Math.max(...vs) / 10) * 10), lo = Math.min(0, Math.floor(Math.min(...vs) / 10) * 10), ry = v => base - (v - lo) / ((hi - lo) || 1) * alto;
       [lo, (lo + hi) / 2, hi].forEach(v => g += `<text x="${W - pr + 6}" y="${(ry(v) + 3.5).toFixed(1)}" class="eje eje-tasa">${Math.round(v)} %</text>`);
       const pts = opts.linea.map((v, i) => v === null ? null : [pl + i * cw + cw / 2, ry(v)]);
-      const unir = pts.map((q, i) => i === opts.suelto ? null : q).filter(Boolean);
-      const d = unir.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' ');
-      if (unir.length > 1) g += `<path class="trazo-ana" pathLength="1" d="${d}" fill="none" stroke="${C_TASA}" stroke-width="1.75" stroke-linejoin="round"/>`;
+      const futI = i => opts.fut ? opts.fut[i] : esFuturo(ms[i]);
+      const unir = pts.map((q, i) => i === opts.suelto ? null : q && [q[0], q[1], futI(i)]).filter(Boolean);
+      const real = unir.filter(q => !q[2]), fu = unir.filter(q => q[2]), dd = l => l.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' ');
+      if (real.length > 1) g += `<path class="trazo-ana" pathLength="1" d="${dd(real)}" fill="none" stroke="${C_TASA}" stroke-width="1.75" stroke-linejoin="round"/>`;
+      const fl = (real.length ? [real[real.length - 1]] : []).concat(fu);
+      if (fu.length && fl.length > 1) g += `<path class="aparece-ana" d="${dd(fl)}" fill="none" stroke="${C_TASA}" stroke-width="1.6" stroke-dasharray="4 3" stroke-linejoin="round"/>`;
       pts.forEach((q, i) => { if (!q) return;
         if (i === opts.suelto) g += `<circle class="pto-ana" cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="${sel === i ? 3.4 : 2.6}" fill="var(--card)" stroke="${C_TASA}" stroke-width="1.4"/>`;
         else g += `<circle class="pto-ana" cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="${sel === i ? 3.6 : 2.2}" fill="${C_TASA}" ${sel === i ? 'stroke="var(--card)" stroke-width="1.5"' : ''}/>`; });
@@ -1627,8 +1672,10 @@ function vAnaFijos() {
         <div class="kv"><span><em style="background:${C_VAR}"></em>Variables</span><b class="num">${fmt(s.vari)} <small>${tot ? Math.round(s.vari / tot * 100) + ' %' : ''}</small></b></div></div>
       ${barrasSVG(ms, [{ vals: datos.map(x => x.fijo), color: C_FIJO }, { vals: datos.map(x => x.vari), color: C_VAR }], { sel: anaSelFijo, apilado: true })}
     </section>
-    <section class="card"><div class="card-cab"><h3>FIJOS DE ${MESES[m.getMonth()].toUpperCase()}</h3></div>${filas(lista(true), C_FIJO)}</section>
-    <section class="card"><div class="card-cab"><h3>VARIABLES POR CATEGORÍA</h3></div>${filas(lista(false), C_VAR)}</section>`;
+    <section class="card"><div class="card-cab"><h3>FIJOS DE ${MESES[m.getMonth()].toUpperCase()}</h3></div>${filas(lista(true), C_FIJO)}
+      <button class="vertodos ver-movs" data-verfv="Fijo" data-mes="${claveMes(m)}">Ver movimientos fijos ${SVG.flecha}</button></section>
+    <section class="card"><div class="card-cab"><h3>VARIABLES POR CATEGORÍA</h3></div>${filas(lista(false), C_VAR)}
+      <button class="vertodos ver-movs" data-verfv="Variable" data-mes="${claveMes(m)}">Ver movimientos variables ${SVG.flecha}</button></section>`;
 }
 
 // Previsión de fin de mes. Mes actual: con los datos de hoy.
@@ -1860,10 +1907,10 @@ function widgetPres(M) {
   return `<button class="wid wfull" data-ana="pres"><div class="wpres-g">
     <div class="wpres-i"><div class="wt">Presupuesto</div>
       <div class="wbig num">${N(Math.abs(e.queda))}</div><div class="ws">${e.queda >= 0 ? 'quedan' : 'pasados'} de ${fK(e.total)} €</div>
-      <div class="wpres"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
+      <div class="wpres${e.futuro ? ' fut' : ''}"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
       <div class="ws" style="margin-top:6px;white-space:normal">${pie}</div></div>
-    <div class="wpres-l">${e.cats.slice(0, 5).map(o => `<div><span>${emojiDe(o.c) ? emojiDe(o.c) + ' ' : ''}${esc(o.c)}</span><b class="${colorPres(o.pct)}">${Math.round(o.pct)} %</b>
-      <i><u class="${colorPres(o.pct)}" style="width:${Math.min(100, o.pct)}%"></u></i></div>`).join('')}${e.cats.length > 5 ? `<small>y ${e.cats.length - 5} más</small>` : ''}</div>
+    <div class="wpres-l">${e.cats.slice(0, 4).map(o => `<div><span>${emojiDe(o.c) ? emojiDe(o.c) + ' ' : ''}${esc(o.c)}</span><b class="${colorPres(o.pct)}">${Math.round(o.pct)} %</b>
+      <i><u class="${colorPres(o.pct)}" style="width:${Math.min(100, o.pct)}%"></u></i></div>`).join('')}${e.cats.length > 4 ? `<small>y ${e.cats.length - 4} más</small>` : ''}</div>
   </div></button>`;
 }
 function vAnaPres() {
@@ -2006,6 +2053,7 @@ function reaplicarPulsado(raiz) {
 // ── Eventos ──────────────────────────────────────────────
 $('#barra').addEventListener('click', e => {
   const t = e.target.closest('.tab');
+  if (t) PILA = [];
   // Volver a pulsar Análisis estando dentro de un gráfico: vuelve a la vista general
   if (t && t.dataset.tab === tab && tab === 'analisis') { if (anaVista) { anaVista = null; window.scrollTo(0, 0); pintar(true); } return; }
   if (t && t.dataset.tab === tab) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
@@ -2028,19 +2076,19 @@ $('#app').addEventListener('click', e => {
     if (a === 'simular') return abrirSimulador();
     if (a === 'verMovsCat') return anaVista === 'ing' ? irAMovimientos(anaCatI ? null : 'Ingreso', anaCatI) : irAMovimientos(null, anaCat);
     if (a === 'irGastos' || a === 'irEvol' || a === 'irIngresos') {
-      tab = 'analisis'; anaMes = new Date(mesSel.getFullYear(), mesSel.getMonth(), 1);
+      apilar(); tab = 'analisis'; anaMes = new Date(mesSel.getFullYear(), mesSel.getMonth(), 1);
       anaCat = null; anaSub = null; anaCatI = null; anaSelEvol = null; anaSelFijo = null;
       if (a === 'irGastos' || a === 'irIngresos') { anaVista = a === 'irGastos' ? 'donut' : 'ing'; anaPer = 'Mes'; anaRef = new Date(anaMes); } else anaVista = 'evol';
       window.scrollTo(0, 0); return pintar(true);
     }
     if (a === 'ajustarSaldo') return abrirAjusteSaldo(bancoFiltro);
-    if (a === 'verTodos') { tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
+    if (a === 'verTodos') { apilar(); tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
     if (a === 'buscar') { busqueda = ''; return pintar(); }
     if (a === 'cerrarBusqueda') { busqueda = null; return pintar(); }
     if (a === 'quitarBanco') { bancoFiltro = null; return pintar(); }
     if (a === 'ojo') { ocultar = !ocultar; guardar('sums_ocultar', ocultar ? '1' : '0'); return pintar(); }
-    if (a === 'verSinBanco') { bancoFiltro = SIN_BANCO; tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
-    if (a === 'verBanco') { bancoFiltro = acc.closest('.cuenta').dataset.banco; tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
+    if (a === 'verSinBanco') { apilar(); bancoFiltro = SIN_BANCO; tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
+    if (a === 'verBanco') { apilar(); bancoFiltro = acc.closest('.cuenta').dataset.banco; tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
     if (a === 'irHoy') {
       // «Hoy» lleva todas las pestañas al mes actual (Inicio, Movimientos, Análisis y sus detalles)
       const m0 = () => new Date(hoy.getFullYear(), hoy.getMonth(), 1);
@@ -2051,8 +2099,10 @@ $('#app').addEventListener('click', e => {
       if (tab === 'analisis') { if (anaVista === 'prev') { pintar(); return animarGrafica(); } return pintarAna(); }
       return cambia ? pintar(false, true) : null;
     }
+    if (a === 'volver') { if (!volver()) pintar(true); return; }
     if (a === 'anaVolver') { if (anaVista === 'donut' && (anaSub || anaCat)) { if (anaSub) anaSub = null; else anaCat = null; return pintar(); }
       if (anaVista === 'ing' && anaCatI) { anaCatI = null; return pintar(); }
+      if (volver()) return;
       if (anaVista === 'ing' && anaPer === 'Mes') anaMes = new Date(anaRef);
       if (anaVista === 'prev') anaMes = new Date(prevRef);
       if (anaVista === 'donut' && anaPer === 'Mes') anaMes = new Date(anaRef);
@@ -2068,13 +2118,13 @@ $('#app').addEventListener('click', e => {
     if (a === 'ajustes') return abrirAjustes();
   }
   const w = e.target.closest('[data-ana]');
-  if (w) { anaVista = w.dataset.ana; prevRef = new Date(anaMes); anaPer = 'Mes'; anaRef = new Date(anaMes); anaCatI = null; anaCat = null; anaSub = null; anaSelEvol = null; anaSelFijo = null; window.scrollTo(0, 0); return pintar(true); }
+  if (w) { apilar(); anaVista = w.dataset.ana; prevRef = new Date(anaMes); anaPer = 'Mes'; anaRef = new Date(anaMes); anaCatI = null; anaCat = null; anaSub = null; anaSelEvol = null; anaSelFijo = null; window.scrollTo(0, 0); return pintar(true); }
   const ap = e.target.closest('[data-anaper]');
   if (ap) { anaPer = ap.dataset.anaper; anaRef = new Date(hoy.getFullYear(), hoy.getMonth(), 1); return pintarAna(); }
   const mg = e.target.closest('[data-migas]');
   if (mg) { const n = +mg.dataset.migas; if (n < 2) anaSub = null; if (n < 1) anaCat = null; return pintarAna(); }
   const pc = e.target.closest('[data-prescat]');
-  if (pc) { anaPer = 'Mes'; anaRef = new Date(anaMes); return irAMovimientos(null, pc.dataset.prescat); }
+  if (pc) { apilar(); anaPer = 'Mes'; anaRef = new Date(anaMes); return irAMovimientos(null, pc.dataset.prescat, null, true); }
   const mc = e.target.closest('[data-movcat]');
   if (mc) return irAMovimientos(anaVista === 'ing' ? 'Ingreso' : 'Gasto', mc.dataset.movcat);
   const bi = e.target.closest('[data-bajai]');
@@ -2086,14 +2136,16 @@ $('#app').addEventListener('click', e => {
   const ei = e.target.closest('[data-evolir]');
   if (ei) {
     const k = ei.dataset.evolir, mm = ei.dataset.mes ? new Date(+ei.dataset.mes.slice(0, 4), +ei.dataset.mes.slice(5, 7) - 1, 1) : anaMes;
-    irAMes(mm); anaPer = 'Mes'; anaRef = new Date(mm); anaCat = null; anaSub = null; anaCatI = null;
-    if (k === 'movs') return irAMovimientos(null, null);
+    apilar(); irAMes(mm); anaPer = 'Mes'; anaRef = new Date(mm); anaCat = null; anaSub = null; anaCatI = null;
+    if (k === 'movs') return irAMovimientos(null, null, null, true);
     anaVista = k; window.scrollTo(0, 0); return pintar(true);
   }
   const am = e.target.closest('[data-anameses]');
   if (am) { anaMeses = +am.dataset.anameses; anaSelEvol = null; anaSelFijo = null; return pintar(true); }
+  const vf = e.target.closest('[data-verfv]');
+  if (vf) { const k = vf.dataset.mes, mm = new Date(+k.slice(0, 4), +k.slice(5, 7) - 1, 1); apilar(); irAMes(mm); anaPer = 'Mes'; anaRef = mm; return irAMovimientos(null, null, vf.dataset.verfv, true); }
   const ic = e.target.closest('[data-ingcol]');
-  if (ic) { const m = ingMs[+ic.dataset.ingcol]; if (m) { irAMes(m); anaPer = 'Mes'; anaRef = new Date(m); } pintar(); return animarGrafica(); }
+  if (ic) { const m = ingMs[+ic.dataset.ingcol]; if (m) { if (anaPer === 'Mes') irAMes(m); anaRef = new Date(m); } pintar(); return animarGrafica(); }
   const col = e.target.closest('[data-col]');
   if (col) { if (anaVista === 'evol') anaSelEvol = +col.dataset.col; else anaSelFijo = +col.dataset.col; return pintar(); }
   const tf = e.target.closest('[data-tipof]');
@@ -2783,7 +2835,7 @@ window.addEventListener('scroll', () => { const m = document.querySelector('.mes
   const app = $('#app');
   document.addEventListener('touchstart', e => {
     const t = e.touches[0];
-    x0 = t.clientX < 28 && tab === 'analisis' && anaVista && $('#velo').classList.contains('oculto') ? t.clientX : null;
+    x0 = t.clientX < 28 && ((tab === 'analisis' && anaVista) || PILA.length) && $('#velo').classList.contains('oculto') ? t.clientX : null;
     y0 = t.clientY; dx = 0; activo = false;
   }, { passive: true });
   document.addEventListener('touchmove', e => {
@@ -2799,7 +2851,7 @@ window.addEventListener('scroll', () => { const m = document.querySelector('.mes
     app.style.transition = 'transform .22s ease, opacity .22s ease';
     if (dx > 90) {
       app.style.transform = 'translateX(100%)'; app.style.opacity = '0';
-      setTimeout(() => { app.style.transition = 'none'; app.style.transform = ''; app.style.opacity = ''; const b = $('[data-acc="anaVolver"]'); if (b) b.click(); }, 200);
+      setTimeout(() => { app.style.transition = 'none'; app.style.transform = ''; app.style.opacity = ''; const b = $('[data-acc="anaVolver"]') || $('[data-acc="volver"]'); if (b) b.click(); }, 200);
     } else { app.style.transform = ''; app.style.opacity = ''; }
   });
 })();
