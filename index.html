@@ -175,11 +175,13 @@
   .buscar input { flex: 1; border: 0; outline: 0; font: inherit; font-size: 16px; background: none; padding: 8px 0; }
 
   /* Patrimonio */
-  .patri { background: var(--verde-suave); border-radius: 26px; padding: 14px 14px 0; overflow: hidden; margin-top: 10px; }
-  .periodos { display: flex; align-items: center; gap: 2px; justify-content: center; }
-  .periodos button { padding: 6px 9px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #5d6b63; }
-  .periodos button.on { background: rgba(255,255,255,.75); color: var(--ink); }
-  .periodos .ojo { margin-left: 4px; color: #5d6b63; }
+  .patri { background: #ebe9e3; border-radius: 26px; padding: 14px 14px 0; overflow: hidden; margin-top: 10px; }
+  .mes + .patri { margin-top: 0; }
+  :root[data-tema="oscuro"] .patri:not(.prevg) { background: #1d1f1e; }
+  .mes.periodos { justify-content: space-between; gap: 2px; padding: 6px 8px; }
+  .mes.periodos button { width: auto; height: 38px; padding: 0 10px; border-radius: 12px; font-size: 14px; font-weight: 700; color: var(--muted); }
+  .mes.periodos button.on { background: var(--bg); color: var(--ink); }
+  .mes.periodos .ojo { padding: 0 6px; color: var(--muted); }
   .periodos .ojo svg { width: 20px; height: 20px; display: block; }
   .patri .lbl { text-align: center; font-size: 12px; font-weight: 700; letter-spacing: .1em; color: #5d6b63; margin-top: 14px; }
   .patri .grande { text-align: center; font-size: 40px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; }
@@ -214,7 +216,7 @@
   .cuenta + .cuenta { border-top: 1px solid var(--line); }
   .cuenta .logo { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; flex: none; overflow: hidden;
     color: #fff; font-weight: 800; font-size: 18px; }
-  .cuenta .logo img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
+  .cuenta .logo img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
   .cuenta .txt { flex: 1; min-width: 0; cursor: pointer; }
   .cuenta .t { font-weight: 700; }
   .cuenta .s { color: var(--muted); font-size: 13px; }
@@ -464,8 +466,8 @@
   :root[data-tema="oscuro"] .tres .gas { background: #3a2224; color: #f4a3a3; }
   :root[data-tema="oscuro"] .tres .aho { background: #22264a; color: #aeb7ff; }
   :root[data-tema="oscuro"] .dia.futuro { color: #4d5450; }
-  :root[data-tema="oscuro"] .periodos button, :root[data-tema="oscuro"] .periodos .ojo, :root[data-tema="oscuro"] .patri .lbl { color: #9fb3a7; }
-  :root[data-tema="oscuro"] .periodos button.on { background: rgba(255,255,255,.1); color: var(--ink); }
+  :root[data-tema="oscuro"] .patri .lbl { color: #9fb3a7; }
+  :root[data-tema="oscuro"] .mes.periodos button.on { background: #2a2f2c; color: var(--ink); }
   :root[data-tema="oscuro"] .patri .var.fecha { color: #b7c9be; }
   :root[data-tema="oscuro"] .grafico .cursor { background: rgba(95, 211, 148, .5); }
   :root[data-tema="oscuro"] .ibtn.pulsado, :root[data-tema="oscuro"] .btn.sec.pulsado, :root[data-tema="oscuro"] .opcion.pulsado { background: #2f3431; }
@@ -1164,10 +1166,11 @@ function vPatri() {
   const ctas = D.cuentas.map((c, i) => `<div class="cuenta" data-banco="${esc(c.banco)}">${logoBanco(c, i)}
       <div class="txt" data-acc="verBanco"><div class="t">${esc(c.banco)}</div><div class="s">Cuenta</div></div>
       <div class="imp num" data-acc="verBanco">${oc(saldoEn(c, HOY))}</div><div class="asa" aria-label="Reordenar">${SVG.asa}</div></div>`).join('');
+  // Selector de periodo en una barra como la de ‹ Mes de Año › (así el recuadro queda a la misma altura que el de Inicio)
   return cabecera('Patrimonio') + `
+    <div class="mes periodos">${['1A', '6M', '3M', 'Mes', 'Semana', 'Todo'].map(p => `<button data-periodo="${p}" class="${p === periodo ? 'on' : ''}">${p}</button>`).join('')}
+      <button class="ojo" data-acc="ojo" aria-label="Ocultar importes">${ocultar ? SVG.ojoNo : SVG.ojo}</button></div>
     <section class="patri">
-      <div class="periodos">${['Semana', 'Mes', '3M', '6M', '1A', 'Todo'].map(p => `<button data-periodo="${p}" class="${p === periodo ? 'on' : ''}">${p}</button>`).join('')}
-        <button class="ojo" data-acc="ojo" aria-label="Ocultar importes">${ocultar ? SVG.ojoNo : SVG.ojo}</button></div>
       <div class="lbl">PATRIMONIO NETO</div>
       <div class="grande num">${oc(ult)}</div>
       <div class="var${dif < -0.004 ? ' baja' : ''}">${dif < -0.004 ? '↓' : '↑'} ${ocultar ? '••••' : N(Math.abs(dif), dif > 0.004 ? '+' : dif < -0.004 ? '−' : '')} (${pct >= 0 ? '+' : ''}${pct.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %)</div>
