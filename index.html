@@ -363,6 +363,53 @@
   .wtasa-p.fut { background: var(--card) !important; box-shadow: inset 0 0 0 1.3px #5566d6; }
   .ibar-p.fut i { background: transparent !important; border: 1.3px dashed var(--c); }
   .wpres.fut { background: transparent; outline: 1.2px dashed var(--muted); outline-offset: -1.2px; } .wpres.fut i { opacity: .5; }
+  .wbarras.apil b.pend { background: transparent; border: 1.2px dashed #3fae6c; border-bottom: 0; box-sizing: border-box; }
+  .ley-ing { gap: 6px 12px; } .ley-ing span { font-size: 11.5px; }
+  .graf-ana .dif-v { font-weight: 700; font-size: 9.5px; }
+  .graf-anim .barra-g.neg, .entra-ana .barra-g.neg, .entra .barra-g.neg { transform-origin: top; }
+  .dif-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); text-align: center; }
+  .dif-stats small { display: block; font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+  .dif-stats b { display: block; font-size: 16px; font-weight: 800; margin-top: 2px; white-space: nowrap; }
+  .dif-stats em { display: block; font-style: normal; font-size: 11px; color: var(--muted); font-weight: 600; }
+  .wdif { position: relative; flex: 1; display: flex; gap: 6px; margin-top: 8px; padding: 0 2px; }
+  .wdif > div { position: relative; flex: 1; height: 100%; }
+  .wdif i { position: absolute; left: 50%; width: 12px; margin-left: -6px; border-radius: 2px; }
+  .wdif i.pos { background: #7fcca0; } .wdif i.neg { background: #f6b37f; }
+  .wdif .fut i { background: transparent !important; border: 1.2px dashed; } .wdif .fut i.pos { border-color: #7fcca0; } .wdif .fut i.neg { border-color: #f6b37f; }
+  .wdif-cero { position: absolute; left: 0; right: 0; border-top: 1px solid var(--line); }
+  .entra-ana .wdif i, .entra .wdif i { transform-origin: bottom; animation: crecer .7s cubic-bezier(.2,.9,.25,1.15) both; animation-delay: calc(150ms + var(--d, 0) * 40ms); }
+  .entra-ana .wdif i.neg, .entra .wdif i.neg { transform-origin: top; }
+  .anillo { position: relative; flex: none; } .anillo svg { display: block; }
+  .an-pista { fill: none; stroke: var(--pista); } .an-arco { fill: none; stroke: #7fcca0; }
+  .anillo.ojo .an-arco { stroke: #f7c27d; } .anillo.mal .an-arco { stroke: #f4a3a3; } .anillo .an-extra { stroke: #d9605f !important; }
+  .anillo.ok-fuerte .an-arco { stroke: #4fb57e; }
+  .anillo.fut .an-arco { stroke-opacity: .45; }
+  .an-dia { stroke: var(--ink); stroke-opacity: .5; stroke-width: 1.6; stroke-linecap: round; }
+  .an-centro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.05; }
+  .an-centro b { font-size: 17px; font-weight: 800; } .an-centro small { font-size: 10px; color: var(--muted); font-weight: 700; }
+  .an-emo { font-size: 22px; line-height: 1; }
+  .entra-ana .an-arco, .entra .an-arco, .graf-anim .an-arco { animation: anilloDibuja 1s cubic-bezier(.2,.8,.25,1) both; }
+  @keyframes anilloDibuja { from { stroke-dasharray: 0 var(--C, 999); } }
+  .pr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 8px; margin-top: 4px; }
+  .pr-cel { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; cursor: pointer; min-width: 0; }
+  .pr-cel .anillo { margin-bottom: 4px; }
+  .pr-cel .n { font-size: 12.5px; font-weight: 700; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pr-cel span.num { font-size: 11.5px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .pr-cel em { font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--verde); } .pr-cel em.ojo { color: #c98a2b; } .pr-cel em.mal { color: #c4581b; }
+  .pr-pct { position: absolute; top: -4px; right: 4px; font-style: normal; font-size: 9.5px; font-weight: 800; color: var(--muted); background: var(--pista); border-radius: 99px; padding: 1px 5px; }
+  .pres-ah { display: flex; align-items: center; gap: 16px; }
+  .pres-ah > div:last-child small { font-size: 12px; color: var(--muted); font-weight: 700; } .pres-ah > div:last-child > b { display: block; font-size: 22px; font-weight: 800; }
+  .pres-ah p { margin: 3px 0 0; font-size: 13px; color: var(--muted); } .pres-ah p.ok { color: var(--verde); font-weight: 700; } .pres-ah p.mal { color: #c4581b; font-weight: 700; }
+  .pres-base { font-size: 12px !important; color: var(--muted); margin-top: 6px !important; }
+  .w-anillos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 4px; align-items: start; align-self: center; }
+  .w-anillos > div { display: flex; flex-direction: column; align-items: center; gap: 2px; } .w-anillos b { font-size: 11px; line-height: 1; font-weight: 800; color: var(--muted); }
+  .w-anillos b.ojo { color: #c98a2b; } .w-anillos b.mal { color: #c4581b; } .w-anillos .an-emo { font-size: 17px; }
+  .w-ahorro { margin-top: 8px; font-size: 13px; font-weight: 800; white-space: nowrap; } .w-ahorro span { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 1px; } .w-ahorro.ok { color: var(--verde); } .w-ahorro.mal { color: #c4581b; }
+  .pe-u { width: 14px; color: var(--muted); font-weight: 700; font-size: 13px; }
+  .pe-ah { background: var(--pista); border-radius: 14px; padding: 8px 10px; border-top: 0; }
+  .pe-tot { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); font-weight: 600; }
+  .pe-tot b { color: var(--ink); text-align: right; } .pe-tot b.mal { color: #c4581b; }
+  .wfv { flex: 1; width: 100%; min-height: 0; margin-top: 8px; display: block; overflow: visible; }
   .wmedia { position: absolute; left: 0; right: 0; border-top: 1.5px dashed #3fae6c; opacity: .85; pointer-events: none; }
   .chips-evol { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
   .chips-evol button { display: inline-flex; align-items: center; gap: 2px; padding: 6px 11px; border-radius: 99px; font-size: 12px; font-weight: 700; color: var(--muted);
@@ -1462,15 +1509,28 @@ function vAnalisis() {
       + todos.map(q => `<span class="wtasa-p aparece-ana${q[2] ? ' fut' : ''}" style="left:${q[0].toFixed(1)}%;top:${q[1].toFixed(1)}%;background:${C_TASA}"></span>`).join('')
 
   })();
-  const w2 = `<button class="wid" data-ana="evol"><div class="wt">Evolución</div>
+  const difs = datos.map(x => x.ahorro), dHi = Math.max(0, ...difs), dLo = Math.min(0, ...difs), dR = (dHi - dLo) || 1, z = -dLo / dR * 100;
+  const wdif = `<div class="wdif"><span class="wdif-cero" style="bottom:${z}%"></span>${difs.map((v, i) => { const vac = !delMes(MA, ms[i]).length, h = Math.abs(v) / dR * 100;
+    return `<div class="${esFuturo(ms[i]) ? 'fut' : ''}">${vac ? '' : `<i class="${v >= 0 ? 'pos' : 'neg'}" style="${v >= 0 ? `bottom:${z}%` : `top:${100 - z}%`};height:${Math.max(2, h)}%;--d:${i}"></i>`}</div>`; }).join('')}</div>`;
+  const w2 = `<button class="wid" data-ana="evol"><div class="wt">Ahorro mensual</div>
     <div class="wbig num">${tasa6 === null ? '—' : `<span class="cnt" data-v="${tasa6}" data-pre="" data-pct="1">${Math.round(tasa6)} %</span>`}</div><div class="ws">ahorro medio · 6 meses</div>
-    <div class="wbarras">${datos.map((x, i) => `<div class="${esFuturo(ms[i]) ? 'fut' : ''}"><i class="${ingPrev6[i] > x.ing ? 'con-prev' : ''}" style="height:${(ingPrev6[i] > x.ing ? ingPrev6[i] : x.ing) / mxW * 100}%;--real:${ingPrev6[i] > x.ing ? x.ing / ingPrev6[i] * 100 : 100}%;--c:${C_ING};background:${C_ING};--d:${i * 2}"></i><i style="height:${x.gas / mxW * 100}%;background:${C_GAS};--c:${C_GAS};--d:${i * 2 + 1}"></i></div>`).join('')}${tendencia}</div>
+    ${wdif}
     <div class="wmeses">${ms.map(m => `<span>${MESES[m.getMonth()].charAt(0).toUpperCase()}</span>`).join('')}</div></button>`;
   const fv = netoFV(mes), tot = fv.fijo + fv.vari, pf = tot ? fv.fijo / tot * 100 : 0;
   const fvs = ms.map(m => netoFV(delMes(MA, m))), mxf = Math.max(1, ...fvs.map(x => x.fijo + x.vari));
   const w3 = `<button class="wid" data-ana="fijos"><div class="wt">Fijos y variables</div>
     <div class="wbig num">${tot ? `<span class="cnt" data-v="${pf}" data-pre="" data-pct="1">${Math.round(pf)} %</span>` : '—'}</div><div class="ws">del gasto es fijo</div>
-    <div class="wbarras apil">${fvs.map((x, i) => `<div class="${esFuturo(ms[i]) ? 'fut' : ''}"><i style="height:${(x.fijo + x.vari) / mxf * 100}%;--d:${i}"><b style="height:${x.fijo + x.vari ? x.fijo / (x.fijo + x.vari) * 100 : 0}%;background:${C_FIJO}"></b><b style="flex:1;background:${C_VAR}"></b></i></div>`).join('')}</div>
+    ${(() => { // mini área apilada (fijos abajo, variables encima); los meses futuros más claros y con borde discontinuo
+      const W = 100, H = 50, n = fvs.length, X = i => i / (n - 1) * W, Y = v => H - 1 - v / mxf * (H - 4);
+      let i0 = fvs.findIndex(x => x.fijo + x.vari > 0); if (i0 < 0) i0 = 0;
+      const pF = fvs.map((x, i) => [X(i), Y(x.fijo)]).slice(i0), pT = fvs.map((x, i) => [X(i), Y(x.fijo + x.vari)]).slice(i0), pB = fvs.map((_, i) => [X(i), H - 1]).slice(i0);
+      const banda = (a, b) => curvaSuave(a) + ' ' + curvaSuave(b.slice().reverse()).replace(/^M/, 'L') + ' Z';
+      const iF = ms.findIndex(m => esFuturo(m)), xc = iF < 0 ? W + 1 : iF === 0 ? 0 : X(iF - 1), id = 'wfv' + (++idAreaFV);
+      const capa = fu => `<g clip-path="url(#${id}${fu ? 'f' : 'r'})"><path d="${banda(pF, pB)}" fill="${C_FIJO}" fill-opacity="${fu ? .3 : .9}"/><path d="${banda(pT, pF)}" fill="${C_VAR}" fill-opacity="${fu ? .3 : .9}"/>
+        <path d="${curvaSuave(pF)}" fill="none" stroke="#7f92e6" stroke-width="1.3" vector-effect="non-scaling-stroke"${fu ? ' stroke-dasharray="3 3"' : ''}/><path d="${curvaSuave(pT)}" fill="none" stroke="#e8a15f" stroke-width="1.3" vector-effect="non-scaling-stroke"${fu ? ' stroke-dasharray="3 3"' : ''}/></g>`;
+      return pF.length ? `<svg class="wfv aparece-ana" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><clipPath id="${id}r"><rect x="-1" y="-5" width="${xc + 1}" height="${H + 10}"/></clipPath><clipPath id="${id}f"><rect x="${xc}" y="-5" width="${W + 2}" height="${H + 10}"/></clipPath></defs>
+        <line x1="0" x2="${W}" y1="${H - .5}" y2="${H - .5}" stroke="var(--line)" vector-effect="non-scaling-stroke"/>${capa(false)}${iF > -1 ? capa(true) : ''}</svg>` : '<div class="wvacio">Sin gastos</div>';
+    })()}
     <div class="wley"><span><em style="background:${C_FIJO}"></em>${fmt(fv.fijo).replace(',00', '')}</span><span><em style="background:${C_VAR}"></em>${fmt(fv.vari).replace(',00', '')}</span></div></button>`;
   const actual = claveMes(M) === claveMes(hoy);
   const nav = `<div class="mes"><button data-acc="anaMesAnt" aria-label="Mes anterior"${claveMes(M) <= primerMes() ? ' disabled' : ''}>${SVG.izq}</button>
@@ -1479,10 +1539,18 @@ function vAnalisis() {
   const ingD = datos.map(x => x.ing), ingCon = ingD.filter((v, i) => claveMes(ms[i]) < claveMes(hoy) && v > 0), ingMed = ingCon.length ? ingCon.reduce((a, b) => a + b, 0) / ingCon.length : 0;
   const mxI = Math.max(1, ...ingD, ...ingPrev6.filter(v => v !== null));
   const difI = ingMed && !esFuturo(M) ? (r.ing - ingMed) / ingMed * 100 : null;
+  const catW = {}; ms.forEach(m => delMes(MA, m).forEach(x => { if (x.tipo === 'Ingreso') catW[x.categoria || 'Otros ingresos'] = (catW[x.categoria || 'Otros ingresos'] || 0) + x.importe; }));
+  const topW = Object.entries(catW).sort((a, b) => b[1] - a[1]).map(e => e[0]).slice(0, 5);
+  const colW = k => { const j = topW.indexOf(k); return j > -1 ? VERDES[j] : '#c9cfcb'; };
+  const barraIng = (m, i) => {
+    const o = {}; delMes(MA, m).forEach(x => { if (x.tipo === 'Ingreso') { const k = topW.includes(x.categoria || 'Otros ingresos') ? (x.categoria || 'Otros ingresos') : '·otros'; o[k] = (o[k] || 0) + x.importe; } });
+    const real = ingD[i], pend = ingPrev6[i] > real ? ingPrev6[i] - real : 0, tot = real + pend;
+    const partes = topW.filter(k => o[k]).map(k => [k, o[k]]).concat(o['·otros'] ? [['·otros', o['·otros']]] : []);
+    return `<div class="${esFuturo(m) ? 'fut' : ''}"><i style="height:${tot / mxI * 100}%;--d:${i}">${partes.map(([k, v]) => `<b style="height:${v / (tot || 1) * 100}%;background:${colW(k)}"></b>`).join('')}${pend ? `<b class="pend" style="flex:1"></b>` : ''}</i></div>`;
+  };
   const wI = `<button class="wid" data-ana="ing"><div class="wt">Ingresos</div>
     <div class="wbig num">${N(r.ing)}</div><div class="ws">${ingMed ? `media ${fK(ingMed)} €/mes` : esFuturo(M) ? 'previstos' : 'sin ingresos'}</div>
-    <div class="wbarras wbi">${ingD.map((v, i) => { const pv = ingPrev6[i] > v ? ingPrev6[i] : 0, ult = i === ingD.length - 1;
-      return `<div class="${esFuturo(ms[i]) ? 'fut' : ''}"><i class="${pv ? 'con-prev' : ''}" style="height:${(pv || v) / mxI * 100}%;--real:${pv ? v / pv * 100 : 100}%;--c:${ult ? '#4fb57e' : C_ING};background:${ult ? '#4fb57e' : C_ING};--d:${i}"></i></div>`; }).join('')}
+    <div class="wbarras apil wbi">${ms.map(barraIng).join('')}
       ${ingMed ? `<span class="wmedia" style="bottom:${ingMed / mxI * 100}%"></span>` : ''}</div>
     <div class="wmeses">${ms.map(m => `<span>${MESES[m.getMonth()].charAt(0).toUpperCase()}</span>`).join('')}</div></button>`;
   const fut = '';
@@ -1493,6 +1561,7 @@ const cabDetalle = (titulo, hoyActivo, sub) => `<header class="top principal det
 
 let anaCatI = null, ingMs = [];
 function vAnaIng() {
+  if (anaPer !== 'Mes') { anaPer = 'Mes'; anaRef = new Date(anaMes); }
   const rg = rangoAna();
   let arr = MA.filter(m => m.tipo === 'Ingreso' && m.fecha >= rg.ini && m.fecha <= rg.fin), campo = 'categoria';
   if (anaCatI) { arr = arr.filter(m => (m.categoria || 'Otros ingresos') === anaCatI); campo = 'subcategoria'; }
@@ -1506,16 +1575,22 @@ function vAnaIng() {
       <div class="ibar-p${rg.ini > ymd(hoy) ? ' fut' : ''}"><i style="width:${Math.max(2, v / mx * 100)}%;background:${VERDES[i % VERDES.length]};--c:${VERDES[i % VERDES.length]};--d:${i}"></i></div></div>`;
   }).join('');
   // Tendencia por periodos (meses, trimestres o años según el selector), desde el primer mes con datos
-  const paso = { Mes: 1, Trimestre: 3, 'Año': 12 }[anaPer], nP = { Mes: 12, Trimestre: 8, 'Año': 5 }[anaPer];
+  const paso = 1, nP = anaMeses;   // siempre por meses: últimos 6 o 12
   const iniDe = d => anaPer === 'Mes' ? new Date(d.getFullYear(), d.getMonth(), 1) : anaPer === 'Trimestre' ? new Date(d.getFullYear(), Math.floor(d.getMonth() / 3) * 3, 1) : new Date(d.getFullYear(), 0, 1);
   const pHoy = iniDe(hoy), pSel = iniDe(anaRef);
   let finP = pSel > pHoy ? pSel : pHoy; if (pSel < new Date(pHoy.getFullYear(), pHoy.getMonth() - paso * (nP - 1), 1)) finP = new Date(pSel.getFullYear(), pSel.getMonth() + paso * (nP - 1), 1);
   const pm = primerMes();
-  ingMs = Array.from({ length: nP }, (_, k) => new Date(finP.getFullYear(), finP.getMonth() - paso * (nP - 1 - k), 1))
-    .filter((d, i, a) => claveMes(new Date(d.getFullYear(), d.getMonth() + paso - 1, 1)) >= pm || a.length - i <= 3);
+  ingMs = Array.from({ length: nP }, (_, k) => new Date(finP.getFullYear(), finP.getMonth() - paso * (nP - 1 - k), 1));
   const clavesDe = d => Array.from({ length: paso }, (_, k) => claveMes(new Date(d.getFullYear(), d.getMonth() + k, 1)));
   const okCat = x => !anaCatI || (x.categoria || 'Otros ingresos') === anaCatI;
   const ingM = ingMs.map(d => { const cl = clavesDe(d); return MA.filter(x => x.tipo === 'Ingreso' && cl.includes(x.fecha.slice(0, 7)) && okCat(x)).reduce((a, x) => a + x.importe, 0); });
+  // Reparto de cada barra por categoría (o por subcategoría si has entrado en una); las 5 mayores y «Otros»
+  const campoT = anaCatI ? 'subcategoria' : 'categoria', nomT = x => x[campoT] || (anaCatI ? '(sin subcategoría)' : 'Otros ingresos');
+  const porCatP = ingMs.map(d => { const cl = clavesDe(d), o = {}; MA.forEach(x => { if (x.tipo === 'Ingreso' && cl.includes(x.fecha.slice(0, 7)) && okCat(x)) o[nomT(x)] = (o[nomT(x)] || 0) + x.importe; }); return o; });
+  const totCat = {}; porCatP.forEach(o => Object.entries(o).forEach(([k, v]) => totCat[k] = (totCat[k] || 0) + v));
+  const ordenC = Object.entries(totCat).sort((a, b) => b[1] - a[1]).map(e => e[0]), topC = ordenC.slice(0, 5), hayOtros = ordenC.length > 5;
+  const seriesI = topC.map((k, j) => ({ nombre: k, color: VERDES[j % VERDES.length], vals: porCatP.map(o => o[k] || 0) }));
+  if (hayOtros) seriesI.push({ nombre: 'Otros', color: '#c9cfcb', vals: porCatP.map(o => Object.entries(o).filter(([k]) => !topC.includes(k)).reduce((a, e) => a + e[1], 0)) });
   const pendI = previstosMes(hoy).filter(q => q.tipo === 'Ingreso' && okCat(q)).reduce((a, q) => a + q.importe, 0);
   const prevI = ingMs.map((d, i) => claveMes(d) === claveMes(pHoy) && pendI > 0 ? ingM[i] + pendI : null);
   const futI = ingMs.map(d => d > pHoy);
@@ -1534,12 +1609,14 @@ function vAnaIng() {
       <div class="tend-kpi"><div><small>Media ${nomP[0]}</small><b class="num">${medI ? fmt(medI) : '—'}</b></div>
         <div><small>Tendencia</small><b class="num ${tend === null ? '' : tend >= 3 ? 'sube' : tend <= -3 ? 'baja' : ''}">${tend === null ? '—' : (tend >= 3 ? '↗ ' : tend <= -3 ? '↘ ' : '→ ') + (tend > 0 ? '+' : '') + Math.round(tend) + ' %'}</b></div>
         <div><small>Rango</small><b class="num">${cerr.length ? fK(minI) + '–' + fK(maxI) + ' €' : '—'}</b></div></div>
-      ${mxI > 0 ? barrasSVG(ingMs, [{ vals: ingM, color: C_ING, colorPrev: '#3fae6c', prev: prevI }], { sel: selI >= 0 ? selI : null, media: medI, attr: 'data-ingcol', etq, fut: futI }) : '<div class="vacio">Aún no hay ingresos</div>'}
+      ${mxI > 0 ? barrasSVG(ingMs, seriesI.concat(prevI.some(v => v) ? [{ nombre: 'Pendiente', color: '#3fae6c', disc: true, vals: prevI.map((v, i) => v ? v - ingM[i] : 0) }] : []),
+          { sel: selI >= 0 ? selI : null, media: medI, attr: 'data-ingcol', etq, fut: futI, apilado: true }) : '<div class="vacio">Aún no hay ingresos</div>'}
+      ${mxI > 0 ? `<div class="ley-evol ley-ing">${seriesI.map(x => `<span><em style="background:${x.color}"></em>${esc(x.nombre)}</span>`).join('')}${prevI.some(v => v) ? '<span><em class="caja-disc" style="color:#3fae6c"></em>Pendiente</span>' : ''}</div>` : ''}
       <p class="nota" style="margin-top:4px">${notaT}toca una barra para verla</p></section>`;
   const migas = `<div class="migas"><button data-migasi="0" class="${!anaCatI ? 'on' : ''}">Todas</button>${anaCatI ? `<span>›</span><button class="on">${esc(anaCatI)}</button>` : ''}</div>`;
   return cabDetalle('Ingresos', anaPer !== 'Mes' || claveMes(anaRef) !== claveMes(hoy), 'Tendencia y origen') + `
     <div class="mes"><button data-acc="anaAnt" aria-label="Anterior">${SVG.izq}</button><b>${rg.txt}</b><button data-acc="anaSig" aria-label="Siguiente">${SVG.der}</button></div>
-    <div class="seg seg-vista">${['Mes', 'Trimestre', 'Año'].map(p => `<button data-anaper="${p}" class="${p === anaPer ? 'on' : ''}">${p}</button>`).join('')}</div>
+    <div class="seg seg-vista">${[[6, '6 meses'], [12, '1 año']].map(([n, t]) => `<button data-anameses="${n}" class="${n === anaMeses ? 'on' : ''}">${t}</button>`).join('')}</div>
     ${tarjetaTend}${migas}
     <section class="card ana-card">${grupos.length ? `<div class="ing-total"><small>${anaCatI ? esc(anaCatI) : 'Ingreso total'}${anaPer === 'Mes' && esFuturo(anaRef) ? ' previsto' : ''}</small><b class="num">${N(total)}</b></div>${filas}
       <button class="vertodos ver-movs" data-acc="verMovsCat">Ver movimientos ${SVG.flecha}</button>` : '<div class="vacio">Sin ingresos en este periodo</div>'}</section>`;
@@ -1595,7 +1672,8 @@ function barrasSVG(ms, series, opts) {
     if (opts.apilado) {
       const bw = Math.min(16, cw * .38); let acc = base;
       series.forEach(s => { const h = s.vals[i] / top * alto; if (h <= 0) return;
-        g += `<rect class="barra-g" x="${(cx - bw / 2).toFixed(1)}" y="${(acc - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" ${est(s.color)} style="--d:${i}"/>`; acc -= h; });
+        const st = s.disc ? `fill="none" stroke="${s.color}" stroke-width="1.2" stroke-dasharray="3 2"` : est(s.color);
+        g += `<rect class="barra-g" x="${(cx - bw / 2 + (s.disc ? .6 : 0)).toFixed(1)}" y="${(acc - h + (s.disc ? .6 : 0)).toFixed(1)}" width="${(bw - (s.disc ? 1.2 : 0)).toFixed(1)}" height="${Math.max(0, h - (s.disc ? .6 : 0)).toFixed(1)}" ${st} style="--d:${i}"/>`; acc -= h; });
     } else {
       const bw = series.length === 1 ? Math.min(16, cw * .42) : Math.min(9, cw * .2), gap = 2, totw = series.length * bw + (series.length - 1) * gap;
       series.forEach((s, k) => { const h = s.vals[i] / top * alto;
@@ -1628,6 +1706,35 @@ function barrasSVG(ms, series, opts) {
   return `<svg class="graf-ana" viewBox="0 0 ${W} ${H}">${g}</svg>`;
 }
 
+// Barras de «ingresos − gastos» de cada mes: hacia arriba en verde si sobra, hacia abajo en naranja si falta
+const C_POS = '#7fcca0', C_NEG = '#f6b37f', T_POS = '#2f8f5b', T_NEG = '#c4581b';
+function difSVG(ms, vals, opts) {
+  const W = 340, H = 204, pl = 32, pr = 4, pt = 18, pb = 40, n = ms.length, cw = (W - pl - pr) / n, alto = H - pt - pb;
+  const extra = (opts.prev || []).filter(v => v !== null && v !== undefined);
+  const hi = Math.max(0, ...vals, ...extra), lo = Math.min(0, ...vals, ...extra), rng = (hi - lo) || 1;
+  const y = v => pt + (hi - v) / rng * alto, y0 = y(0), sel = opts.sel;
+  const fmtE = v => (v > 0 ? '+' : v < 0 ? '−' : '') + (Math.abs(v) >= 1000 ? (Math.abs(v) / 1000).toLocaleString('es-ES', { maximumFractionDigits: 1 }) + 'k' : Math.round(Math.abs(v)));
+  let g = '';
+  if (sel !== null && sel !== undefined) g += `<rect x="${pl + sel * cw + 1}" y="${pt - 14}" width="${cw - 2}" height="${alto + 28}" class="banda"/>`;
+  [hi, lo].filter(v => Math.abs(v) > .5).forEach(v => g += `<line x1="${pl}" x2="${W - pr}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" class="grid"/><text x="${pl - 6}" y="${(y(v) + 3.5).toFixed(1)}" text-anchor="end" class="eje">${fK(v)}</text>`);
+  g += `<line x1="${pl}" x2="${W - pr}" y1="${y0.toFixed(1)}" y2="${y0.toFixed(1)}" class="grid base"/><text x="${pl - 6}" y="${(y0 + 3.5).toFixed(1)}" text-anchor="end" class="eje">0</text>`;
+  const bw = Math.min(22, cw * .56);
+  ms.forEach((m, i) => {
+    const cx = pl + i * cw + cw / 2, v = vals[i], fu = opts.fut ? opts.fut[i] : esFuturo(m), vacio = opts.vacio && opts.vacio[i];
+    const pv = opts.prev && opts.prev[i];
+    if (pv !== null && pv !== undefined) { const c = pv >= 0 ? T_POS : T_NEG;
+      g += `<rect class="aparece-ana" x="${(cx - bw / 2 + .6).toFixed(1)}" y="${Math.min(y(pv), y0).toFixed(1)}" width="${(bw - 1.2).toFixed(1)}" height="${Math.max(1, Math.abs(y(pv) - y0)).toFixed(1)}" rx="2" fill="none" stroke="${c}" stroke-opacity=".7" stroke-width="1.1" stroke-dasharray="3 2"/>`; }
+    if (!vacio) {
+      const c = v >= 0 ? C_POS : C_NEG, hgt = Math.max(1.5, Math.abs(y(v) - y0)), yy = v >= 0 ? y0 - hgt : y0;
+      g += `<rect class="barra-g ${v >= 0 ? '' : 'neg'}" x="${(cx - bw / 2).toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${hgt.toFixed(1)}" rx="2" ${fu ? `fill="${c}" fill-opacity=".28" stroke="${c}" stroke-width="1.2" stroke-dasharray="3 2"` : `fill="${c}"`} style="--d:${i}"/>`;
+      if (n <= 12) g += `<text x="${cx.toFixed(1)}" y="${(v >= 0 ? yy - 4 : yy + hgt + 10).toFixed(1)}" text-anchor="middle" class="eje dif-v" style="fill:${v >= 0 ? T_POS : T_NEG}${n > 6 ? ';font-size:8.5px' : ''}">${fmtE(v)}</text>`;
+    }
+    g += `<text x="${cx.toFixed(1)}" y="${H - 7}" text-anchor="middle" class="eje${sel === i ? ' on' : ''}">${mesCorto(m)}</text>`;
+  });
+  ms.forEach((_, i) => g += `<rect x="${pl + i * cw}" y="0" width="${cw}" height="${H}" fill="transparent" data-col="${i}" style="cursor:pointer"/>`);
+  return `<svg class="graf-ana" viewBox="0 0 ${W} ${H}">${g}</svg>`;
+}
+
 function vAnaEvol() {
   const ms = mesesHasta(anaMes, anaMeses), datos = ms.map(m => resumen(delMes(MA, m)));
   const pendIng = previstosMes(hoy).filter(q => q.tipo === 'Ingreso').reduce((a, q) => a + q.importe, 0);
@@ -1641,7 +1748,19 @@ function vAnaEvol() {
   const ahorroTot = datos.reduce((a, x) => a + x.ahorro, 0);
   const nav = `<div class="mes"><button data-acc="evolAnt" aria-label="Mes anterior"${claveMes(m) <= primerMes() ? ' disabled' : ''}>${SVG.izq}</button>
     <b>${cap(MESES[m.getMonth()])} de ${m.getFullYear()}</b><button data-acc="evolSig" aria-label="Mes siguiente"${claveMes(m) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
-  return cabDetalle('Evolución', claveMes(m) !== claveMes(hoy), 'Ingresos, gastos y ahorro') + nav + `
+  // Datos extra: meses en positivo, mejor y peor mes, y la previsión del mes en curso
+  const conMov = ms.map((mm, i) => ({ i, mm, v: datos[i].ahorro, ok: delMes(MA, mm).length > 0 })).filter(o => o.ok);
+  const cerr = conMov.filter(o => claveMes(o.mm) < claveMes(hoy)), base = cerr.length ? cerr : conMov;
+  const positivos = base.filter(o => o.v > 0).length;
+  const mejor = base.length ? base.reduce((a, o) => o.v > a.v ? o : a) : null, peor = base.length ? base.reduce((a, o) => o.v < a.v ? o : a) : null;
+  const iHoy = ms.findIndex(mm => claveMes(mm) === claveMes(hoy)), pHoy = iHoy > -1 ? prevision(hoy) : null;
+  const prevAh = ms.map((mm, i) => i === iHoy && pHoy && !pHoy.vacio ? pHoy.ahoFin : null);
+  const nomMes = o => cap(MESES[o.mm.getMonth()]).slice(0, 3);
+  const extraHTML = `<div class="dif-stats">
+      <div><small>En positivo</small><b class="num">${base.length ? `${positivos} de ${base.length}` : '—'}</b><em>${base.length ? (positivos === base.length ? 'todos los meses' : 'meses') : ''}</em></div>
+      <div><small>Mejor mes</small><b class="num" style="color:${T_POS}">${mejor ? fK(mejor.v) + ' €' : '—'}</b><em>${mejor ? nomMes(mejor) : ''}</em></div>
+      <div><small>Peor mes</small><b class="num" style="color:${peor && peor.v < 0 ? T_NEG : 'inherit'}">${peor ? fK(peor.v) + ' €' : '—'}</b><em>${peor ? nomMes(peor) : ''}</em></div></div>`;
+  return cabDetalle('Ahorro mensual', claveMes(m) !== claveMes(hoy), 'Lo que entra menos lo que sale') + nav + `
     <div class="seg">${[6, 12].map(n => `<button data-anameses="${n}" class="${n === anaMeses ? 'on' : ''}">Últimos ${n} meses</button>`).join('')}</div>
     <div class="tres" style="margin-top:12px"><div class="ing ir-zona" data-evolir="ing"><small>Ingreso medio <i class="ir">${SVG.der}</i></small><b class="num">${N(ingMedio)}</b></div>
       <div class="aho ir-zona" data-evolir="movs"><small>Ahorro total <i class="ir">${SVG.der}</i></small><b class="num">${N(ahorroTot)}</b><em class="tasa-m">Tasa media ${tasaMedia === null ? '—' : Math.round(tasaMedia) + ' %'}</em></div>
@@ -1651,13 +1770,44 @@ function vAnaEvol() {
         <div class="kv kv-ir" data-evolir="ing" data-mes="${claveMes(m)}"><span><em style="background:${C_ING}"></em>Ingresos</span><b class="num">${fmt(s.ing)} <i class="ir">${SVG.der}</i></b></div>
         ${ingPrevE[anaSelEvol] ? `<div class="kv"><span><em class="caja-disc" style="color:#3fae6c"></em>Ingresos previstos</span><b class="num">${fmt(ingPrevE[anaSelEvol])}</b></div>` : ''}
         <div class="kv kv-ir" data-evolir="donut" data-mes="${claveMes(m)}"><span><em style="background:${C_GAS}"></em>Gastos</span><b class="num">${fmt(s.gas)} <i class="ir">${SVG.der}</i></b></div>
-        <div class="kv kv-ir" data-evolir="movs" data-mes="${claveMes(m)}"><span><em style="background:${C_TASA};border-radius:50%"></em>Ahorro</span><b class="num">${fmt(s.ahorro)} ${s.pct === null || s.pct < -100 ? '' : `<small>(${Math.round(s.pct)} %)</small>`} <i class="ir">${SVG.der}</i></b></div></div>
-      ${barrasSVG(ms, [{ vals: datos.map(x => x.ing), color: C_ING, colorPrev: '#3fae6c', prev: ingPrevE }, { vals: datos.map(x => x.gas), color: C_GAS }],
-        { sel: anaSelEvol, linea: datos.map((x, i) => !delMes(MA, ms[i]).length ? null : x.ing > 0 ? Math.max(-100, x.ahorro / x.ing * 100) : (x.ahorro < 0 ? -100 : 0)) })}
-      <div class="ley-evol">${[['ing', 'Ingresos', `<em style="background:${C_ING}"></em>`], ['gas', 'Gastos', `<em style="background:${C_GAS}"></em>`], ['tasa', 'Tasa de ahorro', `<em class="lin" style="background:${C_TASA}"></em>`]]
-        .map(([k, t, e]) => `<span>${e}${t}</span>`).join('')}</div>
-      <p class="nota" style="margin-top:4px">Toca un mes para ver su detalle</p>
+        <div class="kv kv-ir" data-evolir="movs" data-mes="${claveMes(m)}"><span><em style="background:${s.ahorro >= 0 ? C_POS : C_NEG}"></em>Ahorro</span><b class="num">${fmt(s.ahorro)} ${s.pct === null || s.pct < -100 ? '' : `<small>(${Math.round(s.pct)} %)</small>`} <i class="ir">${SVG.der}</i></b></div></div>
+      ${difSVG(ms, datos.map(x => x.ahorro), { sel: anaSelEvol, prev: prevAh, vacio: ms.map(mm => !delMes(MA, mm).length) })}
+      <div class="ley-evol"><span><em style="background:${C_POS}"></em>Sobra</span><span><em style="background:${C_NEG}"></em>Falta</span>${prevAh.some(v => v !== null) ? '<span><em class="caja-disc" style="color:#7a8a80"></em>Previsto a fin de mes</span>' : ''}</div>
+      ${extraHTML}
+      <p class="nota" style="margin-top:6px">Toca un mes para ver su detalle</p>
     </section>`;
+}
+
+// Área apilada: fijos abajo, variables encima. Los meses futuros se ven más claros y con borde discontinuo.
+let idAreaFV = 0;
+function areaFVSVG(ms, datos, sel) {
+  const W = 340, H = 186, pl = 32, pr = 10, pt = 8, pb = 24, n = ms.length, base = H - pb, alto = base - pt;
+  const xs = i => n === 1 ? (pl + W - pr) / 2 : pl + i * (W - pl - pr) / (n - 1);
+  const mx = Math.max(1, ...datos.map(d => d.fijo + d.vari)), top = techo(mx / 4) * 4, y = v => base - Math.max(0, v) / top * alto;
+  // El área empieza en el primer mes con gasto (los meses vacíos de antes no se dibujan como una rampa desde 0)
+  let i0 = datos.findIndex(d => d.fijo + d.vari > 0); if (i0 < 0) i0 = 0;
+  const pF = datos.map((d, i) => [xs(i), y(d.fijo)]), pT = datos.map((d, i) => [xs(i), y(d.fijo + d.vari)]), pB = datos.map((_, i) => [xs(i), base]);
+  const cF = pF.slice(i0), cT = pT.slice(i0), cB = pB.slice(i0);
+  const banda = (sup, inf) => curvaSuave(sup) + ' ' + curvaSuave(inf.slice().reverse()).replace(/^M/, 'L') + ' Z';
+  const iF = ms.findIndex(m => esFuturo(m)), xc = iF < 0 ? W : iF === 0 ? 0 : xs(iF - 1);
+  const id = 'fv' + (++idAreaFV);
+  let g = `<defs><clipPath id="${id}r"><rect x="0" y="0" width="${xc}" height="${H}"/></clipPath><clipPath id="${id}f"><rect x="${xc}" y="0" width="${W}" height="${H}"/></clipPath></defs>`;
+  for (let k = 0; k <= 4; k += 2) { const v = top * k / 4, yy = y(v).toFixed(1);
+    g += `<line x1="${pl}" x2="${W - pr}" y1="${yy}" y2="${yy}" class="${k ? 'grid' : 'grid base'}"/><text x="${pl - 6}" y="${(+yy + 3.5).toFixed(1)}" text-anchor="end" class="eje">${fK(v)}</text>`; }
+  const capa = (fu) => `<g clip-path="url(#${id}${fu ? 'f' : 'r'})" class="aparece-ana">
+    <path d="${banda(cF, cB)}" fill="${C_FIJO}" fill-opacity="${fu ? .3 : .9}"/>
+    <path d="${banda(cT, cF)}" fill="${C_VAR}" fill-opacity="${fu ? .3 : .9}"/>
+    <path d="${curvaSuave(cF)}" fill="none" stroke="#7f92e6" stroke-width="1.4" ${fu ? 'stroke-dasharray="4 3"' : ''}/>
+    <path d="${curvaSuave(cT)}" fill="none" stroke="#e8a15f" stroke-width="1.4" ${fu ? 'stroke-dasharray="4 3"' : ''}/></g>`;
+  g += capa(false) + (iF > -1 ? capa(true) : '');
+  if (sel !== null && sel !== undefined) { const x = xs(sel);
+    g += `<line x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${pt}" y2="${base}" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1" stroke-dasharray="2 3"/>
+      <circle cx="${x.toFixed(1)}" cy="${pF[sel][1].toFixed(1)}" r="3.6" fill="#7f92e6" stroke="var(--card)" stroke-width="1.5"/>
+      <circle cx="${x.toFixed(1)}" cy="${pT[sel][1].toFixed(1)}" r="3.6" fill="#e8a15f" stroke="var(--card)" stroke-width="1.5"/>`; }
+  ms.forEach((m, i) => g += `<text x="${xs(i).toFixed(1)}" y="${H - 7}" text-anchor="middle" class="eje${sel === i ? ' on' : ''}">${mesCorto(m)}</text>`);
+  const cw = (W - pl - pr) / Math.max(1, n - 1);
+  ms.forEach((_, i) => g += `<rect x="${(xs(i) - cw / 2).toFixed(1)}" y="0" width="${cw.toFixed(1)}" height="${H}" fill="transparent" data-col="${i}" style="cursor:pointer"/>`);
+  return `<svg class="graf-ana" viewBox="0 0 ${W} ${H}">${g}</svg>`;
 }
 
 function vAnaFijos() {
@@ -1679,7 +1829,8 @@ function vAnaFijos() {
       <div class="sel-info"><b>${cap(MESES[m.getMonth()])} ${m.getFullYear()}</b>
         <div class="kv"><span><em style="background:${C_FIJO}"></em>Fijos</span><b class="num">${fmt(s.fijo)} <small>${tot ? Math.round(s.fijo / tot * 100) + ' %' : ''}</small></b></div>
         <div class="kv"><span><em style="background:${C_VAR}"></em>Variables</span><b class="num">${fmt(s.vari)} <small>${tot ? Math.round(s.vari / tot * 100) + ' %' : ''}</small></b></div></div>
-      ${barrasSVG(ms, [{ vals: datos.map(x => x.fijo), color: C_FIJO }, { vals: datos.map(x => x.vari), color: C_VAR }], { sel: anaSelFijo, apilado: true })}
+      ${areaFVSVG(ms, datos, anaSelFijo)}
+      <div class="ley-evol"><span><em style="background:${C_FIJO}"></em>Fijos</span><span><em style="background:${C_VAR}"></em>Variables</span></div>
     </section>
     <section class="card"><div class="card-cab"><h3>FIJOS DE ${MESES[m.getMonth()].toUpperCase()}</h3></div>${filas(lista(true), C_FIJO)}
       <button class="vertodos ver-movs" data-verfv="Fijo" data-mes="${claveMes(m)}">Ver movimientos fijos ${SVG.flecha}</button></section>
@@ -1885,7 +2036,12 @@ function vAnaPrev() {
 
 // ══════════════ PRESUPUESTO ══════════════
 // Límite mensual por categoría de gasto (pestaña Presupuesto de la hoja). Cuenta todo el gasto de la categoría (fijo y variable, menos reembolsos).
+// Cada límite puede ser un importe (300) o un % de los ingresos del mes («15%»). La fila «Ahorro» es el % que queréis ahorrar.
 const PRES = () => (D.config && D.config.presupuesto) || {};
+const AHORRO_P = 'Ahorro';
+const esPct = v => /%/.test(String(v));
+const numPct = v => parseFloat(String(v).replace(',', '.'));
+const limiteEn = (v, base) => esPct(v) ? numPct(v) / 100 * base : +v;
 const gastoPorCat = arr => { const o = {}; arr.forEach(x => { if (x.tipo !== 'Gasto' && x.tipo !== 'Reembolso') return; const c = x.categoria || 'Sin clasificar'; o[c] = (o[c] || 0) + (x.tipo === 'Gasto' ? x.importe : -x.importe); }); return o; };
 // Media mensual de gasto total (fijo + variable) por categoría en los últimos 6 meses con datos: sirve para proponer límites
 function mediaGastoCat(ref) {
@@ -1894,76 +2050,155 @@ function mediaGastoCat(ref) {
   Object.keys(o).forEach(c => o[c] = Math.max(0, o[c] / (meses.length || 1)));
   return o;
 }
+// Ingresos del mes sobre los que se calculan los %: reales en meses pasados, reales + pendientes de Recurrentes en el actual,
+// previstos en los futuros. Si no hay ninguno, la media de los 3 últimos meses cerrados con ingresos.
+function ingresoBase(M) {
+  const k = claveMes(M), act = k === claveMes(hoy);
+  let v = resumen(delMes(MA, M)).ing, tipo = k < claveMes(hoy) ? 'real' : 'previsto';
+  if (act) v += previstosMes(hoy).filter(q => q.tipo === 'Ingreso').reduce((a, q) => a + q.importe, 0);
+  if (v > 0) return { v, tipo };
+  const l = []; for (let i = 1; i <= 24 && l.length < 3; i++) { const r = resumen(delMes(D.movs, new Date(M.getFullYear(), M.getMonth() - i, 1))).ing; if (r > 0) l.push(r); }
+  return { v: l.length ? l.reduce((a, b) => a + b, 0) / l.length : 0, tipo: 'media' };
+}
+function limiteDe(cat, M) { const v = PRES()[cat]; return v === undefined ? undefined : limiteEn(v, ingresoBase(M).v); }
 function estadoPres(M) {
   const pres = PRES(), g = gastoPorCat(delMes(MA, M)), y = M.getFullYear(), mo = M.getMonth(), N = new Date(y, mo + 1, 0).getDate();
   const actual = claveMes(M) === claveMes(hoy), futuro = esFuturo(M), dia = actual ? hoy.getDate() : futuro ? 0 : N;
-  const med = mediaGastoCat(M);
-  const cats = Object.keys(pres).map(c => {
-    const gast = Math.max(0, g[c] || 0), lim = pres[c];
-    const prevFin = actual ? Math.max(gast, med[c] || 0) : futuro ? Math.max(gast, med[c] || 0) : gast;
-    return { c, gast, lim, pct: gast / lim * 100, queda: lim - gast, prevFin };
-  }).sort((a, b) => b.pct - a.pct);
+  const med = mediaGastoCat(M), base = ingresoBase(M);
+  const cats = Object.keys(pres).filter(c => c !== AHORRO_P).map(c => {
+    const gast = Math.max(0, g[c] || 0), lim = limiteEn(pres[c], base.v);
+    const prevFin = actual || futuro ? Math.max(gast, med[c] || 0) : gast;
+    return { c, gast, lim, pct: lim > 0 ? gast / lim * 100 : 0, queda: lim - gast, prevFin, enPct: esPct(pres[c]) ? numPct(pres[c]) : null };
+  }).filter(o => o.lim > 0).sort((a, b) => b.pct - a.pct);
   const total = cats.reduce((a, o) => a + o.lim, 0), gastado = cats.reduce((a, o) => a + o.gast, 0);
   const sin = Object.entries(g).filter(([c, v]) => !pres[c] && v > .5).sort((a, b) => b[1] - a[1]);
-  return { cats, total, gastado, queda: total - gastado, sin, actual, futuro, dia, N, porDia: actual && N - dia + 1 > 0 ? Math.max(0, total - gastado) / (N - dia + 1) : null };
+  // Objetivo de ahorro: en meses cerrados se compara con lo ahorrado; en el actual y los futuros, con lo que se prevé ahorrar
+  let ahorro = null;
+  if (pres[AHORRO_P] !== undefined) {
+    const obj = limiteEn(pres[AHORRO_P], base.v), objPct = esPct(pres[AHORRO_P]) ? numPct(pres[AHORRO_P]) : (base.v ? obj / base.v * 100 : 0);
+    const pasado = !actual && !futuro, real = pasado ? resumen(delMes(MA, M)).ahorro : prevision(M).ahoFin;
+    ahorro = { obj, objPct, real, realPct: base.v ? real / base.v * 100 : 0, pasado, pct: obj > 0 ? Math.max(0, real) / obj * 100 : 0 };
+  }
+  const usaPct = Object.values(pres).some(esPct);
+  const asignado = base.v ? (total + (ahorro ? ahorro.obj : 0)) / base.v * 100 : null;
+  return { cats, total, gastado, queda: total - gastado, sin, actual, futuro, dia, N, base, usaPct, ahorro, asignado,
+    porDia: actual && N - dia + 1 > 0 ? Math.max(0, total - gastado) / (N - dia + 1) : null };
 }
 const colorPres = pct => pct > 100 ? 'mal' : pct > 85 ? 'ojo' : '';
+// Anillo de progreso: si se pasa del 100 % da otra vuelta en un tono más fuerte. La rayita marca el día del mes.
+function anilloSVG(pct, tam, grosor, cls, marca, centro, fut, sinVuelta) {
+  const r = (tam - grosor) / 2, C = 2 * Math.PI * r, c = tam / 2, p1 = Math.max(0, Math.min(100, pct)), p2 = sinVuelta ? 0 : Math.max(0, Math.min(100, pct - 100));
+  const tick = marca !== null && marca !== undefined ? (() => { const a = (marca / 100) * 2 * Math.PI - Math.PI / 2, r1 = r - grosor / 2 - 1, r2 = r + grosor / 2 + 1;
+    return `<line x1="${(c + r1 * Math.cos(a)).toFixed(1)}" y1="${(c + r1 * Math.sin(a)).toFixed(1)}" x2="${(c + r2 * Math.cos(a)).toFixed(1)}" y2="${(c + r2 * Math.sin(a)).toFixed(1)}" class="an-dia"/>`; })() : '';
+  return `<div class="anillo ${cls || ''}${fut ? ' fut' : ''}" style="width:${tam}px;height:${tam}px"><svg viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}">
+    <circle cx="${c}" cy="${c}" r="${r}" class="an-pista" stroke-width="${grosor}"${fut ? ' stroke-dasharray="3 3"' : ''}/>
+    <g transform="rotate(-90 ${c} ${c})">${p1 > .5 ? '' : '<!--'}<circle cx="${c}" cy="${c}" r="${r}" class="an-arco" stroke-width="${grosor}" stroke-linecap="round" style="--len:${(p1 / 100 * C).toFixed(1)};--C:${C.toFixed(1)}" stroke-dasharray="${(p1 / 100 * C).toFixed(1)} ${C.toFixed(1)}"/>${p1 > .5 ? '' : '-->'}
+    ${p2 > 0 ? `<circle cx="${c}" cy="${c}" r="${r}" class="an-arco an-extra" stroke-width="${grosor}" stroke-linecap="round" stroke-dasharray="${(p2 / 100 * C).toFixed(1)} ${C.toFixed(1)}"/>` : ''}</g>${tick}</svg>
+    ${centro ? `<div class="an-centro">${centro}</div>` : ''}</div>`;
+}
 function widgetPres(M) {
   const e = estadoPres(M);
-  if (!e.cats.length) return `<button class="wid wfull" data-ana="pres"><div class="wt">Presupuesto</div><div class="wbig" style="font-size:20px">Sin definir</div>
-    <div class="ws">Pon un límite mensual a cada categoría y controla cuánto os queda</div><span class="wpill">＋ Crear presupuesto</span></button>`;
-  const pct = e.total ? e.gastado / e.total * 100 : 0, marca = e.actual ? e.dia / e.N * 100 : null;
-  const pasados = e.cats.filter(o => o.pct > 100).length;
-  const pie = e.porDia !== null ? `${fmt(e.porDia)}/día hasta fin de mes` : e.futuro ? 'mes futuro' : pasados ? `${pasados} ${pasados === 1 ? 'categoría pasada' : 'categorías pasadas'}` : 'todas dentro del límite';
+  if (!e.cats.length && !e.ahorro) return `<button class="wid wfull" data-ana="pres"><div class="wt">Presupuesto</div><div class="wbig" style="font-size:20px">Sin definir</div>
+    <div class="ws">Pon un límite a cada categoría (en € o en % de los ingresos) y un objetivo de ahorro</div><span class="wpill">＋ Crear presupuesto</span></button>`;
+  const marca = e.actual ? e.dia / e.N * 100 : null;
+  // Las 4 categorías con presupuesto que más han gastado este mes (2 × 2)
+  const top3 = e.cats.slice().sort((a, b) => b.gast - a.gast).slice(0, 4);
+  const ah = e.ahorro;
   return `<button class="wid wfull" data-ana="pres"><div class="wpres-g">
     <div class="wpres-i"><div class="wt">Presupuesto</div>
-      <div class="wbig num">${N(Math.abs(e.queda))}</div><div class="ws">${e.queda >= 0 ? 'quedan' : 'pasados'} de ${fK(e.total)} €</div>
-      <div class="wpres${e.futuro ? ' fut' : ''}"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
-      <div class="ws" style="margin-top:6px;white-space:normal">${pie}</div></div>
-    <div class="wpres-l">${e.cats.slice(0, 4).map(o => `<div><span>${emojiDe(o.c) ? emojiDe(o.c) + ' ' : ''}${esc(o.c)}</span><b class="${colorPres(o.pct)}">${Math.round(o.pct)} %</b>
-      <i><u class="${colorPres(o.pct)}" style="width:${Math.min(100, o.pct)}%"></u></i></div>`).join('')}${e.cats.length > 4 ? `<small>y ${e.cats.length - 4} más</small>` : ''}</div>
+      ${e.cats.length ? `<div class="wbig num">${N(Math.abs(e.queda))}</div><div class="ws">${e.queda >= 0 ? 'quedan' : 'pasados'} de ${fK(e.total)} €</div>` : ''}
+      ${ah ? `<div class="w-ahorro ${ah.real >= ah.obj ? 'ok' : 'mal'}">🎯 Ahorro ${Math.round(ah.realPct)}&nbsp;%<span>objetivo ${Math.round(ah.objPct)} %${ah.pasado ? '' : ' · previsto'}</span></div>`
+        : e.porDia !== null ? `<div class="ws" style="margin-top:6px;white-space:normal">${fmt(e.porDia)}/día hasta fin de mes</div>` : ''}</div>
+    <div class="w-anillos">${top3.map(o => `<div>${anilloSVG(o.pct, 46, 5, colorPres(o.pct), marca, `<span class="an-emo">${emojiDe(o.c) || esc(o.c.slice(0, 1))}</span>`, e.futuro)}
+      <b class="${colorPres(o.pct)}">${Math.round(o.pct)} %</b></div>`).join('')}</div>
   </div></button>`;
 }
 function vAnaPres() {
   const M = anaMes, e = estadoPres(M);
   const nav = `<div class="mes"><button data-acc="anaMesAnt" aria-label="Mes anterior">${SVG.izq}</button><b>${cap(MESES[M.getMonth()])} de ${M.getFullYear()}</b><button data-acc="anaMesSig" aria-label="Mes siguiente"${claveMes(M) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
-  const cab = cabDetalle('Presupuesto', claveMes(M) !== claveMes(hoy), 'Límites por categoría') + nav;
+  const cab = cabDetalle('Presupuesto', claveMes(M) !== claveMes(hoy), 'Límites y objetivo de ahorro') + nav;
   const sim = `<section class="card sim-cta"><div><b>🧮 ¿Y si…?</b><small>Simula un gasto (un móvil, un viaje…) y mira cómo afecta a tu presupuesto y a tu ahorro</small></div>
     <button class="btn pri" data-acc="simular">Simular</button></section>`;
-  if (!e.cats.length) return cab + `<section class="card"><div class="vacio" style="padding:12px 0">Aún no tienes presupuesto. Ponle un límite mensual a las categorías que quieras controlar.</div>
+  if (!e.cats.length && !e.ahorro) return cab + `<section class="card"><div class="vacio" style="padding:12px 0">Aún no tienes presupuesto. Ponle un límite a las categorías que quieras controlar (en € o en % de los ingresos) y, si quieres, un objetivo de ahorro.</div>
     <button class="btn pri" style="width:100%" data-acc="editarPres">Crear presupuesto</button></section>` + sim;
-  const pct = e.total ? e.gastado / e.total * 100 : 0, marca = e.actual ? e.dia / e.N * 100 : null;
-  const fila = o => { const em = emojiDe(o.c);
-    return `<div class="pr-f" data-prescat="${esc(o.c)}"><div class="pr-c"><span class="n">${em ? em + ' ' : ''}${esc(o.c)}</span><b class="num">${fmt(o.gast)}</b><small>/ ${fmt(o.lim)}</small></div>
-      <div class="pc-b"><i class="${colorPres(o.pct)}" style="width:${Math.min(100, o.pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
-      <div class="pr-s">${o.queda >= 0 ? `Quedan ${fmt(o.queda)}` : `<b class="mal">Te has pasado ${fmt(-o.queda)}</b>`}${e.actual && o.prevFin > o.lim && o.queda >= 0 ? ` · <b class="ojo">al ritmo normal llegarás a ${fmt(o.prevFin)}</b>` : ''}</div></div>`; };
+  const marca = e.actual ? e.dia / e.N * 100 : null;
+  const baseTxt = { real: 'ingresos', previsto: 'ingresos previstos', media: 'ingreso medio' }[e.base.tipo];
+  const ah = e.ahorro;
+  const tarjAhorro = ah ? `<section class="card pres-ah">${anilloSVG(ah.pct, 84, 9, ah.real >= ah.obj ? 'ok-fuerte' : ah.pct >= 75 ? 'ojo' : 'mal', null, `<b class="num">${Math.round(ah.realPct)} %</b><small>de ${Math.round(ah.objPct)} %</small>`, e.futuro, true)}
+      <div><small>${ah.pasado ? 'Ahorro del mes' : 'Ahorro previsto a fin de mes'}</small><b class="num">${fmt(ah.real)}</b>
+        <p>Objetivo: <b>${Math.round(ah.objPct)} %</b> de los ${baseTxt} (${fmt(ah.obj)})</p>
+        <p class="${ah.real >= ah.obj ? 'ok' : 'mal'}">${ah.real >= ah.obj ? `✓ ${ah.pasado ? 'Cumplido' : 'Vais a cumplirlo'}${ah.real - ah.obj > 1 ? ` con ${fmt(ah.real - ah.obj)} de margen` : ''}` : `${ah.pasado ? 'Faltaron' : 'Faltarían'} ${fmt(ah.obj - ah.real)}`}</p></div></section>` : '';
+  const celda = o => { const em = emojiDe(o.c);
+    return `<div class="pr-cel" data-prescat="${esc(o.c)}">${anilloSVG(o.pct, 66, 7, colorPres(o.pct), marca, `<span class="an-emo">${em || esc(o.c.slice(0, 1))}</span>`, e.futuro)}
+      <b class="n">${esc(o.c)}</b><span class="num">${fmt(o.gast).replace(/,00 €$/, ' €')} / ${fmt(o.lim).replace(/,00 €$/, ' €')}</span>
+      <em class="${colorPres(o.pct)}">${o.queda >= 0 ? `quedan ${fmt(o.queda).replace(/,00 €$/, ' €')}` : `+${fmt(-o.queda).replace(/,00 €$/, ' €')}`}</em>
+      ${o.enPct !== null ? `<i class="pr-pct">${String(o.enPct).replace('.', ',')} %</i>` : ''}</div>`; };
+  const pct = e.total ? e.gastado / e.total * 100 : 0;
   return cab + `
-    <section class="card prev-hero"><small>${e.queda >= 0 ? 'Te quedan' : 'Te has pasado'}</small><div class="grande num">${N(Math.abs(e.queda))}</div>
+    ${e.cats.length ? `<section class="card prev-hero"><small>${e.queda >= 0 ? 'Te quedan' : 'Te has pasado'}</small><div class="grande num">${N(Math.abs(e.queda))}</div>
       <div class="rango">${fmt(e.gastado)} gastados de <b>${fmt(e.total)}</b></div>
-      <div class="pc-b" style="height:12px;margin:10px 4px 4px"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
-      ${e.porDia !== null ? `<p>Puedes gastar <b>${fmt(e.porDia)} al día</b> hasta fin de mes sin pasarte.</p>` : ''}</section>
-    <section class="card"><div class="card-cab"><h3>POR CATEGORÍA</h3><button class="vertodos" data-acc="editarPres">Editar</button></div>${e.cats.map(fila).join('')}
-      ${marca !== null ? '<p class="nota" style="text-align:left;margin:8px 0 0">La rayita marca cuánto del mes ha pasado. Toca una categoría para ver sus movimientos.</p>' : ''}</section>
+      <div class="pc-b" style="height:10px;margin:10px 4px 4px"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
+      ${e.porDia !== null ? `<p>Puedes gastar <b>${fmt(e.porDia)} al día</b> hasta fin de mes sin pasarte.</p>` : ''}
+      ${e.usaPct ? `<p class="pres-base">Los % se calculan sobre ${fmt(e.base.v)} de ${baseTxt}${e.asignado !== null ? ` · asignado ${Math.round(e.asignado)} %${e.asignado < 100 ? `, quedan ${Math.round(100 - e.asignado)} % libres` : ''}` : ''}</p>` : ''}</section>` : ''}
+    ${tarjAhorro}
+    ${e.cats.length ? `<section class="card"><div class="card-cab"><h3>POR CATEGORÍA</h3><button class="vertodos" data-acc="editarPres">Editar</button></div>
+      <div class="pr-grid">${e.cats.map(celda).join('')}</div>
+      <p class="nota" style="margin:10px 0 0">${marca !== null ? 'La rayita del anillo marca cuánto del mes ha pasado. ' : ''}Toca una categoría para ver sus movimientos.</p></section>`
+      : `<section class="card"><button class="btn sec" style="width:100%" data-acc="editarPres">Añadir límites por categoría</button></section>`}
     ${e.sin.length ? `<section class="card"><div class="card-cab"><h3>SIN PRESUPUESTO</h3></div>${e.sin.map(([c, v]) => `<div class="ley-f"><span class="n">${emojiDe(c) ? emojiDe(c) + ' ' : ''}${esc(c)}</span><b class="num">${fmt(v)}</b></div>`).join('')}</section>` : ''}
     ${sim}`;
 }
-// Editar límites (se guardan en la hoja)
+// Editar límites (se guardan en la hoja). Modo € o % de los ingresos del mes; arriba, el objetivo de ahorro en %.
 function abrirEditarPres() {
   const pres = PRES(), med = mediaGastoCat(hoy), cats = Object.keys(D.config.categorias.Gasto).filter(c => c !== 'Sin clasificar');
-  const red = v => Math.ceil(v / 10) * 10;
-  $('#hoja').innerHTML = `${cabHoja('Presupuesto', '', `<button class="hb pri" id="presOk" aria-label="Guardar">${SVG.ok}</button>`)}
-    <div class="aviso">Límite mensual por categoría. Déjalo vacío si no quieres controlarla. Debajo de cada una ves tu media de gasto mensual.</div>
-    <button class="btn sec" style="width:100%;margin-bottom:6px" id="presMedias">Rellenar con mis medias</button>
-    ${cats.map(c => `<div class="pe-f"><span class="n">${emojiDe(c) ? emojiDe(c) + ' ' : ''}${esc(c)}<small>media ${fmt(med[c] || 0)}</small></span>
-      <input inputmode="decimal" data-pres="${esc(c)}" data-media="${red(med[c] || 0)}" placeholder="—" value="${pres[c] ? String(pres[c]).replace('.', ',') : ''}"></div>`).join('')}`;
-  abrirHoja();
-  $('#presMedias').addEventListener('click', () => document.querySelectorAll('[data-pres]').forEach(i => { if (!i.value && +i.dataset.media > 0) i.value = i.dataset.media; }));
-  $('#presOk').addEventListener('click', async () => {
-    const obj = {}; document.querySelectorAll('[data-pres]').forEach(i => { const v = numImporteS(i.value); if (isFinite(v) && v > 0) obj[i.dataset.pres] = v; });
-    $('#presOk').disabled = true;
-    try { await api('api_guardarPresupuesto', obj); D.config.presupuesto = obj; cerrarHoja(); toast('Presupuesto guardado'); pintar(); recargar().catch(() => {}); }
-    catch (err) { toast(/función no disponible|importe no v/i.test(err.message) ? 'Falta actualizar Código.gs en Apps Script y publicar una nueva versión' : err.message); $('#presOk').disabled = false; }
-  });
+  const base = ingresoBase(hoy).v || 0;
+  const catsPres = Object.keys(pres).filter(c => c !== AHORRO_P);
+  let modo = catsPres.length && catsPres.every(c => esPct(pres[c])) ? 'pct' : 'eur';
+  const red = v => Math.ceil(v / 10) * 10, r1 = v => Math.round(v * 10) / 10;
+  const valIni = c => { const v = pres[c]; if (v === undefined) return '';
+    if (modo === 'pct') return String(r1(esPct(v) ? numPct(v) : (base ? v / base * 100 : 0))).replace('.', ',');
+    return String(Math.round(esPct(v) ? numPct(v) / 100 * base : v)).replace('.', ','); };
+  const ahIni = pres[AHORRO_P] !== undefined ? String(r1(esPct(pres[AHORRO_P]) ? numPct(pres[AHORRO_P]) : (base ? pres[AHORRO_P] / base * 100 : 0))).replace('.', ',') : '';
+  const pinta = () => {
+    $('#hoja').innerHTML = `<div id="presEd">${cabHoja('Presupuesto', '', `<button class="hb pri" id="presOk" aria-label="Guardar">${SVG.ok}</button>`)}
+    <div class="seg" style="margin:0 0 10px"><button data-pmodo="eur" class="${modo === 'eur' ? 'on' : ''}">En euros</button><button data-pmodo="pct" class="${modo === 'pct' ? 'on' : ''}">En % de ingresos</button></div>
+    <div class="aviso">${modo === 'pct' ? `Cada límite es un % de los ingresos de cada mes. Con los de este mes (${fmt(base)}) verás debajo a cuánto equivale.` : 'Límite mensual en euros. Déjalo vacío si no quieres controlar esa categoría.'} También puedes cambiarlo en la pestaña <b>Presupuesto</b> de la hoja.</div>
+    <div class="pe-f pe-ah"><span class="n">🎯 Objetivo de ahorro<small id="peAhEq">${base ? '% de los ingresos del mes' : ''}</small></span><input inputmode="decimal" id="presAh" placeholder="—" value="${ahIni}"><span class="pe-u">%</span></div>
+    <button class="btn sec" style="width:100%;margin:8px 0 6px" id="presMedias">Rellenar con mis medias</button>
+    ${cats.map(c => `<div class="pe-f"><span class="n">${emojiDe(c) ? emojiDe(c) + ' ' : ''}${esc(c)}<small data-eq="${esc(c)}"></small></span>
+      <input inputmode="decimal" data-pres="${esc(c)}" placeholder="—" value="${valIni(c)}"><span class="pe-u">${modo === 'pct' ? '%' : '€'}</span></div>`).join('')}
+    <div class="pe-tot" id="peTot"></div></div>`;
+    const eq = () => {
+      let tot = 0;
+      document.querySelectorAll('[data-pres]').forEach(i => { const v = numImporteS(i.value), c = i.dataset.pres, m = med[c] || 0, el = document.querySelector(`[data-eq="${CSS.escape(c)}"]`);
+        const eur = isFinite(v) && v > 0 ? (modo === 'pct' ? v / 100 * base : v) : 0; tot += eur;
+        el.textContent = modo === 'pct' ? `media ${base ? r1(m / base * 100).toString().replace('.', ',') + ' %' : fmt(m)}${eur ? ' · ≈ ' + fmt(eur) : ''}` : `media ${fmt(m)}${base && eur ? ' · ' + r1(eur / base * 100).toString().replace('.', ',') + ' %' : ''}`; });
+      const ahp = numImporteS($('#presAh').value), ahE = isFinite(ahp) && ahp > 0 ? ahp / 100 * base : 0;
+      $('#peAhEq').textContent = base ? (ahE ? `≈ ${fmt(ahE)} con los ingresos de este mes` : '% de los ingresos del mes') : '';
+      const asig = base ? (tot + ahE) / base * 100 : null;
+      $('#peTot').innerHTML = `<span>Límites</span><b>${fmt(tot)}</b>${asig !== null ? `<span>Con el ahorro, asignado</span><b class="${asig > 100 ? 'mal' : ''}">${Math.round(asig)} % de ${fmt(base)}</b>` : ''}`;
+    };
+    $('#hoja').querySelectorAll('[data-pmodo]').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.pmodo === modo) return;
+      // Convierte lo escrito al otro modo con los ingresos de este mes
+      const vals = {}; document.querySelectorAll('[data-pres]').forEach(i => { const v = numImporteS(i.value); vals[i.dataset.pres] = isFinite(v) && v > 0 ? v : null; });
+      const ah = $('#presAh').value;
+      modo = b.dataset.pmodo; pinta(); $('#presAh').value = ah;
+      document.querySelectorAll('[data-pres]').forEach(i => { const v = vals[i.dataset.pres]; i.value = v === null ? '' : String(modo === 'pct' ? (base ? r1(v / base * 100) : '') : Math.round(v / 100 * base)).replace('.', ','); });
+      eq();
+    }));
+    $('#presEd').addEventListener('input', eq);
+    $('#presMedias').addEventListener('click', () => { document.querySelectorAll('[data-pres]').forEach(i => { const m = med[i.dataset.pres] || 0; if (!i.value && m > 0) i.value = String(modo === 'pct' ? (base ? Math.ceil(m / base * 100) : '') : red(m)).replace('.', ','); }); eq(); });
+    $('#presOk').addEventListener('click', async () => {
+      const obj = {}; document.querySelectorAll('[data-pres]').forEach(i => { const v = numImporteS(i.value); if (isFinite(v) && v > 0) obj[i.dataset.pres] = modo === 'pct' ? r1(v) + '%' : v; });
+      const ah = numImporteS($('#presAh').value); if (isFinite(ah) && ah > 0) obj[AHORRO_P] = r1(ah) + '%';
+      $('#presOk').disabled = true;
+      try { await api('api_guardarPresupuesto', obj); D.config.presupuesto = obj; cerrarHoja(); toast('Presupuesto guardado'); pintar(); recargar().catch(() => {}); }
+      catch (err) { toast(/función no disponible|importe no v/i.test(err.message) ? 'Falta actualizar Código.gs en Apps Script y publicar una nueva versión' : err.message); $('#presOk').disabled = false; }
+    });
+    eq();
+  };
+  pinta(); abrirHoja();
 }
 // ── Simulador «¿Y si…?»: cómo afectaría un gasto que tienes en mente ──
 function abrirSimulador() {
@@ -1984,7 +2219,7 @@ function abrirSimulador() {
     // Ahorro medio mensual de los últimos 6 meses con datos
     const ms = []; for (let k = 1; k <= 24 && ms.length < 6; k++) { const l = delMes(D.movs, new Date(hoy.getFullYear(), hoy.getMonth() - k, 1)); if (l.length) ms.push(resumen(l).ahorro); }
     const ahMed = ms.length ? ms.reduce((a, b) => a + b, 0) / ms.length : null;
-    const lim = PRES()[cat], gastCat = Math.max(0, gastoPorCat(delMes(D.movs, M))[cat] || 0), prevCat = Math.max(gastCat, mediaGastoCat(M)[cat] || 0);
+    const lim = limiteDe(cat, M), gastCat = Math.max(0, gastoPorCat(delMes(D.movs, M))[cat] || 0), prevCat = Math.max(gastCat, mediaGastoCat(M)[cat] || 0);
     const mx = Math.max(1, Math.abs(antes), Math.abs(despues));
     const barra = (t, v, cls) => `<div class="sim-b"><span>${t}</span><div><i class="${cls}" style="width:${Math.abs(v) / mx * 100}%"></i></div><b class="num ${v < 0 ? 'mal' : ''}">${fmt(v)}</b></div>`;
     $('#simRes').innerHTML = `<section class="card sim-res">
@@ -2791,7 +3026,7 @@ function crearDemo() {
   movs.forEach(m => { if (['Hipoteca', 'Nómina · María', 'Seguro coche'].indexOf(m.concepto) > -1) m.origen = 'Recurrente'; });
   const ini = ymd(new Date(hoyD.getFullYear(), hoyD.getMonth() - 2, 0));
   return {
-    movs, config: { categorias: { Gasto: G, Ingreso: I }, metodos: ['BBVA', 'Bankinter'], personas: ['María', 'Fernando'], fijos, iconos: { 'Alimentación||': '🛒', 'Ocio||': '🎉', 'Ocio|Restaurantes|': '🍽️', 'Ocio|Cafeterías|': '☕', 'Ocio|Planes|Cine': '🎬', 'Compras||': '🛍️', 'Compras|Ropa|': '👕', 'Compras|Decoración casa|': '🛋️', 'Coche||': '🚗', 'Coche|Combustible|': '⛽', 'Coche|Seguro coche|': '🛡️', 'Cuidado personal||': '💆', 'Cuidado personal|Salud|Farmacia': '💊', 'Vivienda||': '🏠', 'Vivienda|Hipoteca|': '🏦', 'Vivienda|Suministros|Luz': '💡', 'Suscripciones y TV||': '🔁', 'Suscripciones y TV|Suscripción|Spotify': '🎵', 'Nómina||': '💸', 'Intereses y rendimientos||': '📈', 'Impuestos y tasas||': '🧾' }, presupuesto: { 'Alimentación': 300, 'Ocio': 200, 'Coche': 150, 'Compras': 120 }, reglas: [['mercadona', 'Alimentación', '', ''], ['repsol', 'Coche', 'Combustible', 'Gasoil'], ['loteria', 'Ocio', 'Planes', 'Actividades'], ['bymycar', 'Coche', 'Mantenimiento', 'Taller']] },
+    movs, config: { categorias: { Gasto: G, Ingreso: I }, metodos: ['BBVA', 'Bankinter'], personas: ['María', 'Fernando'], fijos, iconos: { 'Alimentación||': '🛒', 'Ocio||': '🎉', 'Ocio|Restaurantes|': '🍽️', 'Ocio|Cafeterías|': '☕', 'Ocio|Planes|Cine': '🎬', 'Compras||': '🛍️', 'Compras|Ropa|': '👕', 'Compras|Decoración casa|': '🛋️', 'Coche||': '🚗', 'Coche|Combustible|': '⛽', 'Coche|Seguro coche|': '🛡️', 'Cuidado personal||': '💆', 'Cuidado personal|Salud|Farmacia': '💊', 'Vivienda||': '🏠', 'Vivienda|Hipoteca|': '🏦', 'Vivienda|Suministros|Luz': '💡', 'Suscripciones y TV||': '🔁', 'Suscripciones y TV|Suscripción|Spotify': '🎵', 'Nómina||': '💸', 'Intereses y rendimientos||': '📈', 'Impuestos y tasas||': '🧾' }, presupuesto: { 'Ahorro': '20%', 'Alimentación': '8%', 'Ocio': 200, 'Coche': 150, 'Compras': 120, 'Cuidado personal': '2,5%' }, reglas: [['mercadona', 'Alimentación', '', ''], ['repsol', 'Coche', 'Combustible', 'Gasoil'], ['loteria', 'Ocio', 'Planes', 'Actividades'], ['bymycar', 'Coche', 'Mantenimiento', 'Taller']] },
     cuentas: [{ banco: 'BBVA', saldoInicial: 1240.5, fecha: ini, logo: '' }, { banco: 'Bankinter', saldoInicial: 6380, fecha: ini, logo: '' }],
     recurrentes: [{ concepto: 'Hipoteca', importe: 650, tipo: 'Gasto', categoria: 'Vivienda', subcategoria: 'Hipoteca', detalle: '', banco: 'BBVA', dia: 1, ultimo: '', destino: '' },
       { concepto: 'Nómina · María', importe: 1820, tipo: 'Ingreso', categoria: 'Nómina', subcategoria: 'María', detalle: '', banco: 'BBVA', dia: 28, ultimo: '', destino: '' },
