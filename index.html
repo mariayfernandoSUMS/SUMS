@@ -1147,7 +1147,7 @@ function abrirElegirMes() {
     $('#hoja').innerHTML = `<div id="elegirMes">${cabHoja('Ir a un mes', '', `<button class="hb pri txt" id="emHoy">Hoy</button>`)}
       <div class="em-anio"><button class="ibtn" id="emAnt" aria-label="Año anterior"${anio <= anioMin ? ' disabled' : ''}>${SVG.izq}</button><b>${anio}</b><button class="ibtn" id="emSig" aria-label="Año siguiente"${anio >= anioMax ? ' disabled' : ''}>${SVG.der}</button></div>
       <div class="em-grid">${meses}</div>
-      ${anio <= +pm.slice(0, 4) && claveMes(new Date(anio, 0, 1)) < pm ? '<p class="nota" style="margin-top:12px">Los meses en gris claro son anteriores a tu primer movimiento.</p>' : ''}</div>`;
+      </div>`;
     $('#emAnt').onclick = () => { anio--; pinta(); };
     $('#emSig').onclick = () => { anio++; pinta(); };
     $('#emHoy').onclick = () => { cerrarHoja(); irAlMesElegido(new Date(hoy.getFullYear(), hoy.getMonth(), 1)); };
