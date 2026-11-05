@@ -65,6 +65,7 @@
   .mes:not(.periodos) b { font-size: 17px; padding: 4px 10px; }
   /* Durante el deslizamiento de mes no se repiten las animaciones de entrada (aparecer/desvanecer) */
   #app.sin-anim, #app.sin-anim * { animation: none !important; }
+  .vecino-quieto, .vecino-quieto *, .vecino-quieto *::before, .vecino-quieto *::after { animation-play-state: paused !important; }
   html, body { overflow-x: hidden; }
   .mes-fija { position: sticky; top: calc(env(safe-area-inset-top) + 8px); z-index: 15; }
   .mes-fija.pegada { box-shadow: 0 6px 20px rgba(20, 24, 28, .14); }
@@ -3178,6 +3179,10 @@ window.addEventListener('scroll', () => { const m = document.querySelector('.mes
       app.parentNode.insertBefore(vec, app.nextSibling);
     }
     vec.innerHTML = cache[dir]; vec.style.visibility = '';
+    // El mes que entra se ve en el punto de partida de su animación (gráficas a 0, calendario sin colorear):
+    // lleva la misma clase de animación que tendrá al soltarlo, pero congelada en el primer instante
+    const acc = b.dataset.acc;
+    vec.className = 'vecino-quieto ' + (/^mes/.test(acc) ? 'entra-mes' : /^(anaMes|ana)(Ant|Sig)$/.test(acc) ? 'entra-ana' : 'graf-anim');
     vec.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
     const cab = vec.querySelector(':scope > header.top'); if (cab) cab.style.visibility = 'hidden';   // la cabecera de arriba no se mueve: se queda la actual
   }
