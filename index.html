@@ -1209,12 +1209,12 @@ function vMovs() {
   const hayFiltros = tipoFiltro || catFiltro || fvFiltro || bancoFiltro || ordenMov;
   h += `<div class="filtros">`
     + (hayFiltros ? `<button class="f-quitar" data-acc="quitarFiltros" aria-label="Quitar todos los filtros" title="Quitar filtros">${SVG.x}</button>` : '')
-    + pill('filtroTipo', 'Filtrar por tipo', tipoFiltro, tipoFiltro ? TIPOS_F.find(t => t[0] === tipoFiltro)[1] : 'Tipo', TIPOS_F, tipoFiltro ? ' f-' + tipoFiltro.toLowerCase() : '')
+    + pill('filtroOrden', 'Ordenar movimientos', ordenMov, ordenMov === 'mayor' ? '↓ Mayor importe' : ordenMov === 'menor' ? '↑ Menor importe' : 'Ordenar', [['', 'Por fecha'], ['mayor', 'De mayor a menor importe'], ['menor', 'De menor a mayor importe']])
     + (catsF.length ? pill('filtroCat', 'Filtrar por categoría', catFiltro, catFiltro ? (emojiDe(catFiltro) ? emojiDe(catFiltro) + ' ' : '') + catFiltro : 'Categoría',
         [['', 'Todas las categorías']].concat(catsF.map(c => [c, (emojiDe(c) ? emojiDe(c) + '  ' : '') + c]))) : '')
+    + pill('filtroTipo', 'Filtrar por tipo', tipoFiltro, tipoFiltro ? TIPOS_F.find(t => t[0] === tipoFiltro)[1] : 'Tipo', TIPOS_F, tipoFiltro ? ' f-' + tipoFiltro.toLowerCase() : '')
     + pill('filtroFV', 'Filtrar por fijo o variable', fvFiltro, fvFiltro ? fvFiltro + 's' : 'Fijo/Variable', [['', 'Fijos y variables'], ['Fijo', 'Solo fijos'], ['Variable', 'Solo variables']])
     + pill('filtroBanco', 'Filtrar por banco', bancoFiltro, bancoFiltro || 'Banco', [['', 'Todos los bancos']].concat(bancosF.map(b => [b, b])))
-    + pill('filtroOrden', 'Ordenar movimientos', ordenMov, ordenMov === 'mayor' ? '↓ Mayor importe' : ordenMov === 'menor' ? '↑ Menor importe' : 'Ordenar', [['', 'Por fecha'], ['mayor', 'De mayor a menor importe'], ['menor', 'De menor a mayor importe']])
     + `</div>`;
   const pasa = m => (!tipoFiltro || m.tipo === tipoFiltro) && (!catFiltro || m.categoria === catFiltro)
     && (!fvFiltro || ((m.tipo === 'Gasto' || m.tipo === 'Reembolso') && esFijo(m) === (fvFiltro === 'Fijo')));
@@ -1385,9 +1385,9 @@ function volver() {
   pintar(true); requestAnimationFrame(() => window.scrollTo(0, f.y));
   return true;
 }
-function animarGrafica() { if (CAPTURA || SIN_CONTAR) return; const app = $('#app'); app.classList.remove('graf-anim'); void app.offsetWidth; app.classList.add('graf-anim'); clearTimeout(app._ga); app._ga = setTimeout(() => app.classList.remove('graf-anim'), 1400); }
+function animarGrafica() { if (CAPTURA) return; const app = $('#app'); app.classList.remove('graf-anim'); void app.offsetWidth; app.classList.add('graf-anim'); clearTimeout(app._ga); app._ga = setTimeout(() => app.classList.remove('graf-anim'), 1400); }
 // sinNumeros: al cambiar de mes en Análisis los importes salen directamente, sin contar desde 0
-function pintarAna(sinNumeros) { pintar(); if (CAPTURA || SIN_CONTAR) return; const app = $('#app'); void app.offsetWidth; app.classList.add('entra-ana'); if (!sinNumeros) contar(app); setTimeout(() => app.classList.remove('entra-ana'), 1500); }
+function pintarAna(sinNumeros) { pintar(); if (CAPTURA) return; const app = $('#app'); void app.offsetWidth; app.classList.add('entra-ana'); if (!sinNumeros) contar(app); setTimeout(() => app.classList.remove('entra-ana'), 1500); }
 
 // Explorar la gráfica de patrimonio deslizando el dedo
 let GRAF = null;
@@ -2335,11 +2335,21 @@ function reaplicarPulsado(raiz) {
   const soltar = () => {
     if (!actual) return;
     const el = actual; actual = null;
+    if (T_PULSA) { clearTimeout(T_PULSA); T_PULSA = null; el.classList.add('pulsado'); }   // toque muy rápido: que se note igual
     setTimeout(() => el.classList.remove('pulsado'), Math.max(0, 140 - (performance.now() - t0)));
   };
+  let px = 0, py = 0, T_PULSA = null;
+  // Si el dedo se mueve (deslizar de mes o desplazarse), se quita la marca enseguida y no vuelve a aparecer al redibujar
+  const anular = () => { clearTimeout(T_PULSA); if (actual) { actual.classList.remove('pulsado'); actual = null; } PULSADO = null; };
+  document.addEventListener('mesdesliza', anular);
+  document.addEventListener('pointermove', e => { if (actual || T_PULSA) if (Math.abs(e.clientX - px) > 8 || Math.abs(e.clientY - py) > 8) anular(); }, { passive: true });
+  document.addEventListener('click', e => { if (window.MES_DESLIZANDO && !window.CLICK_INTERNO) { e.stopPropagation(); e.preventDefault(); } }, true);
   document.addEventListener('pointerdown', e => {
     const el = e.target.closest(SEL); if (!el || el.disabled) return;
-    soltar(); actual = el; t0 = performance.now(); el.classList.add('pulsado');
+    soltar(); px = e.clientX; py = e.clientY;
+    t0 = performance.now(); actual = el;
+    // La marca aparece tras un instante, para que al empezar a deslizar no llegue a verse
+    clearTimeout(T_PULSA); T_PULSA = setTimeout(() => { T_PULSA = null; if (actual === el && !window.MES_DESLIZANDO) el.classList.add('pulsado'); }, 70);
     // Clave para reencontrar el botón si la pantalla se redibuja al pulsarlo
     const attr = ['data-ana', 'data-anaper', 'data-anameses', 'data-baja', 'data-migas', 'data-acc', 'data-dia', 'data-vista', 'data-tipof', 'data-periodo', 'data-id', 'data-tema', 'data-f', 'data-t'].find(a => el.hasAttribute(a));
     PULSADO = attr ? { sel: `[${attr}="${CSS.escape(el.getAttribute(attr))}"]`, t: t0 } : null;
@@ -3144,12 +3154,13 @@ window.addEventListener('scroll', () => { const m = document.querySelector('.mes
   const NAV = ['mesAnt', 'mesSig', 'anaMesAnt', 'anaMesSig', 'anaAnt', 'anaSig', 'evolAnt', 'evolSig', 'fijoAnt', 'fijoSig', 'prevAnt', 'prevSig'];
   const botones = () => { const m = [...document.querySelectorAll('#app .mes:not(.periodos) > button[data-acc]')].filter(b => NAV.includes(b.dataset.acc)); return m.length === 2 ? m : null; };
   const app = $('#app');
-  let x0 = null, y0 = 0, dx = 0, dy = 0, horiz = null, bs = null, vec = null, dirVec = 0, cache = {}, W = 0, ocupado = false;
+  let x0 = null, y0 = 0, dx = 0, dy = 0, horiz = null, bs = null, vec = null, dirVec = 0, cache = {}, W = 0, ocupado = false, hist = [];
+  window.MES_DESLIZANDO = false;     // mientras se arrastra, ningún botón se marca como pulsado
   // Genera la pantalla del mes de al lado sin cambiar nada: pulsa la flecha oculta en «modo captura» y deja el estado como estaba
   function htmlVecino(b) {
     const est = { mesSel: new Date(mesSel), diaSel, anaMes: new Date(anaMes), prevRef: new Date(prevRef), anaSelEvol, anaSelFijo, anaRef: new Date(anaRef), anaPer, ingMs: ingMs.slice() };
-    CAPTURA = true; CAPTURA_HTML = null;
-    try { b.click(); } catch (e) {} finally { CAPTURA = false; }
+    CAPTURA = true; CAPTURA_HTML = null; window.CLICK_INTERNO = true;
+    try { b.click(); } catch (e) {} finally { CAPTURA = false; window.CLICK_INTERNO = false; }
     mesSel = est.mesSel; diaSel = est.diaSel; anaMes = est.anaMes; prevRef = est.prevRef; anaSelEvol = est.anaSelEvol; anaSelFijo = est.anaSelFijo;
     anaRef = est.anaRef; anaPer = est.anaPer; ingMs = est.ingMs;
     return CAPTURA_HTML;
@@ -3183,6 +3194,7 @@ window.addEventListener('scroll', () => { const m = document.querySelector('.mes
     if (e.target.closest('.grafico, .gprev, .filtros, .asa, input, select, textarea, .barra, .seg, .periodos')) return;
     bs = botones(); if (!bs) return;
     x0 = t.clientX; y0 = t.clientY; dx = 0; dy = 0; horiz = null; cache = {}; W = Math.max(window.innerWidth, app.offsetWidth);
+    hist = [[performance.now(), 0]];
   }, { passive: true });
   document.addEventListener('touchmove', e => {
     if (x0 === null) return;
@@ -3191,28 +3203,39 @@ window.addEventListener('scroll', () => { const m = document.querySelector('.mes
     if (horiz === false) { x0 = null; return; }
     if (!horiz) return;
     if (e.cancelable) e.preventDefault();
+    if (!window.MES_DESLIZANDO) { window.MES_DESLIZANDO = true; document.dispatchEvent(new Event('mesdesliza')); }
+    hist.push([performance.now(), dx]); if (hist.length > 6) hist.shift();
     const dir = dx < 0 ? -1 : 1, b = dir < 0 ? bs[1] : bs[0];
     ponerVecino(dir);
     mover(!b || b.disabled ? dx * .25 : dx);      // sin más meses por ese lado: solo cede un poco
   }, { passive: false });
+  const fin = () => setTimeout(() => { window.MES_DESLIZANDO = false; }, 350);   // el «click» que llega al soltar tampoco cuenta
   document.addEventListener('touchend', () => {
     if (x0 === null) return; x0 = null;
     if (!horiz) return;
+    fin();
     const dir = dx < 0 ? -1 : 1, b = bs && (dir < 0 ? bs[1] : bs[0]);
-    if (Math.abs(dx) < W * .22 || !b || b.disabled || !vec || dir !== dirVec) {      // vuelve a su sitio
-      mover(0, 'transform .25s cubic-bezier(.2,.8,.3,1)'); setTimeout(limpiar, 260); return;
+    // Velocidad del dedo en los últimos ~100 ms: un gesto rápido cambia de mes aunque sea corto
+    const hl = hist[hist.length - 1], recien = performance.now() - hl[0] < 80;          // si el dedo se paró antes de soltar, no es un gesto rápido
+    const h0 = hist.find(q => hl[0] - q[0] < 120) || hist[0], vel = recien && h0 !== hl ? (hl[1] - h0[1]) / Math.max(16, hl[0] - h0[0]) : 0;
+    const rapido = Math.abs(vel) > .3 && Math.sign(vel) === dir && Math.abs(dx) > 25;
+    if ((!rapido && Math.abs(dx) < W * .3) || !b || b.disabled || !vec || dir !== dirVec) {      // vuelve a su sitio
+      mover(0, 'transform .38s cubic-bezier(.25,.8,.25,1)'); setTimeout(limpiar, 400); return;
     }
     ocupado = true;
-    mover(dir * W, 'transform .24s cubic-bezier(.2,.75,.3,1)');
+    // Termina el recorrido con una curva suave; dura más cuanto más falta por recorrer
+    const falta = 1 - Math.abs(dx) / W, dur = Math.round(260 + 220 * falta);
+    mover(dir * W, `transform ${dur}ms cubic-bezier(.22,.8,.3,1)`);
     setTimeout(() => {
-      // El mes nuevo ya se ve: se pinta de verdad en la pantalla (sin animaciones ni números contando) y se quita la copia
-      app.classList.add('sin-anim'); SIN_CONTAR = true;
-      try { b.click(); } finally { SIN_CONTAR = false; }
+      // El mes nuevo ya se ve: se pinta de verdad en la pantalla y se quita la copia.
+      // Las gráficas y el calendario hacen su animación; los números salen ya con su valor
+      SIN_CONTAR = true; window.CLICK_INTERNO = true;
+      try { b.click(); } finally { SIN_CONTAR = false; window.CLICK_INTERNO = false; }
       if (vec) vec.remove(); vec = null; dirVec = 0; cache = {};
-      setTimeout(() => { app.classList.remove('sin-anim', 'entra', 'entra-ana', 'entra-mes', 'graf-anim'); ocupado = false; }, 60);
-    }, 250);
+      ocupado = false;
+    }, dur + 10);
   });
-  document.addEventListener('touchcancel', () => { if (x0 !== null) { x0 = null; mover(0, 'transform .2s ease'); setTimeout(limpiar, 220); } });
+  document.addEventListener('touchcancel', () => { if (x0 !== null) { x0 = null; fin(); mover(0, 'transform .3s ease'); setTimeout(limpiar, 320); } });
 })();
 // Deslizar desde el borde izquierdo hacia la derecha para volver atrás (en las pantallas de detalle de Análisis)
 (function () {
