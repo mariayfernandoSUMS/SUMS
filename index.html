@@ -59,6 +59,11 @@
   .mes button { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: var(--muted); }
   .mes button.pulsado { background: var(--bg); }
   .mes svg { width: 18px; height: 18px; }
+  /* ‹ Mes de Año ›: ya no hay flechas, el mes se cambia deslizando a los lados (los botones siguen ocultos para el gesto) */
+  .mes:not(.periodos) { justify-content: center; background: transparent; box-shadow: none; padding: 0; margin: 2px 0 10px; touch-action: pan-y; }
+  .mes:not(.periodos) > button { display: none; }
+  .mes:not(.periodos) b { font-size: 17px; padding: 4px 10px; }
+  #app.desliza { transition: transform .16s ease-in, opacity .16s ease-in; }
   .mes-fija { position: sticky; top: calc(env(safe-area-inset-top) + 8px); z-index: 15; }
   .mes-fija.pegada { box-shadow: 0 6px 20px rgba(20, 24, 28, .14); }
   .mes-fija.pegada::before { content: ''; position: absolute; left: -16px; right: -16px; top: calc(-8px - env(safe-area-inset-top)); height: calc(8px + env(safe-area-inset-top));
@@ -799,10 +804,21 @@ let TOKEN = PARAMS.k || leer('fin_token');
 let USUARIO = PARAMS.u || leer('sums_usuario');
 let D = { movs: [], cuentas: [], recurrentes: [], config: { categorias: { Gasto: {}, Ingreso: {} }, metodos: [], personas: [], fijos: [] } };
 let FIJOS = new Set();
-const hoy = new Date(); const HOY = ymd(hoy);
+let hoy = new Date(), HOY = ymd(hoy);
+// Si la app se queda abierta en segundo plano y cambia el día, «hoy» se pone al día al volver
+function ponerHoyAlDia() {
+  const ahora = new Date(); if (ymd(ahora) === HOY) return false;
+  const viejo = HOY, mesViejo = claveMes(hoy);
+  hoy = ahora; HOY = ymd(ahora);
+  const m0 = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  if (diaSel === viejo) diaSel = HOY;
+  if (claveMes(mesSel) === mesViejo) mesSel = m0;
+  if (claveMes(anaMes) === mesViejo) { anaMes = new Date(m0); prevRef = new Date(m0); if (anaPer === 'Mes' && claveMes(anaRef) === mesViejo) anaRef = new Date(m0); }
+  return true;
+}
 let mesSel = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
 let tipoFiltro = null, catFiltro = null, fvFiltro = null;
-let tab = 'inicio', vistaMovs = leer('sums_vista') || 'calendario', diaSel = HOY, bancoFiltro = null, busqueda = null;
+let tab = 'inicio', vistaMovs = 'calendario', diaSel = HOY, bancoFiltro = null, busqueda = null;
 let periodo = leer('sums_periodo') || 'Todo', ocultar = leer('sums_ocultar') === '1';
 let form = null;
 
@@ -860,16 +876,23 @@ async function cargar() {
   }
 }
 let ultimaCarga = Date.now();
+let RECARGANDO = null;
 async function recargar() {
-  try {
-    await enviarPendientes();
-    const n = await api('api_datos'); guardarCopia(n); D = conPendientes(n); OFFLINE = null;
-  } catch (e) {
-    if (e.message !== SIN_RED) throw e;
-    OFFLINE = OFFLINE || (leerCopia() || {}).t || Date.now(); D = conPendientes(D);
-  }
-  FIJOS = new Set(D.config.fijos || []); ultimaCarga = Date.now(); avisoRed();
-  const v = $('#velo'); if (v.classList.contains('oculto') || v.classList.contains('cierra')) pintar();
+  if (RECARGANDO) return RECARGANDO;            // no lanza dos peticiones a la vez
+  RECARGANDO = (async () => {
+    const antes = JSON.stringify(D), diaCambia = ponerHoyAlDia();
+    try {
+      await enviarPendientes();
+      const n = await api('api_datos'); guardarCopia(n); D = conPendientes(n); OFFLINE = null;
+    } catch (e) {
+      if (e.message !== SIN_RED) throw e;
+      OFFLINE = OFFLINE || (leerCopia() || {}).t || Date.now(); D = conPendientes(D);
+    }
+    FIJOS = new Set(D.config.fijos || []); ultimaCarga = Date.now(); avisoRed();
+    // Solo se vuelve a pintar si ha llegado algo nuevo (así no salta la pantalla cada vez)
+    const v = $('#velo'); if ((diaCambia || JSON.stringify(D) !== antes) && (v.classList.contains('oculto') || v.classList.contains('cierra'))) pintar();
+  })();
+  try { return await RECARGANDO; } finally { RECARGANDO = null; }
 }
 
 // ── Sin conexión ─────────────────────────────────────────
@@ -922,9 +945,20 @@ function avisoRed() {
 $('#avisoRed').addEventListener('click', () => { toast('Reintentando…'); recargar().then(() => toast(OFFLINE === null ? 'Datos actualizados' : 'Sigue sin conexión')).catch(e => toast(e.message)); });
 window.addEventListener('online', () => { if (INSTALADA && TOKEN) recargar().catch(() => {}); });
 // Vuelve a pedir los datos al volver a la app o al cambiar de pestaña (si han pasado más de 15 s)
-function refrescarSiToca() { if (TOKEN || DEMO) if (Date.now() - ultimaCarga > 15000 && !$('#app').classList.contains('oculto')) recargar().catch(() => {}); }
+// Al volver a la app se piden los datos enseguida y otra vez a los 8 s: el atajo de Apple Pay tarda unos segundos en
+// escribir en la hoja, y si abres SUMS justo después del pago la primera petición puede llegar antes que el movimiento.
+// Mientras la app está abierta, se comprueba cada 30 s si hay movimientos nuevos.
+let T_REPASO = null;
+function refrescarSiToca(forzar) {
+  if (!(TOKEN || DEMO) || $('#app').classList.contains('oculto')) return;
+  if (ponerHoyAlDia()) pintar();
+  if (forzar || Date.now() - ultimaCarga > 3000) recargar().catch(() => {});
+  clearTimeout(T_REPASO); T_REPASO = setTimeout(() => recargar().catch(() => {}), 8000);
+}
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refrescarSiToca(); });
-window.addEventListener('pageshow', refrescarSiToca);
+window.addEventListener('pageshow', () => refrescarSiToca());
+window.addEventListener('focus', () => refrescarSiToca());
+setInterval(() => { if ((TOKEN || DEMO) && document.visibilityState === 'visible' && Date.now() - ultimaCarga > 30000 && $('#velo').classList.contains('oculto') && !$('#app').classList.contains('oculto')) recargar().catch(() => {}); }, 10000);
 
 function pedirUsuario() {
   $('#quienOpciones').innerHTML = D.config.personas.map(p => `<button class="opcion" data-p="${esc(p)}">${esc(p)}</button>`).join('');
@@ -1151,8 +1185,7 @@ function vMovs() {
       <section class="card">${q.length < 2 ? '<div class="vacio">Escribe al menos 2 letras</div>' : res.length ? agruparPorDia(res, true) : '<div class="vacio">Sin resultados</div>'}</section>`;
     return h;
   }
-  h += selectorMes().replace('class="mes"', 'class="mes mes-fija"');   // se queda pegado arriba al bajar por la lista
-  h += `<div class="seg seg-vista"><button data-vista="lista" class="${vistaMovs === 'lista' ? 'on' : ''}">Lista</button><button data-vista="calendario" class="${vistaMovs === 'calendario' ? 'on' : ''}">Calendario</button></div>`;
+  h += selectorMes();
   const futuroM = claveMes(mesSel) > claveMes(hoy);
   const mes = futuroM ? previstosMes(mesSel).filter(p => !bancoFiltro || p.metodo === bancoFiltro || p.destino === bancoFiltro) : delMes(filtrados(), mesSel), r = resumen(mes);
   h += `<div class="tres"><div class="ing ir-zona" data-acc="irIngresos" role="button"><small>Ingreso <i class="ir">${SVG.der}</i></small><b class="num">${N(r.ing)}</b></div>
@@ -1181,7 +1214,7 @@ function vMovs() {
     && (!fvFiltro || ((m.tipo === 'Gasto' || m.tipo === 'Reembolso') && esFijo(m) === (fvFiltro === 'Fijo')));
   const mesF = mes.filter(pasa);
   const nada = tipoFiltro || catFiltro || fvFiltro ? 'No hay movimientos con estos filtros este mes' : 'No hay movimientos este mes';
-  if (vistaMovs === 'lista') {
+  if (false) {
     const cta = bancoFiltro && D.cuentas.find(c => c.banco === bancoFiltro);
     if (cta) h += `<section class="card saldo-cta"><div><small>Saldo de ${esc(cta.banco)} hoy en SUMS</small><b class="num">${fmt(saldoEn(cta, HOY))}</b>
       <p>A la derecha de cada movimiento ves el saldo que quedaba después. Compáralo con el «Disponible» o «Saldo» del banco para encontrar dónde deja de cuadrar.</p></div>
@@ -1207,6 +1240,16 @@ function vMovs() {
     celdas += `<div class="${cls}" data-dia="${f}" style="${fondo};--d:${d}"><span class="n">${d}</span><div class="puntos">${puntos}</div></div>`;
   }
   h += `<section class="card cal-card"><div class="cal">${celdas}</div>${prev.length ? '<div class="leyenda">○ Previsto</div>' : ''}</section>`;
+  // Con algún filtro puesto (o al llegar desde Análisis / Patrimonio) se ve todo el mes filtrado debajo del calendario
+  if (tipoFiltro || catFiltro || fvFiltro || bancoFiltro) {
+    const cta = bancoFiltro && D.cuentas.find(c => c.banco === bancoFiltro);
+    if (cta) h += `<section class="card saldo-cta"><div><small>Saldo de ${esc(cta.banco)} hoy en SUMS</small><b class="num">${fmt(saldoEn(cta, HOY))}</b>
+      <p>A la derecha de cada movimiento ves el saldo que quedaba después. Compáralo con el «Disponible» o «Saldo» del banco para encontrar dónde deja de cuadrar.</p></div>
+      <button class="btn sec" data-acc="ajustarSaldo">Ajustar al saldo real</button></section>`;
+    h += `<div class="dia-cab"><h4>Todo ${MESES[mo]} · con filtros</h4><span class="num">${mesF.length} ${mesF.length === 1 ? 'movimiento' : 'movimientos'}</span></div>
+      <section class="card" style="margin-top:8px">${mesF.length ? agruparPorDia(ordenar(mesF)) : `<div class="vacio">${nada}</div>`}</section>`;
+    return h;
+  }
   if (diaSel.slice(0, 7) === claveMes(mesSel)) {
     const delDia = ordenar(mesF.filter(m => m.fecha === diaSel)), prevDia = prev.filter(p => p.fecha === diaSel);
     const neto = netoDia(delDia);
@@ -1312,7 +1355,7 @@ function irAMes(d) {
 function irAMovimientos(tipo, cat, fv, yaApilado) {
   if (!yaApilado) apilar();
   if (anaPer === 'Mes') irAMes(anaRef);
-  tab = 'movs'; vistaMovs = 'lista'; tipoFiltro = tipo || null; catFiltro = cat || null; fvFiltro = fv || null;
+  tab = 'movs'; vistaMovs = 'calendario'; tipoFiltro = tipo || null; catFiltro = cat || null; fvFiltro = fv || null;
   window.scrollTo(0, 0); pintar(true);
 }
 // Pila de navegación: los enlaces internos (widgets, «Ver movimientos», Inicio → Análisis…) guardan dónde estabas,
@@ -2328,14 +2371,14 @@ $('#app').addEventListener('click', e => {
       window.scrollTo(0, 0); return pintar(true);
     }
     if (a === 'ajustarSaldo') return abrirAjusteSaldo(bancoFiltro);
-    if (a === 'verTodos') { apilar(); tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
+    if (a === 'verTodos') { apilar(); tab = 'movs'; vistaMovs = 'calendario'; window.scrollTo(0, 0); return pintar(true); }
     if (a === 'buscar') { busqueda = ''; return pintar(); }
     if (a === 'cerrarBusqueda') { busqueda = null; return pintar(); }
     if (a === 'quitarFiltros') { tipoFiltro = null; catFiltro = null; fvFiltro = null; bancoFiltro = null; return pintar(); }
     if (a === 'quitarBanco') { bancoFiltro = null; return pintar(); }
     if (a === 'ojo') { ocultar = !ocultar; guardar('sums_ocultar', ocultar ? '1' : '0'); return pintar(); }
-    if (a === 'verSinBanco') { apilar(); bancoFiltro = SIN_BANCO; tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
-    if (a === 'verBanco') { apilar(); bancoFiltro = acc.closest('.cuenta').dataset.banco; tab = 'movs'; vistaMovs = 'lista'; window.scrollTo(0, 0); return pintar(true); }
+    if (a === 'verSinBanco') { apilar(); bancoFiltro = SIN_BANCO; tab = 'movs'; vistaMovs = 'calendario'; window.scrollTo(0, 0); return pintar(true); }
+    if (a === 'verBanco') { apilar(); bancoFiltro = acc.closest('.cuenta').dataset.banco; tab = 'movs'; vistaMovs = 'calendario'; window.scrollTo(0, 0); return pintar(true); }
     if (a === 'irHoy') {
       // «Hoy» lleva todas las pestañas al mes actual (Inicio, Movimientos, Análisis y sus detalles)
       const m0 = () => new Date(hoy.getFullYear(), hoy.getMonth(), 1);
@@ -3083,6 +3126,42 @@ if (INSTALADA && 'serviceWorker' in navigator) {
 document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 // Sombra un poco más marcada cuando el selector de mes de Movimientos está pegado arriba
 window.addEventListener('scroll', () => { const m = document.querySelector('.mes-fija'); if (m) m.classList.toggle('pegada', window.scrollY > 90); }, { passive: true });
+// Deslizar a los lados para cambiar de mes en cualquier pantalla que tenga ‹ Mes de Año ›
+// (izquierda → mes siguiente, derecha → mes anterior). No se activa sobre gráficas que se exploran con el dedo, filtros ni campos.
+(function () {
+  const NAV = ['mesAnt', 'mesSig', 'anaMesAnt', 'anaMesSig', 'anaAnt', 'anaSig', 'evolAnt', 'evolSig', 'fijoAnt', 'fijoSig', 'prevAnt', 'prevSig'];
+  const botones = () => { const m = [...document.querySelectorAll('#app .mes:not(.periodos) > button[data-acc]')].filter(b => NAV.includes(b.dataset.acc)); return m.length === 2 ? m : null; };
+  let x0 = null, y0 = 0, dx = 0, dy = 0, horiz = null;
+  const app = $('#app');
+  document.addEventListener('touchstart', e => {
+    x0 = null; const t = e.touches[0];
+    if (e.touches.length > 1 || t.clientX < 28 || !$('#velo').classList.contains('oculto') || app.classList.contains('oculto')) return;
+    if (e.target.closest('.grafico, .gprev, .filtros, .asa, input, select, textarea, .barra, .seg, .periodos')) return;
+    if (!botones()) return;
+    x0 = t.clientX; y0 = t.clientY; dx = 0; dy = 0; horiz = null;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (x0 === null) return;
+    const t = e.touches[0]; dx = t.clientX - x0; dy = t.clientY - y0;
+    if (horiz === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) horiz = Math.abs(dx) > Math.abs(dy) * 1.3;
+    if (horiz === false) { x0 = null; return; }
+    if (horiz) { if (e.cancelable) e.preventDefault(); app.style.transition = 'none'; app.style.transform = `translateX(${dx * .35}px)`; app.style.opacity = String(Math.max(.55, 1 - Math.abs(dx) / 500)); }
+  }, { passive: false });
+  document.addEventListener('touchend', () => {
+    if (x0 === null) return; x0 = null;
+    if (!horiz) return;
+    const bs = botones(), b = bs && (dx < 0 ? bs[1] : bs[0]);
+    if (Math.abs(dx) < 60 || !b || b.disabled) { app.style.transition = 'transform .2s ease, opacity .2s ease'; app.style.transform = ''; app.style.opacity = ''; return; }
+    const dir = dx < 0 ? -1 : 1;
+    app.style.transition = 'transform .14s ease-in, opacity .14s ease-in'; app.style.transform = `translateX(${dir * 60}px)`; app.style.opacity = '0';
+    setTimeout(() => {
+      b.click();
+      app.style.transition = 'none'; app.style.transform = `translateX(${-dir * 40}px)`; app.style.opacity = '0'; void app.offsetWidth;
+      app.style.transition = 'transform .22s ease-out, opacity .22s ease-out'; app.style.transform = ''; app.style.opacity = '';
+      setTimeout(() => { app.style.transition = ''; }, 260);
+    }, 140);
+  });
+})();
 // Deslizar desde el borde izquierdo hacia la derecha para volver atrás (en las pantallas de detalle de Análisis)
 (function () {
   let x0 = null, y0 = 0, dx = 0, activo = false;
