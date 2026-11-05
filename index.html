@@ -61,7 +61,24 @@
   .mes svg { width: 18px; height: 18px; }
   /* ‹ Mes de Año ›: ya no hay flechas, el mes se cambia deslizando a los lados (los botones siguen ocultos para el gesto) */
   .mes:not(.periodos) { justify-content: center; background: transparent; box-shadow: none; padding: 0; margin: 2px 0 10px; touch-action: pan-y; }
-  .mes:not(.periodos) > button { display: none; }
+  .mes:not(.periodos) { position: relative; }
+  .mes:not(.periodos) > button:not(.mes-ir) { display: none; }
+  .mes-ir { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center;
+    color: var(--ink); background: var(--card); box-shadow: var(--sombra); }
+  .mes-ir svg { width: 19px; height: 19px; }
+  .mes-ir.pulsado { transform: translateY(-50%) scale(.9); }
+  .em-anio { display: flex; align-items: center; justify-content: space-between; margin: 6px 0 14px; }
+  .em-anio b { font-size: 22px; font-weight: 800; }
+  .em-anio .ibtn:disabled { opacity: .3; }
+  .em-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .em-m { height: 52px; border-radius: 14px; background: var(--pista); font-size: 16px; font-weight: 700; color: var(--ink); }
+  .em-m.sin-datos { color: var(--muted); opacity: .6; }
+  .em-m.hoy { box-shadow: inset 0 0 0 2px var(--verde); }
+  .em-m.on { background: var(--ink); color: var(--bg); opacity: 1; }
+  .em-m:disabled { opacity: .25; }
+  .ver-mes { flex: none; font-size: 12.5px; font-weight: 700; color: var(--verde); background: var(--card); box-shadow: var(--sombra); border-radius: 99px; padding: 5px 11px; margin-left: 10px; align-self: center; }
+  .dia-cab h4 { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dia-cab > .num { flex: none; white-space: nowrap; margin-left: 8px; }
   .mes:not(.periodos) b { font-size: 17px; padding: 4px 10px; }
   /* Durante el deslizamiento de mes no se repiten las animaciones de entrada (aparecer/desvanecer) */
   #app.sin-anim, #app.sin-anim * { animation: none !important; }
@@ -820,7 +837,7 @@ function ponerHoyAlDia() {
   return true;
 }
 let mesSel = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-let tipoFiltro = null, catFiltro = null, fvFiltro = null, ordenMov = null;   // ordenMov: null (por fecha) · 'mayor' · 'menor'
+let tipoFiltro = null, catFiltro = null, fvFiltro = null, ordenMov = null, verMesEntero = false;   // verMesEntero: sin día elegido, lista de todo el mes   // ordenMov: null (por fecha) · 'mayor' · 'menor'
 let tab = 'inicio', vistaMovs = 'calendario', diaSel = HOY, bancoFiltro = null, busqueda = null;
 let periodo = leer('sums_periodo') || 'Todo', ocultar = leer('sums_ocultar') === '1';
 let form = null;
@@ -1096,6 +1113,48 @@ function ajustarTitulos() {
   });
 }
 let CAPTURA = false, CAPTURA_HTML = null, SIN_CONTAR = false;
+// Botón 📅 pegado a la derecha de ‹ Mes de Año ›: abre un selector de mes y año para saltar directamente
+const ICO_CAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg>';
+function ponerBotonMes(raiz) {
+  raiz.querySelectorAll('.mes:not(.periodos)').forEach(m => {
+    if (m.querySelector('.mes-ir') || !m.querySelector('button[data-acc]')) return;
+    m.insertAdjacentHTML('beforeend', `<button class="mes-ir" data-acc="elegirMes" aria-label="Ir a un mes">${ICO_CAL}</button>`);
+  });
+}
+// El mes que se está viendo en la pantalla actual
+function mesVisto() {
+  if (tab !== 'analisis') return new Date(mesSel);
+  if (anaVista === 'evol' || anaVista === 'fijos') { const ms = mesesHasta(anaMes, anaMeses), sel = anaVista === 'evol' ? anaSelEvol : anaSelFijo; return new Date(ms[sel === null ? ms.length - 1 : sel]); }
+  if (anaVista === 'ing' || anaVista === 'donut') return new Date(anaRef);
+  if (anaVista === 'prev') return new Date(prevRef);
+  return new Date(anaMes);
+}
+function irAlMesElegido(d) {
+  irAMes(d);
+  if (tab === 'analisis') { anaPer = 'Mes'; anaRef = new Date(d.getFullYear(), d.getMonth(), 1); prevRef = new Date(anaRef); anaSelEvol = null; anaSelFijo = null; SIN_CONTAR = true; try { if (anaVista === 'evol' || anaVista === 'fijos' || anaVista === 'prev') { pintar(); animarGrafica(); } else pintarAna(true); } finally { SIN_CONTAR = false; } }
+  else pintar(false, true);
+}
+function abrirElegirMes() {
+  const visto = mesVisto(), tope = new Date(hoy.getFullYear(), hoy.getMonth() + 12, 1);
+  const pm = primerMes(), anioMin = Math.min(+pm.slice(0, 4), visto.getFullYear()), anioMax = tope.getFullYear();
+  let anio = visto.getFullYear();
+  const pinta = () => {
+    const meses = MESES.map((n, i) => {
+      const d = new Date(anio, i, 1), k = claveMes(d), fuera = d > tope;
+      const cls = [k === claveMes(visto) ? 'on' : '', k === claveMes(hoy) ? 'hoy' : '', k < pm ? 'sin-datos' : ''].join(' ');
+      return `<button class="em-m ${cls}" data-em="${i}"${fuera ? ' disabled' : ''}>${cap(n.slice(0, 3))}</button>`;
+    }).join('');
+    $('#hoja').innerHTML = `<div id="elegirMes">${cabHoja('Ir a un mes', '', `<button class="hb pri txt" id="emHoy">Hoy</button>`)}
+      <div class="em-anio"><button class="ibtn" id="emAnt" aria-label="Año anterior"${anio <= anioMin ? ' disabled' : ''}>${SVG.izq}</button><b>${anio}</b><button class="ibtn" id="emSig" aria-label="Año siguiente"${anio >= anioMax ? ' disabled' : ''}>${SVG.der}</button></div>
+      <div class="em-grid">${meses}</div>
+      ${anio <= +pm.slice(0, 4) && claveMes(new Date(anio, 0, 1)) < pm ? '<p class="nota" style="margin-top:12px">Los meses en gris claro son anteriores a tu primer movimiento.</p>' : ''}</div>`;
+    $('#emAnt').onclick = () => { anio--; pinta(); };
+    $('#emSig').onclick = () => { anio++; pinta(); };
+    $('#emHoy').onclick = () => { cerrarHoja(); irAlMesElegido(new Date(hoy.getFullYear(), hoy.getMonth(), 1)); };
+    $('#elegirMes').querySelectorAll('[data-em]').forEach(b => b.onclick = () => { cerrarHoja(); irAlMesElegido(new Date(anio, +b.dataset.em, 1)); });
+  };
+  pinta(); abrirHoja();
+}
 function pintar(animar, soloBarras) {
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.tab === tab));
   moverLente();
@@ -1111,6 +1170,7 @@ function pintar(animar, soloBarras) {
     void app.offsetWidth; app.classList.add('entra');
     contar(app);
   }
+  ponerBotonMes(app);
   if (tab === 'patri') { activarArrastre(); activarGrafico(); }
   if (tab === 'analisis' && anaVista === 'prev') activarGrafPrev();
   reaplicarPulsado(app);
@@ -1243,27 +1303,29 @@ function vMovs() {
     const v = Math.max(0, vpd[f] || 0);
     const fondo = v > 0 ? `--tono:rgba(var(--naranja),${(0.12 + 0.6 * v / max).toFixed(2)})` : '';
     const puntos = delDia.length ? '<i></i>' : prevDia.length ? '<i class="prev"></i>' : '';
-    const cls = ['dia', f > HOY ? 'futuro' : '', f === HOY ? 'hoy' : '', f === diaSel ? 'sel' : ''].join(' ');
+    const cls = ['dia', f > HOY ? 'futuro' : '', f === HOY ? 'hoy' : '', f === diaSel && !verMesEntero ? 'sel' : ''].join(' ');
     celdas += `<div class="${cls}" data-dia="${f}" style="${fondo};--d:${d}"><span class="n">${d}</span><div class="puntos">${puntos}</div></div>`;
   }
   h += `<section class="card cal-card"><div class="cal">${celdas}</div>${prev.length ? '<div class="leyenda">○ Previsto</div>' : ''}</section>`;
   // Con algún filtro puesto (o al llegar desde Análisis / Patrimonio) se ve todo el mes filtrado debajo del calendario
-  if (tipoFiltro || catFiltro || fvFiltro || bancoFiltro || ordenMov) {
+  if (tipoFiltro || catFiltro || fvFiltro || bancoFiltro || ordenMov || verMesEntero) {
     const cta = bancoFiltro && D.cuentas.find(c => c.banco === bancoFiltro);
     if (cta) h += `<section class="card saldo-cta"><div><small>Saldo de ${esc(cta.banco)} hoy en SUMS</small><b class="num">${fmt(saldoEn(cta, HOY))}</b>
       <p>A la derecha de cada movimiento ves el saldo que quedaba después. Compáralo con el «Disponible» o «Saldo» del banco para encontrar dónde deja de cuadrar.</p></div>
       <button class="btn sec" data-acc="ajustarSaldo">Ajustar al saldo real</button></section>`;
     // Ordenado por importe: lista seguida con la fecha en cada fila; por fecha: agrupada por días
     const porImp = ordenMov ? mesF.slice().sort((a, b) => ordenMov === 'mayor' ? b.importe - a.importe : a.importe - b.importe) : null;
-    const tit = ordenMov && !(tipoFiltro || catFiltro || fvFiltro || bancoFiltro) ? `${cap(MESES[mo])} · ${ordenMov === 'mayor' ? 'mayor importe' : 'menor importe'}` : `Todo ${MESES[mo]} · con filtros`;
+    const sinFil = !(tipoFiltro || catFiltro || fvFiltro || bancoFiltro);
+    const tit = sinFil && !ordenMov ? `Todo ${MESES[mo]}` : ordenMov && sinFil ? `${cap(MESES[mo])} · ${ordenMov === 'mayor' ? 'mayor importe' : 'menor importe'}` : `Todo ${MESES[mo]} · con filtros`;
     h += `<div class="dia-cab"><h4>${tit}</h4><span class="num">${mesF.length} ${mesF.length === 1 ? 'movimiento' : 'movimientos'}</span></div>
+      ${verMesEntero && sinFil && !ordenMov ? '<p class="nota" style="text-align:left;margin:4px 2px 0">Toca un día del calendario para ver solo ese día.</p>' : ''}
       <section class="card" style="margin-top:8px">${!mesF.length ? `<div class="vacio">${nada}</div>` : porImp ? porImp.map(m => filaMov(m, true)).join('') : agruparPorDia(ordenar(mesF))}</section>`;
     return h;
   }
   if (diaSel.slice(0, 7) === claveMes(mesSel)) {
     const delDia = ordenar(mesF.filter(m => m.fecha === diaSel)), prevDia = prev.filter(p => p.fecha === diaSel);
     const neto = netoDia(delDia);
-    h += `<div class="dia-cab"><h4>${fechaLarga(diaSel)}</h4><span class="num">${delDia.length ? fmt(neto, true) : ''}</span></div>
+    h += `<div class="dia-cab"><h4>${fechaLarga(diaSel)}</h4><span class="num">${delDia.length ? fmt(neto, true) : ''}</span><button class="ver-mes" data-acc="verMesEntero">Todo el mes</button></div>
       <section class="card" style="margin-top:8px">${delDia.length || prevDia.length ? delDia.map(m => filaMov(m)).join('') + prevDia.map(m => filaMov(m)).join('') : '<div class="vacio">Sin movimientos este día</div>'}</section>`;
   }
   return h;
@@ -2396,6 +2458,8 @@ $('#app').addEventListener('click', e => {
     if (a === 'verTodos') { apilar(); tab = 'movs'; vistaMovs = 'calendario'; window.scrollTo(0, 0); return pintar(true); }
     if (a === 'buscar') { busqueda = ''; return pintar(); }
     if (a === 'cerrarBusqueda') { busqueda = null; return pintar(); }
+    if (a === 'verMesEntero') { verMesEntero = true; return pintar(); }
+    if (a === 'elegirMes') return abrirElegirMes();
     if (a === 'quitarFiltros') { tipoFiltro = null; catFiltro = null; fvFiltro = null; bancoFiltro = null; ordenMov = null; return pintar(); }
     if (a === 'quitarBanco') { bancoFiltro = null; return pintar(); }
     if (a === 'ojo') { ocultar = !ocultar; guardar('sums_ocultar', ocultar ? '1' : '0'); return pintar(); }
@@ -2474,7 +2538,8 @@ $('#app').addEventListener('click', e => {
   const p = e.target.closest('[data-periodo]');
   if (p) { periodo = p.dataset.periodo; guardar('sums_periodo', periodo); pintar(); return animarGrafica(); }
   const d = e.target.closest('[data-dia]');
-  if (d) { diaSel = d.dataset.dia; return pintar(); }
+  // Tocar el día ya elegido lo deselecciona y muestra todo el mes; tocar otro día lo elige
+  if (d) { if (d.dataset.dia === diaSel && !verMesEntero) verMesEntero = true; else { diaSel = d.dataset.dia; verMesEntero = false; } return pintar(); }
   const m = e.target.closest('.mov[data-id]');
   if (m) abrirForm(D.movs.find(x => x.id === m.dataset.id));
 });
@@ -3184,6 +3249,7 @@ window.addEventListener('scroll', () => { const m = document.querySelector('.mes
     const acc = b.dataset.acc;
     vec.className = 'vecino-quieto ' + (/^mes/.test(acc) ? 'entra-mes' : /^(anaMes|ana)(Ant|Sig)$/.test(acc) ? 'entra-ana' : 'graf-anim');
     vec.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+    ponerBotonMes(vec);
     const cab = vec.querySelector(':scope > header.top'); if (cab) cab.style.visibility = 'hidden';   // la cabecera de arriba no se mueve: se queda la actual
   }
   // Se mueve todo menos la cabecera (título, Hoy y ajustes), que se queda fija
