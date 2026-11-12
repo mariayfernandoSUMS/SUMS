@@ -440,6 +440,43 @@
   .pe-tot { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); font-weight: 600; }
   .pe-tot b { color: var(--ink); text-align: right; } .pe-tot b.mal { color: #c4581b; }
   .wfv { flex: 1; width: 100%; min-height: 0; margin-top: 8px; display: block; overflow: visible; }
+  /* Presupuesto: tarjetas que llevan a su pantalla */
+  .pres-w { position: relative; cursor: pointer; }
+  .pres-chev { position: absolute; right: 14px; top: 16px; color: var(--muted); } .pres-chev svg { width: 16px; height: 16px; }
+  .pres-w-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding-right: 22px; }
+  .pres-w-cab small, .pres-k { display: block; font-size: 12.5px; color: var(--muted); font-weight: 700; margin: 0; }
+  .pres-w-cab b { display: block; white-space: nowrap; font-size: 28px; font-weight: 800; letter-spacing: -.01em; }
+  .pres-w-cab em { display: block; font-style: normal; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+  .pres-obj { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .pres-pill { flex: none; padding: 5px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; background: var(--pista); color: var(--muted); }
+  .pres-pill.ojo { background: #FCEBDD; color: #A8521C; } .pres-pill.mal { background: #FBE3E0; color: #B23A2F; } .pres-pill.ok { background: var(--verde-pill); color: var(--verde); }
+  .pres-msg { margin: 8px 0 0; font-size: 13px; font-weight: 600; color: var(--muted); } .pres-msg.mal { color: #A8521C; } .pres-msg.ok { color: var(--verde); }
+  .pres-grande { font-size: 38px; font-weight: 800; letter-spacing: -.02em; margin-top: 2px; }
+  .pres-sub { margin: 2px 0 8px; font-size: 13px; color: var(--muted); }
+  .pres-ver { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 8px; font-size: 13.5px; font-weight: 700; color: var(--verde); } .pres-ver svg { width: 14px; height: 14px; }
+  .pl-filas { display: grid; grid-template-columns: 52px 1fr; gap: 6px 8px; align-items: center; margin-top: 10px; font-size: 11px; font-weight: 700; color: var(--muted); }
+  .pl-barra { display: flex; gap: 2px; border-radius: 7px; overflow: hidden; background: var(--pista); }
+  .pl-barra i { display: block; height: 100%; flex: none; }
+  .pl-fila { display: grid; grid-template-columns: 1fr 58px 70px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  .pl-fila > span:nth-child(2), .pl-fila > b, .pl-fila.cab > span { text-align: right; } .pl-fila.cab { border-top: 0; font-size: 11.5px; font-weight: 700; color: var(--muted); padding-top: 0; }
+  .pl-fila .n { display: flex; align-items: center; gap: 8px; min-width: 0; } .pl-fila .n i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .pl-fila.fuerte { font-weight: 800; } .pl-fila b.mal { color: #B23A2F; }
+  .termo { padding: 10px 0; border-top: 1px solid var(--line); } .pres-w .termo:first-of-type, .ley-termo + .termo { border-top: 0; }
+  .termo[data-prescat] { cursor: pointer; }
+  .termo-c { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 14.5px; } .termo-c b { font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .termo-c span { font-weight: 700; white-space: nowrap; } .termo-c small { color: var(--muted); font-weight: 600; font-size: 12.5px; }
+  .termo-b { position: relative; height: 11px; margin-top: 8px; background: var(--pista); border-radius: 6px; }
+  .termo-b i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 6px; }
+  .termo-p { border: 1.3px dashed; box-sizing: border-box; opacity: .8; }
+  .termo-l { width: 2px !important; left: auto; top: -3px !important; bottom: -3px !important; margin-left: -1px; background: var(--ink); border-radius: 1px !important; }
+  .termo-h { width: 0 !important; height: 0; top: -9px !important; bottom: auto !important; margin-left: -4px; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 6px solid var(--muted); border-radius: 0 !important; }
+  .termo-t { margin: 6px 0 0; font-size: 12.5px; font-weight: 600; color: var(--muted); } .termo-t.ojo { color: #A8521C; font-weight: 700; } .termo-t.mal { color: #B23A2F; font-weight: 700; }
+  .ley-termo { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 11px; font-weight: 600; color: var(--muted); padding-bottom: 6px; }
+  .ley-termo span { display: inline-flex; align-items: center; gap: 5px; }
+  .ley-termo i { display: inline-block; } .lt-g { width: 12px; height: 8px; border-radius: 2px; background: var(--verde); } .lt-p { width: 12px; height: 8px; border-radius: 2px; border: 1.3px dashed var(--muted); box-sizing: border-box; }
+  .lt-l { width: 2px; height: 11px; background: var(--ink); } .lt-h { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 6px solid var(--muted); }
+  b.bien { color: var(--verde); }
+  .pres-res { display: flex; justify-content: space-between; align-items: center; } .pres-res small { display: block; font-size: 12.5px; color: var(--muted); font-weight: 600; } .pres-res b { font-size: 26px; font-weight: 800; }
   .wmedia { position: absolute; left: 0; right: 0; border-top: 1.5px dashed #3fae6c; opacity: .85; pointer-events: none; }
   .chips-evol { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
   .chips-evol button { display: inline-flex; align-items: center; gap: 2px; padding: 6px 11px; border-radius: 99px; font-size: 12px; font-weight: 700; color: var(--muted);
@@ -1621,6 +1658,9 @@ function vAnalisis() {
   MA = movsAna();
   if (anaVista === 'ing') return vAnaIng();
   if (anaVista === 'pres') return vAnaPres();
+  if (anaVista === 'presRitmo') return vPresRitmo();
+  if (anaVista === 'presPlan') return vPresPlan();
+  if (anaVista === 'presCats') return vPresCats();
   if (anaVista === 'donut') return vAnaDonut();
   if (anaVista === 'evol') return vAnaEvol();
   if (anaVista === 'fijos') return vAnaFijos();
@@ -2253,40 +2293,181 @@ function widgetPres(M) {
       <b class="${colorPres(o.pct)}">${Math.round(o.pct)} %</b></div>`).join('')}</div>
   </div></button>`;
 }
+// ── Presupuesto: pantalla principal con 3 tarjetas (ritmo, plan de ahorro, categorías) y una pantalla de detalle para cada una ──
+const COLS_PRES = ['#F2B66D', '#E98A8A', '#9CC9E8', '#C9A6E4', '#7F8FD6', '#8FD3A8', '#F4C7A1', '#E4B8D6', '#A9D8D2', '#D8C38A'];
+const C_RAPIDO = '#E07B39', C_BIEN = '#2B9A5D', C_PASADO = '#D0453A';
+const sinCent = v => fmt(v).replace(/,00 €$/, ' €');
+const navPres = M => `<div class="mes"><button data-acc="anaMesAnt" aria-label="Mes anterior">${SVG.izq}</button><b>${cap(MESES[M.getMonth()])} de ${M.getFullYear()}</b><button data-acc="anaMesSig" aria-label="Mes siguiente"${claveMes(M) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
+// Gasto acumulado día a día de las categorías con presupuesto, ritmo ideal y proyección a fin de mes
+function datosRitmo(M, e) {
+  const cats = new Set(e.cats.map(o => o.c)), porDia = Array(e.N + 1).fill(0);
+  delMes(MA, M).forEach(x => {
+    if ((x.tipo !== 'Gasto' && x.tipo !== 'Reembolso') || !cats.has(x.categoria || 'Sin clasificar')) return;
+    porDia[+x.fecha.slice(8, 10)] += x.tipo === 'Gasto' ? x.importe : -x.importe;
+  });
+  const hasta = e.actual ? e.dia : e.futuro ? 0 : e.N, acum = []; let s = 0;
+  for (let d = 1; d <= hasta; d++) { s += porDia[d]; acum.push(Math.max(0, s)); }
+  const proy = e.cats.reduce((a, o) => a + o.prevFin, 0), ideal = e.total * e.dia / e.N;
+  return { acum, proy, ideal, sobre: e.gastado - ideal, libre: e.total - e.gastado };
+}
+function ritmoSVG(e, r, mini) {
+  const W = 342, H = mini ? 92 : 200, pl = mini ? 0 : 34, pr = mini ? 0 : 6, pt = mini ? 8 : 18, pb = mini ? 4 : 26;
+  const top = Math.max(e.total, r.proy, r.acum.length ? r.acum[r.acum.length - 1] : 0, 1) * 1.06;
+  const x = d => pl + (W - pl - pr) * d / e.N, y = v => pt + (H - pt - pb) * (1 - v / top);
+  const malo = r.sobre > 0 || r.proy > e.total + .5, col = e.gastado > e.total ? C_PASADO : malo ? C_RAPIDO : C_BIEN;
+  let g = '';
+  if (!mini) [0, e.total / 2].forEach(v => g += `<line x1="${pl}" x2="${W - pr}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" class="grid${v ? '' : ' base'}"/><text x="${pl - 6}" y="${(y(v) + 3.5).toFixed(1)}" text-anchor="end" class="eje">${fK(v)}</text>`);
+  g += `<line x1="${pl}" x2="${W - pr}" y1="${y(e.total).toFixed(1)}" y2="${y(e.total).toFixed(1)}" stroke="var(--ink)" stroke-opacity=".45" stroke-width="1" stroke-dasharray="2 3"/>`;
+  if (!mini) g += `<text x="${pl - 6}" y="${(y(e.total) + 3.5).toFixed(1)}" text-anchor="end" class="eje">${fK(e.total)}</text><text x="${W - pr}" y="${(y(e.total) - 5).toFixed(1)}" text-anchor="end" class="eje" style="fill:var(--ink)">límite</text>`;
+  g += `<line x1="${x(0)}" y1="${y(0)}" x2="${x(e.N)}" y2="${y(e.total).toFixed(1)}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+  if (r.acum.length) {
+    const pts = [[x(0), y(0)]].concat(r.acum.map((v, i) => [x(i + 1), y(v)]));
+    const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' '), u = pts[pts.length - 1];
+    g += `<path d="${d} L${u[0].toFixed(1)} ${y(0)} L${x(0)} ${y(0)} Z" fill="${col}" opacity=".1"/><path class="trazo-ana" pathLength="1" d="${d}" fill="none" stroke="${col}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if (e.actual) g += `<line x1="${u[0].toFixed(1)}" y1="${u[1].toFixed(1)}" x2="${x(e.N)}" y2="${y(r.proy).toFixed(1)}" stroke="${r.proy > e.total + .5 ? C_RAPIDO : C_BIEN}" stroke-width="1.6" stroke-dasharray="3 3" opacity=".75"/>`;
+    g += `<circle cx="${u[0].toFixed(1)}" cy="${u[1].toFixed(1)}" r="${mini ? 4 : 5}" fill="${col}" stroke="var(--card)" stroke-width="2"/>`;
+    if (!mini && e.actual) g += `<line x1="${u[0].toFixed(1)}" x2="${u[0].toFixed(1)}" y1="${pt}" y2="${y(0)}" stroke="var(--ink)" stroke-opacity=".15"/><text x="${u[0].toFixed(1)}" y="${H - 8}" text-anchor="middle" class="eje" style="fill:var(--ink)">Hoy</text>`;
+  } else if (e.futuro) g += `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" class="eje">Mes futuro: aún no hay gastos</text>`;
+  if (!mini) g += `<text x="${pl}" y="${H - 8}" class="eje">1</text><text x="${W - pr}" y="${H - 8}" text-anchor="end" class="eje">${e.N}</text>`;
+  return `<svg class="graf-ana" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gasto acumulado frente al ritmo ideal">${g}</svg>`;
+}
+function textoRitmo(e, r) {
+  if (e.futuro) return { pill: '', cls: '' };
+  if (!e.actual) return e.queda >= 0 ? { pill: `Sobraron ${sinCent(e.queda)}`, cls: 'ok' } : { pill: `Te pasaste ${sinCent(-e.queda)}`, cls: 'mal' };
+  if (e.queda < 0) return { pill: `Te has pasado ${sinCent(-e.queda)}`, cls: 'mal' };
+  return r.sobre > 1 ? { pill: `+${sinCent(r.sobre)} sobre el ritmo`, cls: 'ojo' } : { pill: `${sinCent(-r.sobre)} por debajo del ritmo`, cls: 'ok' };
+}
+// Plan (límites + objetivo de ahorro) frente a lo que va a pasar, en % de los ingresos
+function datosPlan(M, e) {
+  const base = e.base.v; if (!base) return null;
+  const pasado = !e.actual && !e.futuro, gasTot = pasado ? resumen(delMes(MA, M)).gas : prevision(M).gasFin;
+  const cats = e.cats.map((o, i) => ({ c: o.c, color: COLS_PRES[i % COLS_PRES.length], plan: o.lim, real: pasado ? o.gast : o.prevFin }));
+  const sumP = cats.reduce((a, o) => a + o.plan, 0), sumR = cats.reduce((a, o) => a + o.real, 0);
+  const ahObj = e.ahorro ? e.ahorro.obj : 0, resto = Math.max(0, base - sumP - ahObj), otros = Math.max(0, gasTot - sumR), ahReal = base - gasTot;
+  const S = Math.max(base, sumP + ahObj, gasTot);
+  const pc = v => v / base * 100;
+  const malos = cats.filter(o => pc(o.real) - pc(o.plan) >= .5).sort((a, b) => (b.real - b.plan) - (a.real - a.plan)).slice(0, 2);
+  let msg;
+  if (e.ahorro && ahReal >= ahObj) msg = { t: `✓ ${pasado ? 'Cumplisteis' : 'Vais a cumplir'} el objetivo${ahReal - ahObj > 1 ? ` con ${sinCent(ahReal - ahObj)} de margen` : ''}`, cls: 'ok' };
+  else if (malos.length) msg = { t: `${malos.map(o => `${o.c} (+${Math.round(pc(o.real) - pc(o.plan))} %)`).join(' y ')} ${malos.length > 1 ? 'se comen' : 'se come'} tu ahorro`, cls: 'mal' };
+  else if (e.ahorro) msg = { t: 'Los gastos sin presupuesto se comen tu ahorro', cls: 'mal' };
+  else msg = { t: 'Pon un objetivo de ahorro en «Editar» para comparar', cls: '' };
+  return { base, cats, resto, otros, ahObj, ahReal, S, pc, msg, pasado };
+}
+function barraPlan(p, real, alto) {
+  const seg = (v, col, extra) => v > 0 ? `<i style="width:${v / p.S * 100}%;background:${col}${extra || ''}"></i>` : '';
+  const partes = p.cats.map(o => seg(real ? o.real : o.plan, o.color, real && o.real > o.plan + .5 ? ';box-shadow:inset 0 0 0 2px #C0392B' : ''));
+  partes.push(seg(real ? p.otros : p.resto, real ? '#C9CFCB' : 'var(--pista)'));
+  partes.push(seg(real ? Math.max(0, p.ahReal) : p.ahObj, C_BIEN));
+  return `<div class="pl-barra" style="height:${alto}px">${partes.join('')}</div>`;
+}
+// Fila «termómetro»: gastado, hasta dónde llegará (discontinuo), el límite (raya) y el día de hoy (marca)
+function filaTermo(o, e, enlace) {
+  const esc_ = Math.max(o.lim * 1.3, o.prevFin, o.gast, 1), w = v => Math.min(100, v / esc_ * 100);
+  const col = o.gast > o.lim ? C_PASADO : (e.actual || e.futuro) && o.prevFin > o.lim + .5 ? C_RAPIDO : C_BIEN;
+  const diasQ = e.N - e.dia + 1;
+  let txt, cls = '';
+  if (!e.actual && !e.futuro) { txt = o.queda >= 0 ? `Sobraron ${sinCent(o.queda)}` : `Te pasaste ${sinCent(-o.queda)}`; cls = o.queda < 0 ? 'mal' : ''; }
+  else if (e.futuro) txt = `Previsto ${sinCent(o.prevFin)} de ${sinCent(o.lim)}`;
+  else if (o.queda < 0) { txt = `Te has pasado ${sinCent(-o.queda)}`; cls = 'mal'; }
+  else if (o.prevFin > o.lim + .5) { txt = `Llegarás a ~${sinCent(Math.round(o.prevFin))} · quedan ${sinCent(o.queda)} (${fmt(o.queda / diasQ)}/día)`; cls = 'ojo'; }
+  else txt = `Quedan ${sinCent(o.queda)} · ${fmt(o.queda / diasQ)}/día`;
+  const em = emojiDe(o.c);
+  return `<div class="termo"${enlace ? ` data-prescat="${esc(o.c)}"` : ''}>
+    <div class="termo-c"><b>${em ? em + ' ' : ''}${esc(o.c)}</b><span class="num">${sinCent(o.gast)} <small>/ ${sinCent(o.lim)}</small></span></div>
+    <div class="termo-b">${(e.actual || e.futuro) && o.prevFin > o.gast + .5 ? `<i class="termo-p" style="width:${w(o.prevFin)}%;border-color:${col}"></i>` : ''}
+      <i class="termo-g" style="width:${w(o.gast)}%;background:${col}"></i>
+      <i class="termo-l" style="left:${w(o.lim)}%"></i>${e.actual ? `<i class="termo-h" style="left:${w(o.lim * e.dia / e.N)}%"></i>` : ''}</div>
+    <p class="termo-t ${cls}">${txt}</p></div>`;
+}
+const riesgo = o => Math.max(o.pct, o.lim ? o.prevFin / o.lim * 100 : 0);
+const leyTermo = e => `<div class="ley-termo"><span><i class="lt-g"></i>Gastado</span>${e.actual || e.futuro ? '<span><i class="lt-p"></i>A fin de mes</span>' : ''}<span><i class="lt-l"></i>Límite</span>${e.actual ? '<span><i class="lt-h"></i>Hoy</span>' : ''}</div>`;
+const simPres = `<section class="card sim-cta"><div><b>🧮 ¿Y si…?</b><small>Simula un gasto (un móvil, un viaje…) y mira cómo afecta a tu presupuesto y a tu ahorro</small></div>
+    <button class="btn pri" data-acc="simular">Simular</button></section>`;
+const chevPres = `<span class="pres-chev" aria-hidden="true">${SVG.der}</span>`;
+
 function vAnaPres() {
   const M = anaMes, e = estadoPres(M);
-  const nav = `<div class="mes"><button data-acc="anaMesAnt" aria-label="Mes anterior">${SVG.izq}</button><b>${cap(MESES[M.getMonth()])} de ${M.getFullYear()}</b><button data-acc="anaMesSig" aria-label="Mes siguiente"${claveMes(M) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
-  const cab = cabDetalle('Presupuesto', claveMes(M) !== claveMes(hoy), 'Límites y objetivo de ahorro') + nav;
-  const sim = `<section class="card sim-cta"><div><b>🧮 ¿Y si…?</b><small>Simula un gasto (un móvil, un viaje…) y mira cómo afecta a tu presupuesto y a tu ahorro</small></div>
-    <button class="btn pri" data-acc="simular">Simular</button></section>`;
+  const cab = cabDetalle('Presupuesto', claveMes(M) !== claveMes(hoy), 'Límites y objetivo de ahorro') + navPres(M);
   if (!e.cats.length && !e.ahorro) return cab + `<section class="card"><div class="vacio" style="padding:12px 0">Aún no tienes presupuesto. Ponle un límite a las categorías que quieras controlar (en € o en % de los ingresos) y, si quieres, un objetivo de ahorro.</div>
-    <button class="btn pri" style="width:100%" data-acc="editarPres">Crear presupuesto</button></section>` + sim;
-  const marca = e.actual ? e.dia / e.N * 100 : null;
+    <button class="btn pri" style="width:100%" data-acc="editarPres">Crear presupuesto</button></section>` + simPres;
+  let h = cab;
+  if (e.cats.length) {
+    const r = datosRitmo(M, e), t = textoRitmo(e, r);
+    h += `<section class="card pres-w" data-ana="presRitmo">${chevPres}
+      <div class="pres-w-cab"><div><small>${e.queda >= 0 ? (e.actual ? 'Libre para gastar' : e.futuro ? 'Presupuesto del mes' : 'Te sobró') : 'Te has pasado'}</small>
+        <b class="num">${N(Math.abs(e.futuro ? e.total : e.queda))}</b>${e.porDia !== null && e.queda > 0 ? `<em>${fmt(e.porDia)}/día durante ${e.N - e.dia + 1} días</em>` : ''}
+        ${t.pill ? `<span class="pres-pill ${t.cls}" style="display:inline-block;margin-top:8px">${t.pill}</span>` : ''}</div></div>
+      ${ritmoSVG(e, r, true)}</section>`;
+  }
+  const p = datosPlan(M, e);
+  if (p) h += `<section class="card pres-w" data-ana="presPlan">${chevPres}
+      <div class="pres-w-cab"><div><small>Ahorro del mes</small><b class="num" style="font-size:20px">${p.pasado ? '' : 'previsto '}${Math.round(p.pc(Math.max(0, p.ahReal)))} %${e.ahorro ? ` <span class="pres-obj">· objetivo ${Math.round(e.ahorro.objPct)} %</span>` : ''}</b></div></div>
+      <div class="pl-filas"><span>Plan</span>${barraPlan(p, false, 16)}<span>${p.pasado ? 'Real' : 'Previsto'}</span>${barraPlan(p, true, 16)}</div>
+      <p class="pres-msg ${p.msg.cls}">${p.msg.t}</p></section>`;
+  if (e.cats.length) {
+    const orden = e.cats.slice().sort((a, b) => riesgo(b) - riesgo(a));
+    h += `<section class="card pres-w" data-ana="presCats">${chevPres}
+      <div class="pres-w-cab"><div><small>Por categoría</small><b class="num" style="font-size:20px">${sinCent(e.gastado)} <span class="pres-obj">de ${sinCent(e.total)}</span></b></div></div>
+      ${orden.slice(0, 3).map(o => filaTermo(o, e, false)).join('')}
+      <div class="pres-ver">Ver ${e.cats.length === 1 ? 'la categoría' : `las ${e.cats.length} categorías`} ${SVG.der}</div></section>`;
+  }
+  h += `<button class="btn sec" style="width:100%;margin-bottom:12px" data-acc="editarPres">Editar presupuesto</button>` + simPres;
+  return h;
+}
+// Pantalla 1 · Ritmo de gasto
+function vPresRitmo() {
+  const M = anaMes, e = estadoPres(M);
+  const cab = cabDetalle('Ritmo de gasto', claveMes(M) !== claveMes(hoy), '¿Voy bien este mes?') + navPres(M);
+  if (!e.cats.length) return cab + '<section class="card"><div class="vacio">Pon límites a tus categorías para ver el ritmo.</div></section>';
+  const r = datosRitmo(M, e), t = textoRitmo(e, r);
+  const rap = e.cats.map(o => ({ o, d: o.gast - o.lim * e.dia / e.N })).sort((a, b) => b.d - a.d);
+  return cab + `<section class="card ana-card">
+      <small class="pres-k">${e.queda >= 0 ? (e.actual ? 'Libre para gastar' : e.futuro ? 'Presupuesto del mes' : 'Te sobró') : 'Te has pasado'}</small>
+      <div class="pres-grande num">${N(Math.abs(e.futuro ? e.total : e.queda))}</div>
+      <p class="pres-sub">de ${sinCent(e.total)}${e.porDia !== null && e.queda > 0 ? ` · <b>${fmt(e.porDia)}/día</b> durante ${e.N - e.dia + 1} días` : ''}</p>
+      ${t.pill ? `<span class="pres-pill ${t.cls}">${t.pill}</span>` : ''}
+      ${ritmoSVG(e, r, false)}
+      <div class="ley-evol"><span><em style="background:${e.gastado > e.total ? C_PASADO : r.sobre > 0 ? C_RAPIDO : C_BIEN}"></em>Gastado</span><span><em class="caja-disc" style="color:var(--muted)"></em>Ritmo ideal</span>${e.actual ? `<span><em class="caja-disc" style="color:${r.proy > e.total ? C_RAPIDO : C_BIEN}"></em>Si sigues así (${sinCent(Math.round(r.proy))})</span>` : ''}</div>
+    </section>
+    ${e.actual ? `<section class="card"><div class="card-cab"><h3>QUÉ CATEGORÍAS VAN RÁPIDO</h3></div>
+      ${rap.map(({ o, d }) => `<div class="ley-f tap" data-prescat="${esc(o.c)}"><span class="n">${emojiDe(o.c) ? emojiDe(o.c) + ' ' : ''}${esc(o.c)}</span><b class="num ${d > 1 ? (o.gast > o.lim ? 'mal' : 'ojo') : 'bien'}">${d > 1 ? `+${sinCent(Math.round(d))} sobre el ritmo` : `${sinCent(Math.round(-d))} por debajo`}</b></div>`).join('')}
+      <p class="nota" style="margin:8px 0 0">El ritmo ideal reparte el límite de cada categoría por igual entre los días del mes.</p></section>` : ''}`;
+}
+// Pantalla 2 · Plan de ahorro (plan frente a lo que va a pasar)
+function vPresPlan() {
+  const M = anaMes, e = estadoPres(M), p = datosPlan(M, e);
+  const cab = cabDetalle('Plan de ahorro', claveMes(M) !== claveMes(hoy), 'Tu plan frente a lo previsto') + navPres(M);
+  if (!p) return cab + '<section class="card"><div class="vacio">Aún no hay ingresos con los que comparar.</div></section>';
   const baseTxt = { real: 'ingresos', previsto: 'ingresos previstos', media: 'ingreso medio' }[e.base.tipo];
-  const ah = e.ahorro;
-  const tarjAhorro = ah ? `<section class="card pres-ah">${anilloSVG(ah.pct, 84, 9, ah.real >= ah.obj ? 'ok-fuerte' : ah.pct >= 75 ? 'ojo' : 'mal', null, `<b class="num">${Math.round(ah.realPct)} %</b><small>de ${Math.round(ah.objPct)} %</small>`, e.futuro, true)}
-      <div><small>${ah.pasado ? 'Ahorro del mes' : 'Ahorro previsto a fin de mes'}</small><b class="num">${fmt(ah.real)}</b>
-        <p>Objetivo: <b>${Math.round(ah.objPct)} %</b> de los ${baseTxt} (${fmt(ah.obj)})</p>
-        <p class="${ah.real >= ah.obj ? 'ok' : 'mal'}">${ah.real >= ah.obj ? `✓ ${ah.pasado ? 'Cumplido' : 'Vais a cumplirlo'}${ah.real - ah.obj > 1 ? ` con ${fmt(ah.real - ah.obj)} de margen` : ''}` : `${ah.pasado ? 'Faltaron' : 'Faltarían'} ${fmt(ah.obj - ah.real)}`}</p></div></section>` : '';
-  const celda = o => { const em = emojiDe(o.c);
-    return `<div class="pr-cel" data-prescat="${esc(o.c)}">${anilloSVG(o.pct, 66, 7, colorPres(o.pct), marca, `<span class="an-emo">${em || esc(o.c.slice(0, 1))}</span>`, e.futuro)}
-      <b class="n">${esc(o.c)}</b><span class="num">${fmt(o.gast).replace(/,00 €$/, ' €')} / ${fmt(o.lim).replace(/,00 €$/, ' €')}</span>
-      <em class="${colorPres(o.pct)}">${o.queda >= 0 ? `quedan ${fmt(o.queda).replace(/,00 €$/, ' €')}` : `+${fmt(-o.queda).replace(/,00 €$/, ' €')}`}</em>
-      ${o.enPct !== null ? `<i class="pr-pct">${String(o.enPct).replace('.', ',')} %</i>` : ''}</div>`; };
-  const pct = e.total ? e.gastado / e.total * 100 : 0;
-  return cab + `
-    ${e.cats.length ? `<section class="card prev-hero"><small>${e.queda >= 0 ? 'Te quedan' : 'Te has pasado'}</small><div class="grande num">${N(Math.abs(e.queda))}</div>
-      <div class="rango">${fmt(e.gastado)} gastados de <b>${fmt(e.total)}</b></div>
-      <div class="pc-b" style="height:10px;margin:10px 4px 4px"><i class="${colorPres(pct)}" style="width:${Math.min(100, pct)}%"></i>${marca !== null ? `<em style="left:${marca}%"></em>` : ''}</div>
-      ${e.porDia !== null ? `<p>Puedes gastar <b>${fmt(e.porDia)} al día</b> hasta fin de mes sin pasarte.</p>` : ''}
-      ${e.usaPct ? `<p class="pres-base">Los % se calculan sobre ${fmt(e.base.v)} de ${baseTxt}${e.asignado !== null ? ` · asignado ${Math.round(e.asignado)} %${e.asignado < 100 ? `, quedan ${Math.round(100 - e.asignado)} % libres` : ''}` : ''}</p>` : ''}</section>` : ''}
-    ${tarjAhorro}
-    ${e.cats.length ? `<section class="card"><div class="card-cab"><h3>POR CATEGORÍA</h3><button class="vertodos" data-acc="editarPres">Editar</button></div>
-      <div class="pr-grid">${e.cats.map(celda).join('')}</div>
-      <p class="nota" style="margin:10px 0 0">${marca !== null ? 'La rayita del anillo marca cuánto del mes ha pasado. ' : ''}Toca una categoría para ver sus movimientos.</p></section>`
-      : `<section class="card"><button class="btn sec" style="width:100%" data-acc="editarPres">Añadir límites por categoría</button></section>`}
+  const fila = (nom, col, vp, vr, malo, neg) => `<div class="pl-fila${neg ? ' fuerte' : ''}"><span class="n"><i style="background:${col}"></i>${nom}</span><span>${vp === null ? '—' : Math.round(p.pc(vp)) + ' %'}</span><b class="${malo ? 'mal' : ''}">${Math.round(p.pc(Math.max(0, vr)))} %</b></div>`;
+  return cab + `<section class="card ana-card">
+      <small class="pres-k">${p.pasado ? 'Ahorro del mes' : 'Ahorro previsto a fin de mes'}</small>
+      <div class="pres-grande num">${Math.round(p.pc(Math.max(0, p.ahReal)))} %${e.ahorro ? ` <span class="pres-obj">de ${Math.round(e.ahorro.objPct)} % objetivo</span>` : ''}</div>
+      <p class="pres-sub">${sinCent(Math.round(p.ahReal))} de ${sinCent(Math.round(p.base))} de ${baseTxt}</p>
+      <p class="pres-msg ${p.msg.cls}">${p.msg.t}</p>
+      <p class="pres-k" style="margin-top:16px">TU PLAN</p>${barraPlan(p, false, 28)}
+      <p class="pres-k" style="margin-top:12px">${p.pasado ? 'LO QUE PASÓ' : 'LO QUE VA A PASAR'}</p>${barraPlan(p, true, 28)}
+    </section>
+    <section class="card"><div class="pl-fila cab"><span></span><span>Plan</span><span>${p.pasado ? 'Real' : 'Previsto'}</span></div>
+      ${p.cats.map(o => fila(esc(o.c), o.color, o.plan, o.real, o.real > o.plan + .5)).join('')}
+      ${fila('Otros gastos', '#C9CFCB', p.resto, p.otros, false)}
+      ${fila('Ahorro', C_BIEN, e.ahorro ? p.ahObj : null, p.ahReal, e.ahorro && p.ahReal < p.ahObj, true)}
+      <p class="nota" style="margin:10px 0 0;text-align:left">% sobre ${fmt(p.base)} de ${baseTxt}. En el plan, «Otros gastos» es lo que queda sin asignar.</p></section>
+    <button class="btn sec" style="width:100%" data-acc="editarPres">Editar presupuesto y objetivo</button>`;
+}
+// Pantalla 3 · Todas las categorías como termómetros
+function vPresCats() {
+  const M = anaMes, e = estadoPres(M);
+  const cab = cabDetalle('Por categoría', claveMes(M) !== claveMes(hoy), 'De más a menos riesgo') + navPres(M);
+  if (!e.cats.length) return cab + '<section class="card"><div class="vacio">Aún no hay límites por categoría.</div><button class="btn pri" style="width:100%" data-acc="editarPres">Añadir límites</button></section>';
+  const orden = e.cats.slice().sort((a, b) => riesgo(b) - riesgo(a));
+  return cab + `<section class="card pres-res"><div><small>${!e.actual && !e.futuro ? (e.queda >= 0 ? 'Te sobró' : 'Te pasaste') : e.queda >= 0 ? 'Te quedan' : 'Te has pasado'}</small><b class="num">${N(Math.abs(e.queda))}</b></div>
+      <div style="text-align:right"><small>Gastado</small><b class="num" style="font-size:17px">${sinCent(e.gastado)} / ${sinCent(e.total)}</b></div></section>
+    <section class="card">${leyTermo(e)}${orden.map(o => filaTermo(o, e, true)).join('')}
+      <p class="nota" style="margin:8px 0 0">Toca una categoría para ver sus movimientos.</p></section>
     ${e.sin.length ? `<section class="card"><div class="card-cab"><h3>SIN PRESUPUESTO</h3></div>${e.sin.map(([c, v]) => `<div class="ley-f"><span class="n">${emojiDe(c) ? emojiDe(c) + ' ' : ''}${esc(c)}</span><b class="num">${fmt(v)}</b></div>`).join('')}</section>` : ''}
-    ${sim}`;
+    <button class="btn sec" style="width:100%" data-acc="editarPres">Editar presupuesto</button>`;
 }
 // Editar límites (se guardan en la hoja). Modo € o % de los ingresos del mes; arriba, el objetivo de ahorro en %.
 function abrirEditarPres() {
@@ -2503,6 +2684,7 @@ $('#app').addEventListener('click', e => {
     if (a === 'anaVolver') { if (anaVista === 'donut' && (anaSub || anaCat)) { if (anaSub) anaSub = null; else anaCat = null; return pintar(); }
       if (anaVista === 'ing' && anaCatI) { anaCatI = null; return pintar(); }
       if (volver()) return;
+      if (/^pres./.test(anaVista)) { anaVista = 'pres'; window.scrollTo(0, 0); return pintar(true); }
       if (anaVista === 'ing' && anaPer === 'Mes') anaMes = new Date(anaRef);
       if (anaVista === 'prev') anaMes = new Date(prevRef);
       if (anaVista === 'donut' && anaPer === 'Mes') anaMes = new Date(anaRef);
