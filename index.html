@@ -82,6 +82,11 @@
   .mes:not(.periodos) b { font-size: 17px; padding: 4px 10px; }
   /* Durante el deslizamiento de mes no se repiten las animaciones de entrada (aparecer/desvanecer) */
   #app.sin-anim, #app.sin-anim * { animation: none !important; }
+  /* Línea fina arriba mientras se piden los datos a la hoja */
+  #sinc { position: fixed; top: env(safe-area-inset-top); left: 0; right: 0; height: 2.5px; z-index: 60; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: linear-gradient(90deg, transparent, var(--verde), transparent); background-size: 40% 100%; background-repeat: no-repeat; }
+  body.sincronizando #sinc { opacity: .9; animation: sincMueve 1.1s linear infinite; }
+  @keyframes sincMueve { from { background-position: -40% 0; } to { background-position: 140% 0; } }
   .vecino-quieto, .vecino-quieto *, .vecino-quieto *::before, .vecino-quieto *::after { animation-play-state: paused !important; }
   html, body { overflow-x: hidden; }
   .mes-fija { position: sticky; top: calc(env(safe-area-inset-top) + 8px); z-index: 15; }
@@ -764,6 +769,7 @@
 <div class="velo oculto" id="velo"><div class="hoja" id="hoja"></div></div>
 <div id="tirar" class="tirar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></div>
 <div id="toast"></div>
+<div id="sinc" aria-hidden="true"></div>
 <button id="avisoRed" class="aviso-red oculto" type="button"></button>
 
 <script>
@@ -847,9 +853,12 @@ async function api(fn, ...args) {
   if (INSTALADA) {
     if (!API_URL) throw new Error('Falta el enlace de la hoja');
     let r;
-    try { r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: fn, token: TOKEN, args }) }); }
-    catch (e) { throw new Error('Sin conexión'); }
-    let j; try { j = await r.json(); } catch (e) { throw new Error('La hoja no responde. ¿Has publicado la nueva versión del código?'); }
+    // Máximo 25 s por petición: si el móvil congeló la conexión al salir de la app, se corta y se vuelve a intentar
+    const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null, tt = ctl && setTimeout(() => ctl.abort(), 25000);
+    try { r = await fetch(API_URL, { method: 'POST', cache: 'no-store', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: fn, token: TOKEN, args }), signal: ctl ? ctl.signal : undefined }); }
+    catch (e) { clearTimeout(tt); throw new Error('Sin conexión'); }
+    let j; try { j = await r.json(); } catch (e) { clearTimeout(tt); throw new Error(e && e.name === 'AbortError' ? 'Sin conexión' : 'La hoja no responde. ¿Has publicado la nueva versión del código?'); }
+    clearTimeout(tt);
     if (!j.ok) throw new Error(String(j.mensaje || 'Error').replace(/^⚠️\s*/, ''));
     return j.datos;
   }
@@ -885,6 +894,7 @@ async function cargar() {
   } catch (e) {
     if (e.message === SIN_RED && copia) {
       OFFLINE = copia.t; avisoRed(); ultimaCarga = Date.now();
+      setTimeout(() => refrescarSiToca(true), 3000);
       if (!mostrada) { D = conPendientes(JSON.parse(JSON.stringify(copia.D))); FIJOS = new Set(D.config.fijos || []); if (!USUARIO) { pedirUsuario(); return; } pantalla('app'); pintar(true); }
       return;
     }
@@ -897,22 +907,29 @@ async function cargar() {
 }
 let ultimaCarga = Date.now();
 let RECARGANDO = null;
+let RECARGANDO_DESDE = 0, ultimaOK = Date.now(), PINTAR_LUEGO = false;
 async function recargar() {
-  if (RECARGANDO) return RECARGANDO;            // no lanza dos peticiones a la vez
+  // No lanza dos peticiones a la vez… salvo que la anterior lleve colgada más de 30 s
+  if (RECARGANDO && Date.now() - RECARGANDO_DESDE < 30000) return RECARGANDO;
+  RECARGANDO_DESDE = Date.now(); document.body.classList.add('sincronizando');
   RECARGANDO = (async () => {
     const antes = JSON.stringify(D), diaCambia = ponerHoyAlDia();
     try {
       await enviarPendientes();
-      const n = await api('api_datos'); guardarCopia(n); D = conPendientes(n); OFFLINE = null;
+      const n = await api('api_datos'); guardarCopia(n); D = conPendientes(n); OFFLINE = null; ultimaOK = Date.now();
     } catch (e) {
       if (e.message !== SIN_RED) throw e;
       OFFLINE = OFFLINE || (leerCopia() || {}).t || Date.now(); D = conPendientes(D);
     }
     FIJOS = new Set(D.config.fijos || []); ultimaCarga = Date.now(); avisoRed();
-    // Solo se vuelve a pintar si ha llegado algo nuevo (así no salta la pantalla cada vez)
-    const v = $('#velo'); if ((diaCambia || JSON.stringify(D) !== antes) && (v.classList.contains('oculto') || v.classList.contains('cierra'))) pintar();
+    // Solo se vuelve a pintar si ha llegado algo nuevo (así no salta la pantalla cada vez).
+    // Si había una hoja abierta, se pinta al cerrarla
+    if (diaCambia || JSON.stringify(D) !== antes) {
+      const v = $('#velo'); if (v.classList.contains('oculto') || v.classList.contains('cierra')) pintar(); else PINTAR_LUEGO = true;
+    }
   })();
-  try { return await RECARGANDO; } finally { RECARGANDO = null; }
+  const yo = RECARGANDO;
+  try { return await yo; } finally { if (RECARGANDO === yo) { RECARGANDO = null; document.body.classList.remove('sincronizando'); } }
 }
 
 // ── Sin conexión ─────────────────────────────────────────
@@ -968,16 +985,23 @@ window.addEventListener('online', () => { if (INSTALADA && TOKEN) recargar().cat
 // Al volver a la app se piden los datos enseguida y otra vez a los 8 s: el atajo de Apple Pay tarda unos segundos en
 // escribir en la hoja, y si abres SUMS justo después del pago la primera petición puede llegar antes que el movimiento.
 // Mientras la app está abierta, se comprueba cada 30 s si hay movimientos nuevos.
-let T_REPASO = null;
+let T_REPASO = [];
 function refrescarSiToca(forzar) {
   if (!(TOKEN || DEMO) || $('#app').classList.contains('oculto')) return;
   if (ponerHoyAlDia()) pintar();
-  if (forzar || Date.now() - ultimaCarga > 3000) recargar().catch(() => {});
-  clearTimeout(T_REPASO); T_REPASO = setTimeout(() => recargar().catch(() => {}), 8000);
+  if (forzar || Date.now() - ultimaCarga > 2000) recargar().catch(() => {});
+  // Repasos: a los 3 s (la conexión del móvil aún se está despertando), 8 s y 20 s (el atajo de Apple Pay aún escribiendo)
+  T_REPASO.forEach(clearTimeout);
+  T_REPASO = [3000, 8000, 20000].map(ms => setTimeout(() => { if (document.visibilityState === 'visible') recargar().catch(() => {}); }, ms));
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refrescarSiToca(); });
-window.addEventListener('pageshow', () => refrescarSiToca());
-window.addEventListener('focus', () => refrescarSiToca());
+let ULT_VISIBLE = 0;
+const alVolver = () => { if (Date.now() - ULT_VISIBLE < 1500) return; ULT_VISIBLE = Date.now(); refrescarSiToca(true); };
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') alVolver(); });
+window.addEventListener('pageshow', alVolver);
+window.addEventListener('focus', alVolver);
+document.addEventListener('resume', alVolver);
+// Por si el móvil no avisa de que has vuelto: al primer toque, si los datos tienen más de 45 s, se piden otra vez
+document.addEventListener('touchstart', () => { if ((TOKEN || DEMO) && Date.now() - ultimaOK > 45000 && Date.now() - ultimaCarga > 5000) refrescarSiToca(); }, { passive: true });
 setInterval(() => { if ((TOKEN || DEMO) && document.visibilityState === 'visible' && Date.now() - ultimaCarga > 30000 && $('#velo').classList.contains('oculto') && !$('#app').classList.contains('oculto')) recargar().catch(() => {}); }, 10000);
 
 function pedirUsuario() {
@@ -3079,7 +3103,7 @@ function cerrarHoja() {
   const v = $('#velo'), h = $('#hoja');
   if (v.classList.contains('oculto') || v.classList.contains('cierra')) return;
   v.classList.remove('abre'); v.classList.add('cierra');
-  v._t = setTimeout(() => { v.classList.add('oculto'); v.classList.remove('cierra'); h.style.transform = ''; liberarFondo(); }, 300);
+  v._t = setTimeout(() => { v.classList.add('oculto'); v.classList.remove('cierra'); h.style.transform = ''; liberarFondo(); if (PINTAR_LUEGO) { PINTAR_LUEGO = false; pintar(); } }, 300);
 }
 // Arrastrar hacia abajo desde la barrita (o el título) para cerrar
 (() => {

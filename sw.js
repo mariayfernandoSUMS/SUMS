@@ -1,7 +1,7 @@
 // SUMS · guarda la app en el móvil para poder abrirla sin conexión.
 // Los datos NO se guardan aquí: siempre se piden a la hoja de Google.
 // Primero intenta descargar la versión más nueva de GitHub (si tarda más de 3 s o no hay conexión, usa la guardada).
-const CACHE = 'sums-v3';
+const CACHE = 'sums-v4';
 const ARCHIVOS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
