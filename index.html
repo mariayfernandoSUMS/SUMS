@@ -1734,7 +1734,7 @@ function vAnalisis() {
       ${ingMed ? `<span class="wmedia" style="bottom:${ingMed / mxI * 100}%"></span>` : ''}</div>
     <div class="wmeses">${ms.map(m => `<span>${MESES[m.getMonth()].charAt(0).toUpperCase()}</span>`).join('')}</div></button>`;
   const fut = '';
-  return cabecera('Análisis', (esFuturo(M) ? 'Previsión de ' : 'Un vistazo a ') + MESES[M.getMonth()], '', !actual) + nav + fut + `<div class="widgets">${w1}${wI}${w2}${w3}${widgetPres(M)}</div>`;
+  return cabecera('Análisis', (esFuturo(M) ? 'Previsión de ' : 'Un vistazo a ') + MESES[M.getMonth()], '', !actual) + nav + fut + `<div class="widgets">${w1}${wI}${w2}${w3}</div>`;
 }
 const cabDetalle = (titulo, hoyActivo, sub) => `<header class="top principal detalle"><div class="tit-det"><button class="ibtn" data-acc="anaVolver" aria-label="Volver">${SVG.izq}</button>
   <div><h1>${titulo}</h1><p>${sub || ''}</p></div></div>${accionesCab('', hoyActivo)}</header>`;
@@ -3214,9 +3214,9 @@ $('#hoja').addEventListener('click', async e => {
   const f = e.target.closest('[data-f]'); if (!f) return;
   if (f.dataset.f === 'cancelar') return cerrarHoja();
   if (f.dataset.f === 'reemb') {
-    const o = form.mov, ya = reembolsosDe(o.id).reduce((a, r) => a + r.importe, 0);
+    const o = form.mov;
     return abrirForm(null, { tipo: 'Reembolso', categoria: o.categoria, subcategoria: o.subcategoria, detalle: o.detalle, metodo: o.metodo,
-      vinculado: o.id, importe: ya ? '' : Math.round(o.importe / 2 * 100) / 100, concepto: '' });
+      vinculado: o.id, importe: '', concepto: '' });
   }
   if (f.dataset.f === 'borrar') {
     if (!confirm('¿Borrar este movimiento?')) return;
