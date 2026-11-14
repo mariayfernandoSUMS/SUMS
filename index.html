@@ -585,6 +585,8 @@
   .ley-f .n { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
   .ley-f small { color: var(--muted); font-weight: 600; min-width: 36px; text-align: right; }
   .ley-f.tap { cursor: pointer; }
+  .ley-f .n .ree-f { display: block; font-style: normal; font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 1px; }
+  .ree-nota { font-size: 12px; font-weight: 600; color: var(--muted); padding-top: 2px; }
   .leyenda-ana { margin-top: 8px; }
   .graf-ana { display: block; width: 100%; height: auto; margin-top: 6px; overflow: visible; }
   .graf-ana .eje { font-size: 10px; fill: var(--muted); font-weight: 600; font-family: inherit; font-variant-numeric: tabular-nums; }
@@ -1079,8 +1081,11 @@ $('#loginForm').addEventListener('submit', e => {
 });
 
 // ── Cálculos ─────────────────────────────────────────────
-const esFijo = m => FIJOS.has([m.categoria, m.subcategoria, m.detalle].join('|')) ||
+// Un reembolso vinculado a un gasto cuenta como ese gasto (misma categoría y mismo fijo/variable)
+const refFV = m => (m.tipo === 'Reembolso' && m.vinculado && D.movs.find(g => g.id === m.vinculado && g.tipo === 'Gasto')) || m;
+const esFijoBase = m => FIJOS.has([m.categoria, m.subcategoria, m.detalle].join('|')) ||
   FIJOS.has([m.categoria, m.subcategoria, ''].join('|')) || FIJOS.has([m.categoria, '', ''].join('|'));
+const esFijo = m => esFijoBase(refFV(m));
 const filtrados = () => !bancoFiltro ? D.movs : bancoFiltro === SIN_BANCO ? sinBanco()
   : D.movs.filter(m => bancoDe(m.metodo) === bancoFiltro || bancoDe(m.destino) === bancoFiltro);
 const SIN_BANCO = 'Sin banco';
@@ -1995,12 +2000,16 @@ function vAnaFijos() {
   if (anaSelFijo === null || anaSelFijo >= ms.length) anaSelFijo = ms.length - 1;
   const s = datos[anaSelFijo], m = ms[anaSelFijo], tot = s.fijo + s.vari;
   const mov = delMes(MA, m);
+  // Cada fila: gasto neto (gasto − reembolsos). Si hubo reembolsos, se indica debajo cuánto restaron.
   const lista = fijo => {
     const o = {};
-    mov.forEach(x => { if ((x.tipo !== 'Gasto' && x.tipo !== 'Reembolso') || esFijo(x) !== fijo) return; const k = fijo ? (x.detalle || x.subcategoria || x.categoria) : x.categoria; o[k] = (o[k] || 0) + (x.tipo === 'Gasto' ? x.importe : -x.importe); });
-    return Object.entries(o).filter(e => e[1] > 0.004).sort((a, b) => b[1] - a[1]);
+    mov.forEach(x => { if ((x.tipo !== 'Gasto' && x.tipo !== 'Reembolso') || esFijo(x) !== fijo) return; const r = refFV(x);
+      const k = (fijo ? (r.detalle || r.subcategoria || r.categoria) : r.categoria) || 'Sin clasificar';
+      const e = o[k] || (o[k] = { g: 0, r: 0 }); if (x.tipo === 'Gasto') e.g += x.importe; else e.r += x.importe; });
+    return Object.entries(o).map(([k, e]) => [k, e.g - e.r, e.r]).filter(e => Math.abs(e[1]) > 0.004 || e[2] > 0.004).sort((a, b) => b[1] - a[1]);
   };
-  const filas = (l, c) => l.length ? l.map(([k, v]) => `<div class="ley-f"><em style="background:${c}"></em><span class="n">${esc(k)}</span><b class="num">${fmt(v)}</b></div>`).join('') : '<div class="vacio" style="padding:10px 0">—</div>';
+  const reeMes = mov.reduce((a, x) => a + (x.tipo === 'Reembolso' ? x.importe : 0), 0);
+  const filas = (l, c) => l.length ? l.map(([k, v, r]) => `<div class="ley-f"><em style="background:${c}"></em><span class="n">${esc(k)}${r > 0.004 ? `<i class="ree-f">Reembolsos −${fmt(r)}</i>` : ''}</span><b class="num">${fmt(v)}</b></div>`).join('') : '<div class="vacio" style="padding:10px 0">—</div>';
   const nav = `<div class="mes"><button data-acc="fijoAnt" aria-label="Mes anterior"${claveMes(m) <= primerMes() ? ' disabled' : ''}>${SVG.izq}</button>
     <b>${cap(MESES[m.getMonth()])} de ${m.getFullYear()}</b><button data-acc="fijoSig" aria-label="Mes siguiente"${claveMes(m) >= MAX_FUTURO() ? ' disabled' : ''}>${SVG.der}</button></div>`;
   return cabDetalle('Fijos y variables', claveMes(m) !== claveMes(hoy), 'Qué parte del gasto es fija') + nav + `
@@ -2008,7 +2017,8 @@ function vAnaFijos() {
     <section class="card ana-card">
       <div class="sel-info"><b>${cap(MESES[m.getMonth()])} ${m.getFullYear()}</b>
         <div class="kv"><span><em style="background:${C_FIJO}"></em>Fijos</span><b class="num">${fmt(s.fijo)} <small>${tot ? Math.round(s.fijo / tot * 100) + ' %' : ''}</small></b></div>
-        <div class="kv"><span><em style="background:${C_VAR}"></em>Variables</span><b class="num">${fmt(s.vari)} <small>${tot ? Math.round(s.vari / tot * 100) + ' %' : ''}</small></b></div></div>
+        <div class="kv"><span><em style="background:${C_VAR}"></em>Variables</span><b class="num">${fmt(s.vari)} <small>${tot ? Math.round(s.vari / tot * 100) + ' %' : ''}</small></b></div>
+        ${reeMes > 0.004 ? `<div class="ree-nota">Ya descontados ${fmt(reeMes)} de reembolsos</div>` : ''}</div>
       ${areaFVSVG(ms, datos, anaSelFijo)}
       <div class="ley-evol"><span><em style="background:${C_FIJO}"></em>Fijos</span><span><em style="background:${C_VAR}"></em>Variables</span></div>
     </section>
@@ -2039,7 +2049,7 @@ function mediasVariables(ref, n) {
 }
 function varPorCat(arr) {
   const o = {};
-  arr.forEach(x => { if ((x.tipo !== 'Gasto' && x.tipo !== 'Reembolso') || esFijo(x)) return; const c = x.categoria || 'Sin clasificar'; o[c] = (o[c] || 0) + (x.tipo === 'Gasto' ? x.importe : -x.importe); });
+  arr.forEach(x => { if ((x.tipo !== 'Gasto' && x.tipo !== 'Reembolso') || esFijo(x)) return; const c = refFV(x).categoria || 'Sin clasificar'; o[c] = (o[c] || 0) + (x.tipo === 'Gasto' ? x.importe : -x.importe); });
   return o;
 }
 function prevision(ref) {
